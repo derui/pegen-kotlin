@@ -15,7 +15,7 @@ class PegDsl {
     /**
      * Create a new [PegSequence] with the given [suffixes]. This function implicitly expresses SEQUENCE.
      */
-    fun s(vararg prefixes: PegSequence): PegExpression = PegExpression(prefixes.toList())
+    fun s(vararg prefixes: PegPrefix): PegSequence = PegSequence(prefixes.toList())
 
     /**
      *  Create a new [PegAndPrefix] with the given [suffix].
