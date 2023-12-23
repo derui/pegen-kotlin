@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.9.21"
-    java
+    `java-library`
 }
 
 group = "io.github:derui"
@@ -23,6 +23,6 @@ kotlin {
     jvmToolchain(17)
 }
 
-application {
-    mainClass.set("MainKt")
+tasks {
+    jar {}
 }
