@@ -4,7 +4,7 @@ package io.github.derui.pegen.core.lang
  * A peg suffix is a suffix of peg primary
  */
 sealed class PegSuffix(
-    private val primary: PegPrimary
+    private val primary: PegPrimary,
 )
 
 /**

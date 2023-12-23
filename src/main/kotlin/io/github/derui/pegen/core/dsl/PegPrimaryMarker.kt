@@ -9,6 +9,9 @@ package io.github.derui.pegen.core.dsl
 sealed interface SyntaxHierarchyMarker
 
 interface PegSequenceMarker : SyntaxHierarchyMarker
+
 interface PegPrefixMarker : PegSequenceMarker
+
 interface PegSuffixMarker : PegPrefixMarker
+
 interface PegPrimaryMarker : PegSuffixMarker

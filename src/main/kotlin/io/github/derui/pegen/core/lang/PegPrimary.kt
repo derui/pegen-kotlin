@@ -10,24 +10,22 @@ sealed interface PegPrimary
  */
 class PegIdentifierPrimary internal constructor(
     // TODO We want to treat Identifier as class
-    private val identifier: PegExpression
-) : PegPrimary {}
+    private val identifier: PegExpression,
+) : PegPrimary
 
 /**
  * This primary is a representation of PEG's literal
  */
 class PegLiteralPrimary internal constructor(
-    private val literal: String
-) : PegPrimary {}
+    private val literal: String,
+) : PegPrimary
 
 /**
  * This primary is a PEG's [(p)] primary
  */
 class PegClassPrimary internal constructor(
-    private val cls: Set<Char>
+    private val cls: Set<Char>,
 ) : PegPrimary {
-
-
     /**
      * A simple builder for [PegClassPrimary]
      */
@@ -66,10 +64,10 @@ class PegClassPrimary internal constructor(
  * This primary is a PEG's [(e)] primary
  */
 class PegGroupPrimary internal constructor(
-    private val expression: PegExpression
-) : PegPrimary {}
+    private val expression: PegExpression,
+) : PegPrimary
 
 /**
  * This primary is a PEG's [.] primary
  */
-object PegDotPrimary : PegPrimary {}
+object PegDotPrimary : PegPrimary

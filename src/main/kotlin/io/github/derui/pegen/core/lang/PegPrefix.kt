@@ -4,7 +4,7 @@ package io.github.derui.pegen.core.lang
  * A peg prefix is a prefix of a peg suffix
  */
 sealed class PegPrefix(
-    private val suffix: PegSuffix
+    private val suffix: PegSuffix,
 )
 
 /**
