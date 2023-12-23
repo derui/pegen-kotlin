@@ -13,7 +13,7 @@ class PegDsl<T : Tag> internal constructor() {
      * Create a new [PegExpression] with the given [sequences]. This function implicitly expresses CHOICE.
      */
     fun <T> exp(vararg sequences: T): PegExpression
-        where T : PegSequenceMarker, T : ImplicitConversionDelegates = PegExpression(sequences.map { it.asSequence() }.toList())
+        where T : PegSequenceMarker, T : ImplicitConversionDelegate = PegExpression(sequences.map { it.asSequence() }.toList())
 
     /**
      * Create a new [PegSequence] without any prefix. This function implicitly expresses SEQUENCE.
@@ -24,49 +24,49 @@ class PegDsl<T : Tag> internal constructor() {
      * Create a new [PegSequence] with the given [prefixes]. This function implicitly expresses SEQUENCE.
      */
     fun <T> s(vararg prefixes: T): ImplicitPegSequence
-        where T : PegPrefixMarker, T : ImplicitConversionDelegates = ImplicitPegSequence(PegSequence(prefixes.map { it.asPrefix() }.toList()))
+        where T : PegPrefixMarker, T : ImplicitConversionDelegate = ImplicitPegSequence(PegSequence(prefixes.map { it.asPrefix() }.toList()))
 
     /**
      *  Create a new [PegAndPrefix] with the given [suffix].
      */
     fun <T> and(suffix: T): ImplicitPegPrefix
-        where T : PegSuffixMarker, T : ImplicitConversionDelegates = ImplicitPegPrefix(PegAndPrefix(suffix.asSuffix()))
+        where T : PegSuffixMarker, T : ImplicitConversionDelegate = ImplicitPegPrefix(PegAndPrefix(suffix.asSuffix()))
 
     /**
      *  Create a new [PegNotPrefix] with the given [suffix].
      */
     fun <T> not(suffix: T): ImplicitPegPrefix
-        where T : PegSuffixMarker, T : ImplicitConversionDelegates = ImplicitPegPrefix(PegNotPrefix(suffix.asSuffix()))
+        where T : PegSuffixMarker, T : ImplicitConversionDelegate = ImplicitPegPrefix(PegNotPrefix(suffix.asSuffix()))
 
     /**
      * Create a new [PegNakedPrefix] with the given [suffix].
      */
     fun <T> np(suffix: T): ImplicitPegPrefix
-        where T : PegSuffixMarker, T : ImplicitConversionDelegates = ImplicitPegPrefix(PegNakedPrefix(suffix.asSuffix()))
+        where T : PegSuffixMarker, T : ImplicitConversionDelegate = ImplicitPegPrefix(PegNakedPrefix(suffix.asSuffix()))
 
     /**
      * Create a new [PegSuffix] as a representation of [*] in PEG
      */
     fun <T> many(primary: PegPrimary): ImplicitPegSuffix
-        where T : PegPrimaryMarker, T : ImplicitConversionDelegates = ImplicitPegSuffix(PegStarSuffix(primary))
+        where T : PegPrimaryMarker, T : ImplicitConversionDelegate = ImplicitPegSuffix(PegStarSuffix(primary))
 
     /**
      * Create a new [PegSuffix] as a representation of [+] in PEG
      */
     fun <T> many1(primary: PegPrimary): ImplicitPegSuffix
-        where T : PegPrimaryMarker, T : ImplicitConversionDelegates = ImplicitPegSuffix(PegPlusSuffix(primary))
+        where T : PegPrimaryMarker, T : ImplicitConversionDelegate = ImplicitPegSuffix(PegPlusSuffix(primary))
 
     /**
      * Create a new [PegSuffix] as a representation of [?] in PEG
      */
     fun <T> opt(primary: PegPrimary): ImplicitPegSuffix
-        where T : PegPrimaryMarker, T : ImplicitConversionDelegates = ImplicitPegSuffix(PegQuestionSuffix(primary))
+        where T : PegPrimaryMarker, T : ImplicitConversionDelegate = ImplicitPegSuffix(PegQuestionSuffix(primary))
 
     /**
      * Create a new [PegSuffix] without any suffix
      */
     fun <T> ns(primary: PegPrimary): ImplicitPegSuffix
-        where T : PegPrimaryMarker, T : ImplicitConversionDelegates = ImplicitPegSuffix(PegNakedSuffix(primary))
+        where T : PegPrimaryMarker, T : ImplicitConversionDelegate = ImplicitPegSuffix(PegNakedSuffix(primary))
 
     /**
      * A shortcut creating [PegLiteralPrimary]
