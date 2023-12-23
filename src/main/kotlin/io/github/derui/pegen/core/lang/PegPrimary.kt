@@ -1,9 +1,11 @@
 package io.github.derui.pegen.core.lang
 
+import java.util.UUID
+
 /**
  * A base class for primary component of PEG
  */
-sealed interface PegPrimary
+sealed interface PegPrimary : PegSyntax
 
 /**
  * This primary is a PEG's identifier
@@ -11,6 +13,7 @@ sealed interface PegPrimary
 class PegIdentifierPrimary internal constructor(
     // TODO We want to treat Identifier as class
     private val identifier: PegExpression,
+    override val id: UUID,
 ) : PegPrimary
 
 /**
@@ -18,6 +21,7 @@ class PegIdentifierPrimary internal constructor(
  */
 class PegLiteralPrimary internal constructor(
     private val literal: String,
+    override val id: UUID,
 ) : PegPrimary
 
 /**
@@ -25,11 +29,12 @@ class PegLiteralPrimary internal constructor(
  */
 class PegClassPrimary internal constructor(
     private val cls: Set<Char>,
+    override val id: UUID,
 ) : PegPrimary {
     /**
      * A simple builder for [PegClassPrimary]
      */
-    class Builder internal constructor() {
+    class Builder internal constructor(private val id: UUID) {
         private val chars = mutableSetOf<Char>()
 
         /**
@@ -56,7 +61,7 @@ class PegClassPrimary internal constructor(
         /**
          * Build [PegClassPrimary] from this builder
          */
-        fun build(): PegClassPrimary = PegClassPrimary(chars)
+        fun build(): PegClassPrimary = PegClassPrimary(chars, id)
     }
 }
 
@@ -65,9 +70,10 @@ class PegClassPrimary internal constructor(
  */
 class PegGroupPrimary internal constructor(
     private val expression: PegExpression,
+    override val id: UUID,
 ) : PegPrimary
 
 /**
  * This primary is a PEG's [.] primary
  */
-object PegDotPrimary : PegPrimary
+class PegDotPrimary internal constructor(override val id: UUID) : PegPrimary

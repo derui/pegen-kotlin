@@ -1,5 +1,6 @@
 package io.github.derui.pegen.core.dsl
 
+import io.github.derui.pegen.core.dsl.support.SyntaxIdentifierGenerator
 import io.github.derui.pegen.core.lang.PegNakedPrefix
 import io.github.derui.pegen.core.lang.PegNakedSuffix
 import io.github.derui.pegen.core.lang.PegPrefix
@@ -23,34 +24,52 @@ sealed interface ImplicitConversionDelegate {
 /**
  * An implicit version of [PegPrimary]
  */
-class ImplicitPegPrimary internal constructor(private val primary: PegPrimary) : ImplicitConversionDelegate, PegPrimaryMarker {
+class ImplicitPegPrimary internal constructor(
+    private val generator: SyntaxIdentifierGenerator,
+    private val primary: PegPrimary,
+) : ImplicitConversionDelegate, PegPrimaryMarker {
     override fun asPrimary(): PegPrimary = primary
 
-    override fun asSuffix(): PegSuffix = PegNakedSuffix(primary)
+    override fun asSuffix(): PegSuffix = PegNakedSuffix(primary, generator.generate())
 
-    override fun asPrefix(): PegPrefix = PegNakedPrefix(PegNakedSuffix(primary))
+    override fun asPrefix(): PegPrefix = PegNakedPrefix(PegNakedSuffix(primary, generator.generate()), generator.generate())
 
-    override fun asSequence(): PegSequence = PegSequence(listOf(PegNakedPrefix(PegNakedSuffix(primary))))
+    override fun asSequence(): PegSequence =
+        PegSequence(
+            listOf(
+                PegNakedPrefix(
+                    PegNakedSuffix(primary, generator.generate()),
+                    generator.generate(),
+                ),
+            ),
+            generator.generate(),
+        )
 }
 
 /**
  * An implicit version of [PegSuffix]
  */
-class ImplicitPegSuffix internal constructor(private val suffix: PegSuffix) : ImplicitConversionDelegate, PegSuffixMarker {
+class ImplicitPegSuffix internal constructor(
+    private val generator: SyntaxIdentifierGenerator,
+    private val suffix: PegSuffix,
+) : ImplicitConversionDelegate, PegSuffixMarker {
     override fun asSuffix(): PegSuffix = suffix
 
-    override fun asPrefix(): PegPrefix = PegNakedPrefix(suffix)
+    override fun asPrefix(): PegPrefix = PegNakedPrefix(suffix, generator.generate())
 
-    override fun asSequence(): PegSequence = PegSequence(listOf(PegNakedPrefix(suffix)))
+    override fun asSequence(): PegSequence = PegSequence(listOf(PegNakedPrefix(suffix, generator.generate())), generator.generate())
 }
 
 /**
  * An implicit version of [PegPrefix]
  */
-class ImplicitPegPrefix internal constructor(private val prefix: PegPrefix) : ImplicitConversionDelegate, PegPrefixMarker {
+class ImplicitPegPrefix internal constructor(
+    private val generator: SyntaxIdentifierGenerator,
+    private val prefix: PegPrefix,
+) : ImplicitConversionDelegate, PegPrefixMarker {
     override fun asPrefix(): PegPrefix = prefix
 
-    override fun asSequence(): PegSequence = PegSequence(listOf(prefix))
+    override fun asSequence(): PegSequence = PegSequence(listOf(prefix), generator.generate())
 }
 
 /**
