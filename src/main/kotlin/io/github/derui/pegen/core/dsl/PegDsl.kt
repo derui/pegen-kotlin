@@ -1,11 +1,13 @@
 package io.github.derui.pegen.core.dsl
 
+import io.github.derui.pegen.core.Tag
 import io.github.derui.pegen.core.lang.*
 
 /**
  * Dsl for PEG
+ *
  */
-class PegDsl {
+class PegDsl<T : Tag> internal constructor() {
 
     /**
      * Create a new [PegExpression] with the given [sequences]. This function implicitly expresses CHOICE.
@@ -51,13 +53,13 @@ class PegDsl {
     /**
      * Create a new [PegSuffix] as a representation of [+] in PEG
      */
-    fun <T> some(primary: PegPrimary): ImplicitPegSuffix
+    fun <T> many1(primary: PegPrimary): ImplicitPegSuffix
         where T : PegPrimaryMarker, T : ImplicitConversionDelegates = ImplicitPegSuffix(PegPlusSuffix(primary))
 
     /**
      * Create a new [PegSuffix] as a representation of [?] in PEG
      */
-    fun <T> optional(primary: PegPrimary): ImplicitPegSuffix
+    fun <T> opt(primary: PegPrimary): ImplicitPegSuffix
         where T : PegPrimaryMarker, T : ImplicitConversionDelegates = ImplicitPegSuffix(PegQuestionSuffix(primary))
 
     /**
