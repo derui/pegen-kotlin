@@ -10,69 +10,83 @@ class PegDsl {
     /**
      * Create a new [PegExpression] with the given [sequences]. This function implicitly expresses CHOICE.
      */
-    fun exp(vararg sequences: PegSequence): PegExpression = PegExpression(sequences.toList())
+    fun <T> exp(vararg sequences: T): PegExpression
+        where T : PegSequenceMarker, T : ImplicitConversionDelegates = PegExpression(sequences.map { it.asSequence() }.toList())
 
     /**
-     * Create a new [PegSequence] with the given [suffixes]. This function implicitly expresses SEQUENCE.
+     * Create a new [PegSequence] without any prefix. This function implicitly expresses SEQUENCE.
      */
-    fun s(vararg prefixes: PegPrefix): PegSequence = PegSequence(prefixes.toList())
+    fun s(): ImplicitPegSequence = ImplicitPegSequence(PegSequence(emptyList()))
+
+    /**
+     * Create a new [PegSequence] with the given [prefixes]. This function implicitly expresses SEQUENCE.
+     */
+    fun <T> s(vararg prefixes: T): ImplicitPegSequence
+        where T : PegPrefixMarker, T : ImplicitConversionDelegates = ImplicitPegSequence(PegSequence(prefixes.map { it.asPrefix() }.toList()))
 
     /**
      *  Create a new [PegAndPrefix] with the given [suffix].
      */
-    fun and(suffix: PegSuffix): PegPrefix = PegAndPrefix(suffix)
+    fun <T> and(suffix: T): ImplicitPegPrefix
+        where T : PegSuffixMarker, T : ImplicitConversionDelegates = ImplicitPegPrefix(PegAndPrefix(suffix.asSuffix()))
 
     /**
      *  Create a new [PegNotPrefix] with the given [suffix].
      */
-    fun not(suffix: PegSuffix): PegPrefix = PegNotPrefix(suffix)
+    fun <T> not(suffix: T): ImplicitPegPrefix
+        where T : PegSuffixMarker, T : ImplicitConversionDelegates = ImplicitPegPrefix(PegNotPrefix(suffix.asSuffix()))
 
     /**
      * Create a new [PegNakedPrefix] with the given [suffix].
      */
-    fun np(suffix: PegSuffix): PegPrefix = PegNakedPrefix(suffix)
+    fun <T> np(suffix: T): ImplicitPegPrefix
+        where T : PegSuffixMarker, T : ImplicitConversionDelegates = ImplicitPegPrefix(PegNakedPrefix(suffix.asSuffix()))
 
     /**
      * Create a new [PegSuffix] as a representation of [*] in PEG
      */
-    fun many(primary: PegPrimary): PegSuffix = PegStarSuffix(primary)
+    fun <T> many(primary: PegPrimary): ImplicitPegSuffix
+        where T : PegPrimaryMarker, T : ImplicitConversionDelegates = ImplicitPegSuffix(PegStarSuffix(primary))
 
     /**
      * Create a new [PegSuffix] as a representation of [+] in PEG
      */
-    fun many1(primary: PegPrimary): PegSuffix = PegPlusSuffix(primary)
+    fun <T> some(primary: PegPrimary): ImplicitPegSuffix
+        where T : PegPrimaryMarker, T : ImplicitConversionDelegates = ImplicitPegSuffix(PegPlusSuffix(primary))
 
     /**
      * Create a new [PegSuffix] as a representation of [?] in PEG
      */
-    fun opt(primary: PegPrimary): PegSuffix = PegQuestionSuffix(primary)
+    fun <T> optional(primary: PegPrimary): ImplicitPegSuffix
+        where T : PegPrimaryMarker, T : ImplicitConversionDelegates = ImplicitPegSuffix(PegQuestionSuffix(primary))
 
     /**
      * Create a new [PegSuffix] without any suffix
      */
-    fun ns(primary: PegPrimary): PegSuffix = PegNakedSuffix(primary)
+    fun <T> ns(primary: PegPrimary): ImplicitPegSuffix
+        where T : PegPrimaryMarker, T : ImplicitConversionDelegates = ImplicitPegSuffix(PegNakedSuffix(primary))
 
     /**
      * A shortcut creating [PegLiteralPrimary]
      */
-    operator fun String.unaryPlus(): PegPrimary = PegLiteralPrimary(this)
+    operator fun String.unaryPlus(): ImplicitPegPrimary = ImplicitPegPrimary(PegLiteralPrimary(this))
 
     /**
      * A shortcut creating [PegClassPrimary]
      */
-    fun cls(init: PegClassPrimary.Builder.() -> Unit): PegClassPrimary {
+    fun cls(init: PegClassPrimary.Builder.() -> Unit): ImplicitPegPrimary {
         val builder = PegClassPrimary.Builder()
         builder.init()
-        return builder.build()
+        return ImplicitPegPrimary(builder.build())
     }
 
     /**
      * A shortcut creating [PegGroupPrimary]
      */
-    fun g(exp: PegExpression): PegGroupPrimary = PegGroupPrimary(exp)
+    fun g(exp: PegExpression): ImplicitPegPrimary = ImplicitPegPrimary(PegGroupPrimary(exp))
 
     /**
      * A shortcut to detect dot
      */
-    val dot = PegDotPrimary
+    val dot = ImplicitPegPrimary(PegDotPrimary)
 }
