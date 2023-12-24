@@ -26,7 +26,7 @@ class PegDsl<V> internal constructor(
     /**
      * Create a new [PegExpression] with the given [sequences]. This function implicitly expresses CHOICE.
      */
-    fun <T> exp(vararg sequences: T): PegExpression<T> where T : PegSequenceMarker, T : ImplicitConversionDelegate<V> =
+    fun <T> exp(vararg sequences: T): PegExpression<V> where T : PegSequenceMarker, T : ImplicitConversionDelegate<V> =
         PegExpression(
             generator.generate(),
             sequences.map {
