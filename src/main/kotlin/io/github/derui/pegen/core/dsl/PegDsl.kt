@@ -26,6 +26,11 @@ class PegDsl<V, TagType> internal constructor(
     private val generator: SyntaxIdentifierGenerator,
 ) {
     /**
+     * Set [tag] to the given [ImplicitConversionDelegate] for constructing from expression.
+     */
+    infix fun ImplicitConversionDelegate<V, TagType>.tagged(tag: TagType): ImplicitConversionDelegate<V, TagType> = tagged(tag)
+
+    /**
      * Create a new [PegExpressionIntermediate] with the given [sequences]. This function implicitly expresses CHOICE.
      */
     fun <T> exp(
