@@ -1,0 +1,9 @@
+repos:
+- repo: local
+  hooks:
+  - id: ktlint
+    name: ktlint
+    language: system
+    files: \.kt$
+    entry: ./ktlint -F
+
