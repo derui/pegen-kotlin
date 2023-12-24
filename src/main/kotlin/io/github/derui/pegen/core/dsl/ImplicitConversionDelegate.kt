@@ -11,31 +11,31 @@ import io.github.derui.pegen.core.lang.PegSuffix
 /**
  * Default interface for implicit conversion in DSL.
  */
-sealed interface ImplicitConversionDelegate {
-    fun asPrimary(): PegPrimary = throw UnsupportedOperationException()
+sealed interface ImplicitConversionDelegate<T> {
+    fun asPrimary(): PegPrimary<T> = throw UnsupportedOperationException()
 
-    fun asSuffix(): PegSuffix = throw UnsupportedOperationException()
+    fun asSuffix(): PegSuffix<T> = throw UnsupportedOperationException()
 
-    fun asPrefix(): PegPrefix = throw UnsupportedOperationException()
+    fun asPrefix(): PegPrefix<T> = throw UnsupportedOperationException()
 
-    fun asSequence(): PegSequence = throw UnsupportedOperationException()
+    fun asSequence(): PegSequence<T> = throw UnsupportedOperationException()
 }
 
 /**
  * An implicit version of [PegPrimary]
  */
-class ImplicitPegPrimary internal constructor(
+class ImplicitPegPrimary<T> internal constructor(
     private val generator: SyntaxIdentifierGenerator,
-    private val primary: PegPrimary,
-) : ImplicitConversionDelegate, PegPrimaryMarker {
-    override fun asPrimary(): PegPrimary = primary
+    private val primary: PegPrimary<T>,
+) : ImplicitConversionDelegate<T>, PegPrimaryMarker {
+    override fun asPrimary() = primary
 
-    override fun asSuffix(): PegSuffix = PegNakedSuffix(primary, generator.generate())
+    override fun asSuffix() = PegNakedSuffix(primary, generator.generate())
 
-    override fun asPrefix(): PegPrefix = PegNakedPrefix(PegNakedSuffix(primary, generator.generate()), generator.generate())
+    override fun asPrefix() = PegNakedPrefix<T>(PegNakedSuffix(primary, generator.generate()), generator.generate())
 
-    override fun asSequence(): PegSequence =
-        PegSequence(
+    override fun asSequence() =
+        PegSequence<T>(
             listOf(
                 PegNakedPrefix(
                     PegNakedSuffix(primary, generator.generate()),
@@ -49,27 +49,27 @@ class ImplicitPegPrimary internal constructor(
 /**
  * An implicit version of [PegSuffix]
  */
-class ImplicitPegSuffix internal constructor(
+class ImplicitPegSuffix<T> internal constructor(
     private val generator: SyntaxIdentifierGenerator,
-    private val suffix: PegSuffix,
-) : ImplicitConversionDelegate, PegSuffixMarker {
-    override fun asSuffix(): PegSuffix = suffix
+    private val suffix: PegSuffix<T>,
+) : ImplicitConversionDelegate<T>, PegSuffixMarker {
+    override fun asSuffix() = suffix
 
-    override fun asPrefix(): PegPrefix = PegNakedPrefix(suffix, generator.generate())
+    override fun asPrefix() = PegNakedPrefix<T>(suffix, generator.generate())
 
-    override fun asSequence(): PegSequence = PegSequence(listOf(PegNakedPrefix(suffix, generator.generate())), generator.generate())
+    override fun asSequence() = PegSequence<T>(listOf(PegNakedPrefix(suffix, generator.generate())), generator.generate())
 }
 
 /**
  * An implicit version of [PegPrefix]
  */
-class ImplicitPegPrefix internal constructor(
+class ImplicitPegPrefix<T> internal constructor(
     private val generator: SyntaxIdentifierGenerator,
-    private val prefix: PegPrefix,
-) : ImplicitConversionDelegate, PegPrefixMarker {
-    override fun asPrefix(): PegPrefix = prefix
+    private val prefix: PegPrefix<T>,
+) : ImplicitConversionDelegate<T>, PegPrefixMarker {
+    override fun asPrefix() = prefix
 
-    override fun asSequence(): PegSequence = PegSequence(listOf(prefix), generator.generate())
+    override fun asSequence() = PegSequence(listOf(prefix), generator.generate())
 }
 
 /**
@@ -77,6 +77,6 @@ class ImplicitPegPrefix internal constructor(
  *
  * This class is only defined for consistency of DSL.
  */
-class ImplicitPegSequence internal constructor(private val sequence: PegSequence) : ImplicitConversionDelegate, PegSequenceMarker {
-    override fun asSequence(): PegSequence = sequence
+class ImplicitPegSequence<T> internal constructor(private val sequence: PegSequence<T>) : ImplicitConversionDelegate<T>, PegSequenceMarker {
+    override fun asSequence() = sequence
 }

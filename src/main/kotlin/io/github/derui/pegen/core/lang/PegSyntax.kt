@@ -5,6 +5,6 @@ import java.util.UUID
 /**
  * A sealed interface for PEG syntax
  */
-sealed interface PegSyntax {
+sealed interface PegSyntax<T> {
     val id: UUID
 }

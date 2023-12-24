@@ -5,7 +5,7 @@ import java.util.UUID
 /**
  * A peg sequence is a sequence of peg prefix
  */
-class PegSequence internal constructor(
-    private val prefixes: List<PegPrefix>,
+class PegSequence<T> internal constructor(
+    private val prefixes: List<PegPrefix<T>>,
     override val id: UUID,
-) : PegSyntax
+) : PegSyntax<T>
