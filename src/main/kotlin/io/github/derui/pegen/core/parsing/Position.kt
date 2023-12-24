@@ -6,7 +6,7 @@ package io.github.derui.pegen.core.parsing
 class Position private constructor(
     val line: Int,
     val column: Int,
-) {
+) : Comparable<Position> {
     companion object {
         /**
          * Start position of a source code.
@@ -25,6 +25,14 @@ class Position private constructor(
 
     override fun toString(): String {
         return "($line, $column)"
+    }
+
+    override fun compareTo(other: Position): Int {
+        if (line != other.line) {
+            return line.compareTo(other.line)
+        } else {
+            return column.compareTo(other.column)
+        }
     }
 
     override fun equals(other: Any?): Boolean {

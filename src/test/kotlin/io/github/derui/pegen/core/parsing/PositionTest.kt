@@ -2,6 +2,9 @@ package io.github.derui.pegen.core.parsing
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isGreaterThan
+import assertk.assertions.isLessThan
+import assertk.assertions.isNotEqualTo
 import org.junit.jupiter.api.Test
 
 class PositionTest {
@@ -39,5 +42,19 @@ class PositionTest {
         // Assert
         assertThat(position.line).isEqualTo(2)
         assertThat(position.column).isEqualTo(1)
+    }
+
+    @Test
+    fun `should be able to compare`() {
+        // Arrange
+
+        // Act
+        val position1 = Position.start().forward('a').forward('\n')
+        val position2 = Position.start().forward('a').forward('b')
+
+        // Assert
+        assertThat(position1).isGreaterThan(position2)
+        assertThat(position2).isLessThan(position1)
+        assertThat(position1).isNotEqualTo(position2)
     }
 }
