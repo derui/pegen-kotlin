@@ -5,7 +5,9 @@ import io.github.derui.pegen.core.lang.PegAndPrefix
 import io.github.derui.pegen.core.lang.PegClassPrimary
 import io.github.derui.pegen.core.lang.PegDotPrimary
 import io.github.derui.pegen.core.lang.PegExpression
+import io.github.derui.pegen.core.lang.PegExpressionIntermediate
 import io.github.derui.pegen.core.lang.PegGroupPrimary
+import io.github.derui.pegen.core.lang.PegIdentifierPrimary
 import io.github.derui.pegen.core.lang.PegLiteralPrimary
 import io.github.derui.pegen.core.lang.PegNakedPrefix
 import io.github.derui.pegen.core.lang.PegNakedSuffix
@@ -24,10 +26,12 @@ class PegDsl<V, TagType> internal constructor(
     private val generator: SyntaxIdentifierGenerator,
 ) {
     /**
-     * Create a new [PegExpression] with the given [sequences]. This function implicitly expresses CHOICE.
+     * Create a new [PegExpressionIntermediate] with the given [sequences]. This function implicitly expresses CHOICE.
      */
-    fun <T> exp(vararg sequences: T): PegExpression<V, TagType> where T : PegSequenceMarker, T : ImplicitConversionDelegate<V, TagType> =
-        PegExpression(
+    fun <T> exp(
+        vararg sequences: T,
+    ): PegExpressionIntermediate<V, TagType> where T : PegSequenceMarker, T : ImplicitConversionDelegate<V, TagType> =
+        PegExpressionIntermediate(
             generator.generate(),
             sequences.map {
                 it.asSequence()
@@ -139,11 +143,16 @@ class PegDsl<V, TagType> internal constructor(
     /**
      * A shortcut creating [PegGroupPrimary]
      */
-    fun g(exp: PegExpression<V, TagType>): ImplicitPegPrimary<V, TagType> =
+    fun g(exp: PegExpressionIntermediate<V, TagType>): ImplicitPegPrimary<V, TagType> =
         ImplicitPegPrimary(generator, PegGroupPrimary(exp, generator.generate()))
 
     /**
      * A shortcut to detect dot
      */
     val dot = ImplicitPegPrimary<V, TagType>(generator, PegDotPrimary(generator.generate()))
+
+    /**
+     * A shortcut to create identifier
+     */
+    fun ident(v: PegExpression<V>) = ImplicitPegPrimary<V, TagType>(generator, PegIdentifierPrimary(v, generator.generate()))
 }

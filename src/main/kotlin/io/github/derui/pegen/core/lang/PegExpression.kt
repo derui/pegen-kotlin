@@ -5,18 +5,23 @@ import java.util.UUID
 /**
  * A class for PEG expression
  */
-class PegExpression<T, TagType> internal constructor(
+class PegExpressionIntermediate<T, TagType> internal constructor(
     override val id: UUID,
-    private val sequeces: List<PegSequence<T, TagType>>,
+    private val sequences: List<PegSequence<T, TagType>>,
     override val tag: TagType? = null,
-) : PegSyntax<T, TagType>
+) : PegSyntax<T, TagType> {
+    /**
+     * Construct this expression as
+     */
+    fun constructAs(typeConstructor: () -> T): PegExpression<T> = PegExpression(id, sequences, typeConstructor)
+}
 
 /**
- * No tag version [PegExpression]. This class is used with type constructor of [T]
+ * No tag version [PegExpressionIntermediate]. This class is used with type constructor of [T]
  */
-class PegExpressionWithoutTag<T> internal constructor(
+class PegExpression<T> internal constructor(
     override val id: UUID,
-    private val sequeces: List<PegSequence<T, *>>,
+    private val sequences: List<PegSequence<T, *>>,
     private val typeConstructor: () -> T,
 ) : PegSyntax<T, Nothing> {
     override val tag: Nothing? = null
