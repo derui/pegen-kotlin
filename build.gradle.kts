@@ -11,6 +11,8 @@ repositories {
 }
 
 dependencies {
+    testImplementation(kotlin("test-junit5"))
+    testImplementation("com.willowtreeapps.assertk:assertk:0.28.0")
 }
 
 tasks.test {
