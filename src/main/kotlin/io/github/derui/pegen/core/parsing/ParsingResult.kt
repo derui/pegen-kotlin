@@ -24,4 +24,3 @@ class NoParse<V> : ParsingResult<V> {
 
     override fun hashCode(): Int = javaClass.hashCode()
 }
-

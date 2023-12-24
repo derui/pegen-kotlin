@@ -5,32 +5,35 @@ import java.util.UUID
 /**
  * A base class for primary component of PEG
  */
-sealed interface PegPrimary<T> : PegSyntax<T>
+sealed interface PegPrimary<T, TagType> : PegSyntax<T, TagType>
 
 /**
  * This primary is a PEG's identifier
  */
-class PegIdentifierPrimary<T> internal constructor(
+class PegIdentifierPrimary<T, TagType> internal constructor(
     // TODO We want to treat Identifier as class
-    private val identifier: PegExpression<T>,
+    private val identifier: PegExpression<T, TagType>,
     override val id: UUID,
-) : PegPrimary<T>
+    override val tag: TagType? = null,
+) : PegPrimary<T, TagType>
 
 /**
  * This primary is a representation of PEG's literal
  */
-class PegLiteralPrimary<T> internal constructor(
+class PegLiteralPrimary<T, TagType> internal constructor(
     private val literal: String,
     override val id: UUID,
-) : PegPrimary<T>
+    override val tag: TagType? = null,
+) : PegPrimary<T, TagType>
 
 /**
  * This primary is a PEG's [(p)] primary
  */
-class PegClassPrimary<T> internal constructor(
+class PegClassPrimary<T, TagType> internal constructor(
     private val cls: Set<Char>,
     override val id: UUID,
-) : PegPrimary<T> {
+    override val tag: TagType? = null,
+) : PegPrimary<T, TagType> {
     /**
      * A simple builder for [PegClassPrimary]
      */
@@ -61,19 +64,20 @@ class PegClassPrimary<T> internal constructor(
         /**
          * Build [PegClassPrimary] from this builder
          */
-        fun <T> build(): PegClassPrimary<T> = PegClassPrimary<T>(chars, id)
+        fun <T, TagType> build(): PegClassPrimary<T, TagType> = PegClassPrimary<T, TagType>(chars, id)
     }
 }
 
 /**
  * This primary is a PEG's [(e)] primary
  */
-class PegGroupPrimary<T> internal constructor(
-    private val expression: PegExpression<T>,
+class PegGroupPrimary<T, TagType> internal constructor(
+    private val expression: PegExpression<T, TagType>,
     override val id: UUID,
-) : PegPrimary<T>
+    override val tag: TagType? = null,
+) : PegPrimary<T, TagType>
 
 /**
  * This primary is a PEG's [.] primary
  */
-class PegDotPrimary<T> internal constructor(override val id: UUID) : PegPrimary<T>
+class PegDotPrimary<T, TagType> internal constructor(override val id: UUID, override val tag: TagType? = null) : PegPrimary<T, TagType>

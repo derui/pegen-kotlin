@@ -17,10 +17,11 @@ class Position private constructor(
     /**
      * Move forward a position with [c].
      */
-    fun forward(c: Char) = when (c) {
-        '\n' -> Position(line + 1, 1)
-        else -> Position(line, column + 1)
-    }
+    fun forward(c: Char) =
+        when (c) {
+            '\n' -> Position(line + 1, 1)
+            else -> Position(line, column + 1)
+        }
 
     override fun toString(): String {
         return "($line, $column)"

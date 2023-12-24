@@ -11,31 +11,31 @@ import io.github.derui.pegen.core.lang.PegSuffix
 /**
  * Default interface for implicit conversion in DSL.
  */
-sealed interface ImplicitConversionDelegate<T> {
-    fun asPrimary(): PegPrimary<T> = throw UnsupportedOperationException()
+sealed interface ImplicitConversionDelegate<T, TagType> {
+    fun asPrimary(): PegPrimary<T, TagType> = throw UnsupportedOperationException()
 
-    fun asSuffix(): PegSuffix<T> = throw UnsupportedOperationException()
+    fun asSuffix(): PegSuffix<T, TagType> = throw UnsupportedOperationException()
 
-    fun asPrefix(): PegPrefix<T> = throw UnsupportedOperationException()
+    fun asPrefix(): PegPrefix<T, TagType> = throw UnsupportedOperationException()
 
-    fun asSequence(): PegSequence<T> = throw UnsupportedOperationException()
+    fun asSequence(): PegSequence<T, TagType> = throw UnsupportedOperationException()
 }
 
 /**
  * An implicit version of [PegPrimary]
  */
-class ImplicitPegPrimary<T> internal constructor(
+class ImplicitPegPrimary<T, TagType> internal constructor(
     private val generator: SyntaxIdentifierGenerator,
-    private val primary: PegPrimary<T>,
-) : ImplicitConversionDelegate<T>, PegPrimaryMarker {
+    private val primary: PegPrimary<T, TagType>,
+) : ImplicitConversionDelegate<T, TagType>, PegPrimaryMarker {
     override fun asPrimary() = primary
 
     override fun asSuffix() = PegNakedSuffix(primary, generator.generate())
 
-    override fun asPrefix() = PegNakedPrefix<T>(PegNakedSuffix(primary, generator.generate()), generator.generate())
+    override fun asPrefix() = PegNakedPrefix(PegNakedSuffix(primary, generator.generate()), generator.generate())
 
     override fun asSequence() =
-        PegSequence<T>(
+        PegSequence(
             listOf(
                 PegNakedPrefix(
                     PegNakedSuffix(primary, generator.generate()),
@@ -49,24 +49,24 @@ class ImplicitPegPrimary<T> internal constructor(
 /**
  * An implicit version of [PegSuffix]
  */
-class ImplicitPegSuffix<T> internal constructor(
+class ImplicitPegSuffix<T, TagType> internal constructor(
     private val generator: SyntaxIdentifierGenerator,
-    private val suffix: PegSuffix<T>,
-) : ImplicitConversionDelegate<T>, PegSuffixMarker {
+    private val suffix: PegSuffix<T, TagType>,
+) : ImplicitConversionDelegate<T, TagType>, PegSuffixMarker {
     override fun asSuffix() = suffix
 
-    override fun asPrefix() = PegNakedPrefix<T>(suffix, generator.generate())
+    override fun asPrefix() = PegNakedPrefix(suffix, generator.generate())
 
-    override fun asSequence() = PegSequence<T>(listOf(PegNakedPrefix(suffix, generator.generate())), generator.generate())
+    override fun asSequence() = PegSequence(listOf(PegNakedPrefix(suffix, generator.generate())), generator.generate())
 }
 
 /**
  * An implicit version of [PegPrefix]
  */
-class ImplicitPegPrefix<T> internal constructor(
+class ImplicitPegPrefix<T, TagType> internal constructor(
     private val generator: SyntaxIdentifierGenerator,
-    private val prefix: PegPrefix<T>,
-) : ImplicitConversionDelegate<T>, PegPrefixMarker {
+    private val prefix: PegPrefix<T, TagType>,
+) : ImplicitConversionDelegate<T, TagType>, PegPrefixMarker {
     override fun asPrefix() = prefix
 
     override fun asSequence() = PegSequence(listOf(prefix), generator.generate())
@@ -77,6 +77,8 @@ class ImplicitPegPrefix<T> internal constructor(
  *
  * This class is only defined for consistency of DSL.
  */
-class ImplicitPegSequence<T> internal constructor(private val sequence: PegSequence<T>) : ImplicitConversionDelegate<T>, PegSequenceMarker {
+class ImplicitPegSequence<T, TagType> internal constructor(
+    private val sequence: PegSequence<T, TagType>,
+) : ImplicitConversionDelegate<T, TagType>, PegSequenceMarker {
     override fun asSequence() = sequence
 }

@@ -6,6 +6,4 @@ package io.github.derui.pegen.core.parsing
 class ErrorInfo internal constructor(
     val message: String,
     val position: Position,
-) {
-
-}
+)

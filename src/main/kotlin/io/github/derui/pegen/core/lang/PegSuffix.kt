@@ -5,26 +5,40 @@ import java.util.UUID
 /**
  * A peg suffix is a suffix of peg primary
  */
-sealed class PegSuffix<T>(
-    private val primary: PegPrimary<T>,
-) : PegSyntax<T>
+sealed interface PegSuffix<T, TagType> : PegSyntax<T, TagType>
 
 /**
  * This suffix is a PEG's [*] suffix
  */
-class PegStarSuffix<T> internal constructor(primary: PegPrimary<T>, override val id: UUID) : PegSuffix<T>(primary)
+class PegStarSuffix<T, TagType> internal constructor(
+    private val primary: PegPrimary<T, TagType>,
+    override val id: UUID,
+    override val tag: TagType? = null,
+) : PegSuffix<T, TagType>
 
 /**
  * This suffix is a PEG's [+] suffix
  */
-class PegPlusSuffix<T> internal constructor(primary: PegPrimary<T>, override val id: UUID) : PegSuffix<T>(primary)
+class PegPlusSuffix<T, TagType> internal constructor(
+    private val primary: PegPrimary<T, TagType>,
+    override val id: UUID,
+    override val tag: TagType? = null,
+) : PegSuffix<T, TagType>
 
 /**
  * This suffix is a PEG's [?] suffix
  */
-class PegQuestionSuffix<T> internal constructor(primary: PegPrimary<T>, override val id: UUID) : PegSuffix<T>(primary)
+class PegQuestionSuffix<T, TagType> internal constructor(
+    private val primary: PegPrimary<T, TagType>,
+    override val id: UUID,
+    override val tag: TagType? = null,
+) : PegSuffix<T, TagType>
 
 /**
  * This suffix is marker class for no suffix
  */
-class PegNakedSuffix<T> internal constructor(primary: PegPrimary<T>, override val id: UUID) : PegSuffix<T>(primary)
+class PegNakedSuffix<T, TagType> internal constructor(
+    private val primary: PegPrimary<T, TagType>,
+    override val id: UUID,
+    override val tag: TagType? = null,
+) : PegSuffix<T, TagType>

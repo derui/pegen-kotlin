@@ -1,6 +1,7 @@
 package io.github.derui.pegen.core.parsing
 
 import io.github.derui.pegen.core.lang.PegExpression
+import io.github.derui.pegen.core.lang.PegExpressionWithoutTag
 import java.util.UUID
 
 /**
@@ -10,12 +11,12 @@ import java.util.UUID
  */
 class PackratState<V> private constructor(
     private val cache: Array<MutableMap<UUID, ParsingResult<V>>>,
-    private val expressions: Map<UUID, PegExpression<V>>,
+    private val expressions: Map<UUID, PegExpressionWithoutTag<V>>,
 ) {
     companion object {
         fun <V> from(
             input: String,
-            expressions: List<PegExpression<V>>,
+            expressions: List<PegExpressionWithoutTag<V>>,
         ): PackratState<V> {
             val expMap = expressions.associateBy { it.id }
 
