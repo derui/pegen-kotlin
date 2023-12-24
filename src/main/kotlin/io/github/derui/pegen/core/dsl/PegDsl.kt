@@ -41,42 +41,33 @@ class PegDsl<V, TagType> internal constructor(
     /**
      * Create a new [PegSequence] without any prefix. This function implicitly expresses SEQUENCE.
      */
-    fun s(): ImplicitPegSequence<V, TagType> = ImplicitPegSequence(PegSequence(emptyList(), generator.generate()))
+    fun s(): ImplicitPegSequence<V, TagType> = ImplicitPegSequence { PegSequence(emptyList(), generator.generate(), it) }
 
     /**
      * Create a new [PegSequence] with the given [prefixes]. This function implicitly expresses SEQUENCE.
      */
     fun <T> s(vararg prefixes: T): ImplicitPegSequence<V, TagType> where T : PegPrefixMarker, T : ImplicitConversionDelegate<V, TagType> =
-        ImplicitPegSequence(
-            PegSequence(prefixes.map { it.asPrefix() }.toList(), generator.generate()),
-        )
+        ImplicitPegSequence {
+            PegSequence(prefixes.map { it.asPrefix() }.toList(), generator.generate(), it)
+        }
 
     /**
      *  Create a new [PegAndPrefix] with the given [suffix].
      */
     fun <T> and(suffix: T): ImplicitPegPrefix<V, TagType> where T : PegSuffixMarker, T : ImplicitConversionDelegate<V, TagType> =
-        ImplicitPegPrefix(
-            generator,
-            PegAndPrefix(suffix.asSuffix(), generator.generate()),
-        )
+        ImplicitPegPrefix(generator) { PegAndPrefix(suffix.asSuffix(), generator.generate(), it) }
 
     /**
      *  Create a new [PegNotPrefix] with the given [suffix].
      */
     fun <T> not(suffix: T): ImplicitPegPrefix<V, TagType> where T : PegSuffixMarker, T : ImplicitConversionDelegate<V, TagType> =
-        ImplicitPegPrefix(
-            generator,
-            PegNotPrefix(suffix.asSuffix(), generator.generate()),
-        )
+        ImplicitPegPrefix(generator) { PegNotPrefix(suffix.asSuffix(), generator.generate(), it) }
 
     /**
      * Create a new [PegNakedPrefix] with the given [suffix].
      */
     fun <T> np(suffix: T): ImplicitPegPrefix<V, TagType> where T : PegSuffixMarker, T : ImplicitConversionDelegate<V, TagType> =
-        ImplicitPegPrefix(
-            generator,
-            PegNakedPrefix(suffix.asSuffix(), generator.generate()),
-        )
+        ImplicitPegPrefix(generator) { PegNakedPrefix(suffix.asSuffix(), generator.generate(), it) }
 
     /**
      * Create a new [PegSuffix] as a representation of [*] in PEG
@@ -86,8 +77,7 @@ class PegDsl<V, TagType> internal constructor(
     ): ImplicitPegSuffix<V, TagType> where T : PegPrimaryMarker, T : ImplicitConversionDelegate<V, TagType> =
         ImplicitPegSuffix(
             generator,
-            PegStarSuffix(primary, generator.generate()),
-        )
+        ) { PegStarSuffix(primary, generator.generate(), it) }
 
     /**
      * Create a new [PegSuffix] as a representation of [+] in PEG
@@ -95,10 +85,7 @@ class PegDsl<V, TagType> internal constructor(
     fun <T> many1(
         primary: PegPrimary<V, TagType>,
     ): ImplicitPegSuffix<V, TagType> where T : PegPrimaryMarker, T : ImplicitConversionDelegate<V, TagType> =
-        ImplicitPegSuffix(
-            generator,
-            PegPlusSuffix(primary, generator.generate()),
-        )
+        ImplicitPegSuffix(generator) { PegPlusSuffix(primary, generator.generate(), it) }
 
     /**
      * Create a new [PegSuffix] as a representation of [?] in PEG
@@ -106,10 +93,7 @@ class PegDsl<V, TagType> internal constructor(
     fun <T> opt(
         primary: PegPrimary<V, TagType>,
     ): ImplicitPegSuffix<V, TagType> where T : PegPrimaryMarker, T : ImplicitConversionDelegate<V, TagType> =
-        ImplicitPegSuffix(
-            generator,
-            PegQuestionSuffix(primary, generator.generate()),
-        )
+        ImplicitPegSuffix(generator) { PegQuestionSuffix(primary, generator.generate(), it) }
 
     /**
      * Create a new [PegSuffix] without any suffix
@@ -119,8 +103,7 @@ class PegDsl<V, TagType> internal constructor(
     ): ImplicitPegSuffix<V, TagType> where T : PegPrimaryMarker, T : ImplicitConversionDelegate<V, TagType> =
         ImplicitPegSuffix(
             generator,
-            PegNakedSuffix(primary, generator.generate()),
-        )
+        ) { PegNakedSuffix(primary, generator.generate(), it) }
 
     /**
      * A shortcut creating [PegLiteralPrimary]
@@ -128,31 +111,33 @@ class PegDsl<V, TagType> internal constructor(
     operator fun String.unaryPlus(): ImplicitPegPrimary<V, TagType> =
         ImplicitPegPrimary(
             generator,
-            PegLiteralPrimary(this, generator.generate()),
+            { PegLiteralPrimary(this, generator.generate(), it) },
         )
 
     /**
      * A shortcut creating [PegClassPrimary]
      */
     fun cls(init: PegClassPrimary.Builder.() -> Unit): ImplicitPegPrimary<V, TagType> {
-        val builder = PegClassPrimary.Builder(generator.generate())
-        builder.init()
-        return ImplicitPegPrimary(generator, builder.build())
+        return ImplicitPegPrimary(generator, {
+            val builder = PegClassPrimary.Builder(generator.generate())
+            builder.init()
+            builder.build(it)
+        })
     }
 
     /**
      * A shortcut creating [PegGroupPrimary]
      */
     fun g(exp: PegExpressionIntermediate<V, TagType>): ImplicitPegPrimary<V, TagType> =
-        ImplicitPegPrimary(generator, PegGroupPrimary(exp, generator.generate()))
+        ImplicitPegPrimary(generator, { PegGroupPrimary(exp, generator.generate(), it) })
 
     /**
      * A shortcut to detect dot
      */
-    val dot = ImplicitPegPrimary<V, TagType>(generator, PegDotPrimary(generator.generate()))
+    val dot = ImplicitPegPrimary<V, TagType>(generator, { PegDotPrimary(generator.generate(), it) })
 
     /**
      * A shortcut to create identifier
      */
-    fun ident(v: PegExpression<V>) = ImplicitPegPrimary<V, TagType>(generator, PegIdentifierPrimary(v, generator.generate()))
+    fun ident(v: PegExpression<V>) = ImplicitPegPrimary<V, TagType>(generator, { PegIdentifierPrimary(v, generator.generate(), it) })
 }

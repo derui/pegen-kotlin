@@ -13,7 +13,7 @@ class PegExpressionIntermediate<T, TagType> internal constructor(
     /**
      * Construct this expression as
      */
-    fun constructAs(typeConstructor: () -> T): PegExpression<T> = PegExpression(id, sequences, typeConstructor)
+    infix fun constructAs(typeConstructor: () -> T): PegExpression<T> = PegExpression(id, sequences, typeConstructor)
 }
 
 /**

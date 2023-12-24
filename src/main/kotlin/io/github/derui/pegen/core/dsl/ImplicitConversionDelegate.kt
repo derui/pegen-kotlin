@@ -12,6 +12,8 @@ import io.github.derui.pegen.core.lang.PegSuffix
  * Default interface for implicit conversion in DSL.
  */
 sealed interface ImplicitConversionDelegate<T, TagType> {
+    fun tagged(tag: TagType): ImplicitConversionDelegate<T, TagType> = throw UnsupportedOperationException()
+
     fun asPrimary(): PegPrimary<T, TagType> = throw UnsupportedOperationException()
 
     fun asSuffix(): PegSuffix<T, TagType> = throw UnsupportedOperationException()
@@ -26,19 +28,26 @@ sealed interface ImplicitConversionDelegate<T, TagType> {
  */
 class ImplicitPegPrimary<T, TagType> internal constructor(
     private val generator: SyntaxIdentifierGenerator,
-    private val primary: PegPrimary<T, TagType>,
+    private val primary: (TagType?) -> PegPrimary<T, TagType>,
+    private var tag: TagType? = null,
 ) : ImplicitConversionDelegate<T, TagType>, PegPrimaryMarker {
-    override fun asPrimary() = primary
+    override fun tagged(tag: TagType): ImplicitConversionDelegate<T, TagType> {
+        this.tag = tag
 
-    override fun asSuffix() = PegNakedSuffix(primary, generator.generate())
+        return this
+    }
 
-    override fun asPrefix() = PegNakedPrefix(PegNakedSuffix(primary, generator.generate()), generator.generate())
+    override fun asPrimary() = primary(tag)
+
+    override fun asSuffix() = PegNakedSuffix(primary(tag), generator.generate())
+
+    override fun asPrefix() = PegNakedPrefix(PegNakedSuffix(primary(tag), generator.generate()), generator.generate())
 
     override fun asSequence() =
         PegSequence(
             listOf(
                 PegNakedPrefix(
-                    PegNakedSuffix(primary, generator.generate()),
+                    PegNakedSuffix(primary(tag), generator.generate()),
                     generator.generate(),
                 ),
             ),
@@ -51,13 +60,21 @@ class ImplicitPegPrimary<T, TagType> internal constructor(
  */
 class ImplicitPegSuffix<T, TagType> internal constructor(
     private val generator: SyntaxIdentifierGenerator,
-    private val suffix: PegSuffix<T, TagType>,
+    private val suffix: (TagType?) -> PegSuffix<T, TagType>,
 ) : ImplicitConversionDelegate<T, TagType>, PegSuffixMarker {
-    override fun asSuffix() = suffix
+    private var tag: TagType? = null
 
-    override fun asPrefix() = PegNakedPrefix(suffix, generator.generate())
+    override fun tagged(tag: TagType): ImplicitConversionDelegate<T, TagType> {
+        this.tag = tag
 
-    override fun asSequence() = PegSequence(listOf(PegNakedPrefix(suffix, generator.generate())), generator.generate())
+        return this
+    }
+
+    override fun asSuffix() = suffix(tag)
+
+    override fun asPrefix() = PegNakedPrefix(suffix(tag), generator.generate())
+
+    override fun asSequence() = PegSequence(listOf(PegNakedPrefix(suffix(tag), generator.generate())), generator.generate())
 }
 
 /**
@@ -65,11 +82,19 @@ class ImplicitPegSuffix<T, TagType> internal constructor(
  */
 class ImplicitPegPrefix<T, TagType> internal constructor(
     private val generator: SyntaxIdentifierGenerator,
-    private val prefix: PegPrefix<T, TagType>,
+    private val prefix: (TagType?) -> PegPrefix<T, TagType>,
 ) : ImplicitConversionDelegate<T, TagType>, PegPrefixMarker {
-    override fun asPrefix() = prefix
+    private var tag: TagType? = null
 
-    override fun asSequence() = PegSequence(listOf(prefix), generator.generate())
+    override fun tagged(tag: TagType): ImplicitConversionDelegate<T, TagType> {
+        this.tag = tag
+
+        return this
+    }
+
+    override fun asPrefix() = prefix(tag)
+
+    override fun asSequence() = PegSequence(listOf(prefix(tag)), generator.generate())
 }
 
 /**
@@ -78,7 +103,15 @@ class ImplicitPegPrefix<T, TagType> internal constructor(
  * This class is only defined for consistency of DSL.
  */
 class ImplicitPegSequence<T, TagType> internal constructor(
-    private val sequence: PegSequence<T, TagType>,
+    private val sequence: (TagType?) -> PegSequence<T, TagType>,
 ) : ImplicitConversionDelegate<T, TagType>, PegSequenceMarker {
-    override fun asSequence() = sequence
+    private var tag: TagType? = null
+
+    override fun tagged(tag: TagType): ImplicitConversionDelegate<T, TagType> {
+        this.tag = tag
+
+        return this
+    }
+
+    override fun asSequence() = sequence(tag)
 }

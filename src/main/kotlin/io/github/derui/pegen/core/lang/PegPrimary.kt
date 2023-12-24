@@ -64,7 +64,7 @@ class PegClassPrimary<T, TagType> internal constructor(
         /**
          * Build [PegClassPrimary] from this builder
          */
-        fun <T, TagType> build(): PegClassPrimary<T, TagType> = PegClassPrimary<T, TagType>(chars, id)
+        internal fun <T, TagType> build(tag: TagType?): PegClassPrimary<T, TagType> = PegClassPrimary(chars, id, tag)
     }
 }
 
