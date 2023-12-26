@@ -10,7 +10,7 @@ import java.util.UUID
  * This class is NOT thread-safe.
  */
 class PackratState<V> private constructor(
-    private val cache: Array<MutableMap<UUID, ParsingResult<V>>>,
+    private val cache: Array<MutableMap<UUID, ParserResultCache<V>>>,
     private val expressions: Map<UUID, PegExpression<V>>,
 ) {
     companion object {
@@ -20,7 +20,14 @@ class PackratState<V> private constructor(
         ): PackratState<V> {
             val expMap = expressions.associateBy { it.id }
 
-            return PackratState(Array(input.length) { expMap.mapValues { NoParse<V>() }.toMutableMap() }, expMap)
+            return PackratState(
+                Array(input.length) {
+                    expMap.mapValues {
+                        ParserResultCache.NoParse<V>()
+                    }.toMutableMap()
+                },
+                expMap,
+            )
         }
     }
 }

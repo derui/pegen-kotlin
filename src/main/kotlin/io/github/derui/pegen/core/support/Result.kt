@@ -22,6 +22,10 @@ class Ok<out T>(val value: T) : Result<T, Nothing>() {
     }
 
     override fun hashCode(): Int = value?.hashCode() ?: 0
+
+    override fun toString(): String {
+        return "Ok($value)"
+    }
 }
 
 /**
@@ -39,6 +43,10 @@ class Err<out E>(val error: E) : Result<Nothing, E>() {
 
     override fun hashCode(): Int {
         return error?.hashCode() ?: 0
+    }
+
+    override fun toString(): String {
+        return "Err($error)"
     }
 }
 
