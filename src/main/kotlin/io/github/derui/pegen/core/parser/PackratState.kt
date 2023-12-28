@@ -1,4 +1,4 @@
-package io.github.derui.pegen.core.parsing
+package io.github.derui.pegen.core.parser
 
 import io.github.derui.pegen.core.lang.PegExpression
 import io.github.derui.pegen.core.lang.PegExpressionIntermediate
@@ -10,8 +10,8 @@ import java.util.UUID
  * This class is NOT thread-safe.
  */
 class PackratState<V> private constructor(
-    private val cache: Array<MutableMap<UUID, ParserResultCache<V>>>,
-    private val expressions: Map<UUID, PegExpression<V>>,
+        private val cache: Array<MutableMap<UUID, ParserResultCache<V>>>,
+        private val expressions: Map<UUID, PegExpression<V>>,
 ) {
     companion object {
         fun <V> from(

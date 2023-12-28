@@ -1,4 +1,4 @@
-package io.github.derui.pegen.core.parsing
+package io.github.derui.pegen.core.parser
 
 import io.github.derui.pegen.core.Tag
 import io.github.derui.pegen.core.lang.PegSyntax
@@ -22,6 +22,10 @@ class ParserContext<T> private constructor(
      * Map of tag that is build in [PegExpression] and [PegExpressionIntermediate] and its [PegSyntax].
      */
     private val tags = mutableMapOf<Tag, ParsingResult<T>>()
+
+    /**
+     * current index of this context
+     */
     private var currentIndex: Int = startIndex
 
     /**

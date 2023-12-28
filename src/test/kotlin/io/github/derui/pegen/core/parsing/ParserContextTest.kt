@@ -2,6 +2,8 @@ package io.github.derui.pegen.core.parsing
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import io.github.derui.pegen.core.parser.ErrorInfo
+import io.github.derui.pegen.core.parser.ParserContext
 import io.github.derui.pegen.core.support.Err
 import io.github.derui.pegen.core.support.Ok
 import org.junit.jupiter.api.Test

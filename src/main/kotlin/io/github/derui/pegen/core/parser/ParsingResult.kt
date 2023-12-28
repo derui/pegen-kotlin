@@ -1,4 +1,4 @@
-package io.github.derui.pegen.core.parsing
+package io.github.derui.pegen.core.parser
 
 /**
  * A type of parsing result.

@@ -1,4 +1,4 @@
-package io.github.derui.pegen.core.parsing
+package io.github.derui.pegen.core.parser
 
 /**
  * [Position] holds and represents a position in a source code.

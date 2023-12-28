@@ -1,4 +1,4 @@
-package io.github.derui.pegen.core.parsing
+package io.github.derui.pegen.core.parser
 
 import io.github.derui.pegen.core.support.Err
 import io.github.derui.pegen.core.support.Ok

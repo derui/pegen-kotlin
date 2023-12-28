@@ -5,6 +5,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isGreaterThan
 import assertk.assertions.isLessThan
 import assertk.assertions.isNotEqualTo
+import io.github.derui.pegen.core.parser.Position
 import org.junit.jupiter.api.Test
 
 class PositionTest {
