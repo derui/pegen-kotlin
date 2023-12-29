@@ -5,31 +5,31 @@ import java.util.UUID
 /**
  * A peg prefix is a prefix of a peg suffix
  */
-sealed interface PegPrefix<T, TagType> : PegSyntax<T, TagType>
+sealed class PegPrefix<T, TagType>(internal val suffix: PegSuffix<T, TagType>) : PegSyntax<T, TagType>
 
 /**
  * This prefix is a PEG's [&] prefix
  */
 class PegAndPrefix<T, TagType> internal constructor(
-    private val suffix: PegSuffix<T, TagType>,
+    suffix: PegSuffix<T, TagType>,
     override val id: UUID,
     override val tag: TagType? = null,
-) : PegPrefix<T, TagType>
+) : PegPrefix<T, TagType>(suffix)
 
 /**
  * This prefix is a PEG's [!] prefix
  */
 class PegNotPrefix<T, TagType> internal constructor(
-    private val suffix: PegSuffix<T, TagType>,
+    suffix: PegSuffix<T, TagType>,
     override val id: UUID,
     override val tag: TagType? = null,
-) : PegPrefix<T, TagType>
+) : PegPrefix<T, TagType>(suffix)
 
 /**
  * This prefix is marker class for no prefix
  */
 class PegNakedPrefix<T, TagType> internal constructor(
-    private val suffix: PegSuffix<T, TagType>,
+    suffix: PegSuffix<T, TagType>,
     override val id: UUID,
     override val tag: TagType? = null,
-) : PegPrefix<T, TagType>
+) : PegPrefix<T, TagType>(suffix)

@@ -3,10 +3,20 @@ package io.github.derui.pegen.core.parser
 /**
  * A simple error info. This class is completely immutable.
  */
-class ErrorInfo internal constructor(
-        val messages: List<String>,
-        val position: Position,
+class ErrorInfo private constructor(
+    val messages: List<String>,
+    val position: Position,
 ) {
+    companion object {
+        /**
+         * Create new [ErrorInfo] from message and position
+         */
+        fun from(
+            message: String,
+            position: Position,
+        ) = ErrorInfo(listOf(message), position)
+    }
+
     /**
      * Merge two error info. The position of the merged error info is the smaller one of the two.
      */

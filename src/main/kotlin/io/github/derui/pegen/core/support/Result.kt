@@ -100,3 +100,16 @@ fun <T, T2, E> Result<T, E>.flatMap(f: (T) -> Result<T2, E>): Result<T2, E> {
         is Err -> Err(this.error)
     }
 }
+
+/**
+ * fold [f] if [this] is [Ok], otherwise fold [e].
+ */
+fun <T, T2, E> Result<T, E>.fold(
+    f: (T) -> T2,
+    e: (E) -> T2,
+): T2 {
+    return when (this) {
+        is Ok -> f(this.value)
+        is Err -> e(this.error)
+    }
+}

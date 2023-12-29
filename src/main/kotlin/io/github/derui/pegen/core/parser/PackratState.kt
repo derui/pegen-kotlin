@@ -1,22 +1,22 @@
 package io.github.derui.pegen.core.parser
 
+import io.github.derui.pegen.core.lang.PegDefinition
 import io.github.derui.pegen.core.lang.PegExpression
-import io.github.derui.pegen.core.lang.PegExpressionIntermediate
 import java.util.UUID
 
 /**
- * [PackratState] contains information and logics for parsing on PEG syntax [PegExpressionIntermediate] with packrat parsing.
+ * [PackratState] contains information and logics for parsing on PEG syntax [PegExpression] with packrat parsing.
  *
  * This class is NOT thread-safe.
  */
 class PackratState<V> private constructor(
-        private val cache: Array<MutableMap<UUID, ParserResultCache<V>>>,
-        private val expressions: Map<UUID, PegExpression<V>>,
+    private val cache: Array<MutableMap<UUID, ParserResultCache<V>>>,
+    private val expressions: Map<UUID, PegDefinition<V>>,
 ) {
     companion object {
         fun <V> from(
             input: String,
-            expressions: List<PegExpression<V>>,
+            expressions: List<PegDefinition<V>>,
         ): PackratState<V> {
             val expMap = expressions.associateBy { it.id }
 

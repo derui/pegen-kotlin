@@ -34,7 +34,7 @@ class ParserContextTest {
         val actual = context.readChar()
 
         // Assert
-        assertThat(actual).isEqualTo(Err(ErrorInfo(listOf("Unexpected end of input"), context.position)))
+        assertThat(actual).isEqualTo(Err(ErrorInfo.from("Unexpected end of input", context.position)))
         assertThat(context.position.line).isEqualTo(1)
         assertThat(context.position.column).isEqualTo(5)
     }
@@ -78,5 +78,20 @@ class ParserContextTest {
 
         // Assert
         assertThat(actual).isEqualTo("")
+    }
+
+    @Test
+    fun `new error info from current context`() {
+        // Arrange
+        val context = ParserContext.startOf<Unit>("test")
+        context.readChar()
+        context.readChar()
+
+        // Act
+        val actual = context.errorOf("error")
+
+        // Assert
+        assertThat(actual.messages).isEqualTo(listOf("message"))
+        assertThat(actual.position).isEqualTo(context.position)
     }
 }

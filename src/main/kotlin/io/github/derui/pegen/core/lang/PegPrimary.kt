@@ -12,7 +12,7 @@ sealed interface PegPrimary<T, TagType> : PegSyntax<T, TagType>
  */
 class PegIdentifierPrimary<T, TagType> internal constructor(
     // TODO We want to treat Identifier as class
-    private val identifier: PegExpression<T>,
+    private val identifier: PegDefinition<T>,
     override val id: UUID,
     override val tag: TagType? = null,
 ) : PegPrimary<T, TagType>
@@ -21,7 +21,7 @@ class PegIdentifierPrimary<T, TagType> internal constructor(
  * This primary is a representation of PEG's literal
  */
 class PegLiteralPrimary<T, TagType> internal constructor(
-    private val literal: String,
+    internal val literal: String,
     override val id: UUID,
     override val tag: TagType? = null,
 ) : PegPrimary<T, TagType>
@@ -30,7 +30,7 @@ class PegLiteralPrimary<T, TagType> internal constructor(
  * This primary is a PEG's [(p)] primary
  */
 class PegClassPrimary<T, TagType> internal constructor(
-    private val cls: Set<Char>,
+    internal val cls: Set<Char>,
     override val id: UUID,
     override val tag: TagType? = null,
 ) : PegPrimary<T, TagType> {
@@ -64,7 +64,17 @@ class PegClassPrimary<T, TagType> internal constructor(
         /**
          * Build [PegClassPrimary] from this builder
          */
-        internal fun <T, TagType> build(tag: TagType?): PegClassPrimary<T, TagType> = PegClassPrimary(chars, id, tag)
+        internal fun <T, TagType> build(tag: TagType?): PegClassPrimary<T, TagType> {
+            require(chars.isNotEmpty()) {
+                "Character class needs least 1 character"
+            }
+
+            return PegClassPrimary(chars, id, tag)
+        }
+    }
+
+    override fun toString(): String {
+        return "[${cls.joinToString()}]"
     }
 }
 
@@ -72,7 +82,7 @@ class PegClassPrimary<T, TagType> internal constructor(
  * This primary is a PEG's [(e)] primary
  */
 class PegGroupPrimary<T, TagType> internal constructor(
-    private val expression: PegExpressionIntermediate<T, TagType>,
+    internal val expression: PegExpression<T, TagType>,
     override val id: UUID,
     override val tag: TagType? = null,
 ) : PegPrimary<T, TagType>

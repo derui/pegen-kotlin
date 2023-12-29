@@ -3,9 +3,9 @@ package io.github.derui.pegen.core.dsl
 import io.github.derui.pegen.core.dsl.support.SyntaxIdentifierGenerator
 import io.github.derui.pegen.core.lang.PegAndPrefix
 import io.github.derui.pegen.core.lang.PegClassPrimary
+import io.github.derui.pegen.core.lang.PegDefinition
 import io.github.derui.pegen.core.lang.PegDotPrimary
 import io.github.derui.pegen.core.lang.PegExpression
-import io.github.derui.pegen.core.lang.PegExpressionIntermediate
 import io.github.derui.pegen.core.lang.PegGroupPrimary
 import io.github.derui.pegen.core.lang.PegIdentifierPrimary
 import io.github.derui.pegen.core.lang.PegLiteralPrimary
@@ -31,12 +31,10 @@ class PegDsl<V, TagType> internal constructor(
     infix fun ImplicitConversionDelegate<V, TagType>.tagged(tag: TagType): ImplicitConversionDelegate<V, TagType> = tagged(tag)
 
     /**
-     * Create a new [PegExpressionIntermediate] with the given [sequences]. This function implicitly expresses CHOICE.
+     * Create a new [PegExpression] with the given [sequences]. This function implicitly expresses CHOICE.
      */
-    fun <T> exp(
-        vararg sequences: T,
-    ): PegExpressionIntermediate<V, TagType> where T : PegSequenceMarker, T : ImplicitConversionDelegate<V, TagType> =
-        PegExpressionIntermediate(
+    fun <T> exp(vararg sequences: T): PegExpression<V, TagType> where T : PegSequenceMarker, T : ImplicitConversionDelegate<V, TagType> =
+        PegExpression(
             generator.generate(),
             sequences.map {
                 it.asSequence()
@@ -133,7 +131,7 @@ class PegDsl<V, TagType> internal constructor(
     /**
      * A shortcut creating [PegGroupPrimary]
      */
-    fun g(exp: PegExpressionIntermediate<V, TagType>): ImplicitPegPrimary<V, TagType> =
+    fun g(exp: PegExpression<V, TagType>): ImplicitPegPrimary<V, TagType> =
         ImplicitPegPrimary(generator, { PegGroupPrimary(exp, generator.generate(), it) })
 
     /**
@@ -144,5 +142,5 @@ class PegDsl<V, TagType> internal constructor(
     /**
      * A shortcut to create identifier
      */
-    fun ident(v: PegExpression<V>) = ImplicitPegPrimary<V, TagType>(generator, { PegIdentifierPrimary(v, generator.generate(), it) })
+    fun ident(v: PegDefinition<V>) = ImplicitPegPrimary<V, TagType>(generator, { PegIdentifierPrimary(v, generator.generate(), it) })
 }
