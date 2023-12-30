@@ -15,7 +15,7 @@ class ParserContext<T> private constructor(
     private val startIndex: Int,
 ) {
     companion object {
-        fun <T> startOf(input: String): ParserContext<T> = ParserContext(Position.start(), input, 0)
+        fun <T> newWith(input: String): ParserContext<T> = ParserContext(Position.start(), input, 0)
     }
 
     /**

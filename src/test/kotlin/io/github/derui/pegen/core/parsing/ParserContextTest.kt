@@ -12,7 +12,7 @@ class ParserContextTest {
     @Test
     fun `should be able to get next character`() {
         // Arrange
-        val context = ParserContext.startOf<Unit>("test")
+        val context = ParserContext.newWith<Unit>("test")
 
         // Act
         val actual = context.readChar()
@@ -24,7 +24,7 @@ class ParserContextTest {
     @Test
     fun `should return error info if can not read anymore`() {
         // Arrange
-        val context = ParserContext.startOf<Unit>("test")
+        val context = ParserContext.newWith<Unit>("test")
         context.readChar()
         context.readChar()
         context.readChar()
@@ -42,7 +42,7 @@ class ParserContextTest {
     @Test
     fun `should be able to get new context`() {
         // Arrange
-        val context = ParserContext.startOf<Unit>("test")
+        val context = ParserContext.newWith<Unit>("test")
         context.readChar()
 
         // Act
@@ -55,7 +55,7 @@ class ParserContextTest {
     @Test
     fun `should be able to get parsed string in context`() {
         // Arrange
-        val context = ParserContext.startOf<Unit>("test")
+        val context = ParserContext.newWith<Unit>("test")
         context.readChar()
         context.readChar()
 
@@ -69,7 +69,7 @@ class ParserContextTest {
     @Test
     fun `new context should not reflect original context parsed information`() {
         // Arrange
-        val context = ParserContext.startOf<Unit>("test")
+        val context = ParserContext.newWith<Unit>("test")
         context.readChar()
         context.readChar()
 
@@ -83,7 +83,7 @@ class ParserContextTest {
     @Test
     fun `new error info from current context`() {
         // Arrange
-        val context = ParserContext.startOf<Unit>("test")
+        val context = ParserContext.newWith<Unit>("test")
         context.readChar()
         context.readChar()
 
