@@ -19,7 +19,7 @@ class ParserContext<T> private constructor(
     }
 
     /**
-     * Map of tag that is build in [PegExpression] and [PegExpressionIntermediate] and its [PegSyntax].
+     * Map of tag that is build in [PegDefinition] and [PegExpression] and its [PegSyntax].
      */
     private val tags = mutableMapOf<Tag, ParsingResult<T>>()
 
