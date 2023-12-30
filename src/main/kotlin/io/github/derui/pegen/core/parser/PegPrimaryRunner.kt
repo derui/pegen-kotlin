@@ -71,16 +71,14 @@ sealed class PegPrimaryRunner<T> : SyntaxRunner<T>() {
 
                 Ok(ParsingResult.rawOf(context.parsed()))
             } else {
-                fun recurse(
-                    ch: Char,
-                    index: Int,
-                ): Result<Unit, ErrorInfo> {
+                fun recurse(index: Int): Result<Unit, ErrorInfo> {
                     return if (index == primary.literal.length) {
                         Ok(Unit)
                     } else {
+                        val ch = primary.literal[index]
                         context.readChar().flatMap {
                             if (it == ch) {
-                                recurse(primary.literal[index + 1], index + 1)
+                                recurse(index + 1)
                             } else {
                                 Err(context.errorOf("Literal not matched: ${primary.literal}"))
                             }
@@ -88,7 +86,7 @@ sealed class PegPrimaryRunner<T> : SyntaxRunner<T>() {
                     }
                 }
 
-                recurse(primary.literal[0], 0).map {
+                recurse(0).map {
                     context.putRawIfTagged(primary.tag)
                     ParsingResult.rawOf(context.parsed())
                 }

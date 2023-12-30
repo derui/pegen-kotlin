@@ -32,17 +32,6 @@ sealed class PegSuffixRunner<T> : SyntaxRunner<T>() {
     }
 
     /**
-     * A helper function to put parsed string as raw with [tag]
-     */
-    internal fun <T, R : Tag> ParserContext<T>.putRawIfTagged(tag: R?) {
-        if (tag == null) {
-            return
-        }
-
-        this.tagging(tag, ParsingResult.rawOf(parsed()))
-    }
-
-    /**
      * private runner of [PegDotPrimary]
      */
     private class PegNakedSuffixRunner<T, TagType : Tag>(
@@ -63,7 +52,9 @@ sealed class PegSuffixRunner<T> : SyntaxRunner<T>() {
             return PegPrimaryRunner.run(suffix.primary, context).flatMap {
                 fun recurse(): Result<ParsingResult<T>, ErrorInfo> {
                     return PegPrimaryRunner.run(suffix.primary, context).fold({ recurse() }) {
-                        Ok(ParsingResult.rawOf(context.parsed()))
+                        val result = ParsingResult.rawOf<T>(context.parsed())
+                        suffix.tag?.run { context.tagging(this, result) }
+                        Ok(result)
                     }
                 }
 
@@ -81,7 +72,9 @@ sealed class PegSuffixRunner<T> : SyntaxRunner<T>() {
         override fun run(context: ParserContext<T>): Result<ParsingResult<T>, ErrorInfo> {
             fun recurse(): Result<ParsingResult<T>, ErrorInfo> {
                 return PegPrimaryRunner.run(suffix.primary, context).fold({ recurse() }) {
-                    Ok(ParsingResult.rawOf(context.parsed()))
+                    val result = ParsingResult.rawOf<T>(context.parsed())
+                    suffix.tag?.run { context.tagging(this, result) }
+                    Ok(result)
                 }
             }
 
@@ -96,8 +89,14 @@ sealed class PegSuffixRunner<T> : SyntaxRunner<T>() {
         private val suffix: PegQuestionSuffix<T, TagType>,
     ) : PegPrimaryRunner<T>() {
         override fun run(context: ParserContext<T>): Result<ParsingResult<T>, ErrorInfo> {
-            return PegPrimaryRunner.run(suffix.primary, context).fold({ Ok(ParsingResult.rawOf(context.parsed())) }) {
-                Ok(ParsingResult.rawOf(context.parsed()))
+            return PegPrimaryRunner.run(suffix.primary, context).fold({
+                val result = ParsingResult.rawOf<T>(context.parsed())
+                suffix.tag?.run { context.tagging(this, result) }
+                Ok(result)
+            }) {
+                val result = ParsingResult.rawOf<T>("")
+                suffix.tag?.run { context.tagging(this, result) }
+                Ok(result)
             }
         }
     }
