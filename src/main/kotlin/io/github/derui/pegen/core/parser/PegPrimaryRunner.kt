@@ -27,8 +27,8 @@ sealed class PegPrimaryRunner<T, TagType> : SyntaxRunner<T, TagType>() {
         ) = when (primary) {
             is PegClassPrimary -> PegClassPrimaryRunner(primary).run(source, context)
             is PegDotPrimary -> PegDotPrimaryRunner(primary).run(source, context)
-            is PegGroupPrimary -> TODO()
-            is PegIdentifierPrimary -> TODO()
+            is PegGroupPrimary -> PegGroupPrimaryRunner(primary).run(source, context)
+            is PegIdentifierPrimary -> PegIdentifierPrimaryRunner(primary).run(source, context)
             is PegLiteralPrimary -> PegLiteralPrimaryRunner(primary).run(source, context)
         }
     }
@@ -109,6 +109,40 @@ sealed class PegPrimaryRunner<T, TagType> : SyntaxRunner<T, TagType>() {
                     primary.tag?.let { tag -> context.tagging(tag, result) }
                     Ok(result)
                 }
+            }
+        }
+    }
+
+    /**
+     * parser runner of [PegGroupPrimary]
+     */
+    private class PegGroupPrimaryRunner<T, TagType>(
+        private val primary: PegGroupPrimary<T, TagType>,
+    ) : PegPrimaryRunner<T, TagType>() {
+        override fun run(
+            source: ParserSource,
+            context: ParserContext<T, TagType>,
+        ): Result<ParsingResult<T>, ErrorInfo> {
+            return PegExpressionRunner(primary.expression).run(source, context).map {
+                primary.tag?.let { tag -> context.tagging(tag, it) }
+                it
+            }
+        }
+    }
+
+    /**
+     * parser runner of [PegIdentifierPrimary]
+     */
+    private class PegIdentifierPrimaryRunner<T, TagType>(
+        private val primary: PegIdentifierPrimary<T, TagType>,
+    ) : PegPrimaryRunner<T, TagType>() {
+        override fun run(
+            source: ParserSource,
+            context: ParserContext<T, TagType>,
+        ): Result<ParsingResult<T>, ErrorInfo> {
+            return PegDefinitionRunner(primary.identifier).run(source, context).map {
+                primary.tag?.let { tag -> context.tagging(tag, it) }
+                it
             }
         }
     }

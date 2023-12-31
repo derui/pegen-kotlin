@@ -16,7 +16,7 @@ class PegDefinitionRunnerTest {
     private enum class TagType
 
     @Test
-    fun `parse expression`() {
+    fun `parse definition`() {
         // Arrange
         val context = ParserContext.new<Unit, TagType>()
         val source = ParserSource.newWith("test")
