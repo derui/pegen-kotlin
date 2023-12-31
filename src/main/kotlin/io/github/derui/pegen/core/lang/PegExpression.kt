@@ -1,5 +1,6 @@
 package io.github.derui.pegen.core.lang
 
+import io.github.derui.pegen.core.parser.ParserContext
 import java.util.UUID
 
 /**
@@ -13,5 +14,5 @@ class PegExpression<T, TagType> internal constructor(
     /**
      * Construct this expression as
      */
-    infix fun constructAs(typeConstructor: () -> T) = PegDefinition(id, this, typeConstructor)
+    infix fun constructAs(typeConstructor: (ParserContext<T, TagType>) -> T) = PegDefinition(id, this, typeConstructor)
 }
