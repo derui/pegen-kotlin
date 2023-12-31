@@ -13,5 +13,5 @@ class PegExpression<T, TagType> internal constructor(
     /**
      * Construct this expression as
      */
-    infix fun constructAs(typeConstructor: () -> T): PegDefinition<T> = PegDefinition(id, sequences, typeConstructor)
+    infix fun constructAs(typeConstructor: () -> T) = PegDefinition(id, this, typeConstructor)
 }

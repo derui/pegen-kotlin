@@ -8,7 +8,7 @@ import io.github.derui.pegen.core.lang.PegExpression
  * A parser object that is used to DSL named PEG
  */
 object Parser {
-    operator fun <V, TagType : Tag> invoke(init: PegDsl<V, TagType>.() -> PegExpression<V, TagType>): PegExpression<V, TagType> {
+    operator fun <V, TagType> invoke(init: PegDsl<V, TagType>.() -> PegExpression<V, TagType>): PegExpression<V, TagType> {
         val generator = DefaultSyntaxIdentifierGenerator()
         return PegDsl<V, TagType>(generator).init()
     }

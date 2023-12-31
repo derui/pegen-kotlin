@@ -1,6 +1,5 @@
 package io.github.derui.pegen.core.parser
 
-import io.github.derui.pegen.core.Tag
 import io.github.derui.pegen.core.lang.PegClassPrimary
 import io.github.derui.pegen.core.lang.PegDotPrimary
 import io.github.derui.pegen.core.lang.PegGroupPrimary
@@ -16,15 +15,15 @@ import io.github.derui.pegen.core.support.map
 /**
  * Syntax runner interface.
  */
-sealed class PegPrimaryRunner<T> : SyntaxRunner<T>() {
+sealed class PegPrimaryRunner<T, TagType> : SyntaxRunner<T, TagType>() {
     companion object {
         /**
          * Run the primary
          */
-        fun <T, TagType : Tag> run(
+        fun <T, TagType> run(
             primary: PegPrimary<T, TagType>,
             source: ParserSource,
-            context: ParserContext<T>,
+            context: ParserContext<T, TagType>,
         ) = when (primary) {
             is PegClassPrimary -> PegClassPrimaryRunner(primary).run(source, context)
             is PegDotPrimary -> PegDotPrimaryRunner(primary).run(source, context)
@@ -37,12 +36,12 @@ sealed class PegPrimaryRunner<T> : SyntaxRunner<T>() {
     /**
      * private runner of [PegDotPrimary]
      */
-    private class PegDotPrimaryRunner<T, TagType : Tag>(
+    private class PegDotPrimaryRunner<T, TagType>(
         private val primary: PegDotPrimary<T, TagType>,
-    ) : PegPrimaryRunner<T>() {
+    ) : PegPrimaryRunner<T, TagType>() {
         override fun run(
             source: ParserSource,
-            context: ParserContext<T>,
+            context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
             return source.readChar().map {
                 val result = ParsingResult.rawOf<T>(it.first.toString(), it.second)
@@ -55,12 +54,12 @@ sealed class PegPrimaryRunner<T> : SyntaxRunner<T>() {
     /**
      * private runner of [PegLiteralPrimary]
      */
-    private class PegLiteralPrimaryRunner<T, TagType : Tag>(
+    private class PegLiteralPrimaryRunner<T, TagType>(
         private val primary: PegLiteralPrimary<T, TagType>,
-    ) : PegPrimaryRunner<T>() {
+    ) : PegPrimaryRunner<T, TagType>() {
         override fun run(
             source: ParserSource,
-            context: ParserContext<T>,
+            context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
             return if (primary.literal.isEmpty()) {
                 val result = ParsingResult.rawOf<T>("", source)
@@ -95,12 +94,12 @@ sealed class PegPrimaryRunner<T> : SyntaxRunner<T>() {
     /**
      * parser runner of [PegClassPrimary]
      */
-    private class PegClassPrimaryRunner<T, TagType : Tag>(
+    private class PegClassPrimaryRunner<T, TagType>(
         private val primary: PegClassPrimary<T, TagType>,
-    ) : PegPrimaryRunner<T>() {
+    ) : PegPrimaryRunner<T, TagType>() {
         override fun run(
             source: ParserSource,
-            context: ParserContext<T>,
+            context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
             return source.readChar().flatMap { (ch, rest) ->
                 if (ch !in primary.cls) {

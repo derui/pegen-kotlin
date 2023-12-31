@@ -33,7 +33,10 @@ class PegDsl<V, TagType> internal constructor(
     /**
      * Create a new [PegExpression] with the given [sequences]. This function implicitly expresses CHOICE.
      */
-    fun <T> exp(vararg sequences: T): PegExpression<V, TagType> where T : PegSequenceMarker, T : ImplicitConversionDelegate<V, TagType> =
+    fun <T> exp(
+        vararg sequences: T,
+    ): PegExpression<V, TagType> where
+                                       T : PegSequenceMarker, T : ImplicitConversionDelegate<V, TagType> =
         PegExpression(
             sequences.map {
                 it.asSequence()
@@ -142,5 +145,6 @@ class PegDsl<V, TagType> internal constructor(
     /**
      * A shortcut to create identifier
      */
-    fun ident(v: PegDefinition<V>) = ImplicitPegPrimary<V, TagType>(generator, { PegIdentifierPrimary(v, generator.generate(), it) })
+    fun ident(v: PegDefinition<V, TagType>) =
+        ImplicitPegPrimary<V, TagType>(generator, { PegIdentifierPrimary(v, generator.generate(), it) })
 }

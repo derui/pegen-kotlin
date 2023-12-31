@@ -1,6 +1,5 @@
 package io.github.derui.pegen.core.parser
 
-import io.github.derui.pegen.core.Tag
 import io.github.derui.pegen.core.lang.PegDotPrimary
 import io.github.derui.pegen.core.lang.PegNakedSuffix
 import io.github.derui.pegen.core.lang.PegPlusSuffix
@@ -15,15 +14,15 @@ import io.github.derui.pegen.core.support.fold
 /**
  * Syntax runner interface.
  */
-sealed class PegSuffixRunner<T> : SyntaxRunner<T>() {
+sealed class PegSuffixRunner<T, TagType> : SyntaxRunner<T, TagType>() {
     companion object {
         /**
          * Run the primary
          */
-        fun <T, TagType : Tag> run(
+        fun <T, TagType> run(
             syntax: PegSuffix<T, TagType>,
             source: ParserSource,
-            context: ParserContext<T>,
+            context: ParserContext<T, TagType>,
         ) = when (syntax) {
             is PegNakedSuffix -> PegNakedSuffixRunner(syntax).run(source, context)
             is PegPlusSuffix -> PegPlusSuffixRunner(syntax).run(source, context)
@@ -35,12 +34,12 @@ sealed class PegSuffixRunner<T> : SyntaxRunner<T>() {
     /**
      * private runner of [PegDotPrimary]
      */
-    private class PegNakedSuffixRunner<T, TagType : Tag>(
+    private class PegNakedSuffixRunner<T, TagType>(
         private val suffix: PegNakedSuffix<T, TagType>,
-    ) : PegPrimaryRunner<T>() {
+    ) : PegPrimaryRunner<T, TagType>() {
         override fun run(
             source: ParserSource,
-            context: ParserContext<T>,
+            context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
             return PegPrimaryRunner.run(suffix.primary, source, context)
         }
@@ -49,12 +48,12 @@ sealed class PegSuffixRunner<T> : SyntaxRunner<T>() {
     /**
      * private runner of [PegPlusSUffix]
      */
-    private class PegPlusSuffixRunner<T, TagType : Tag>(
+    private class PegPlusSuffixRunner<T, TagType>(
         private val suffix: PegPlusSuffix<T, TagType>,
-    ) : PegPrimaryRunner<T>() {
+    ) : PegPrimaryRunner<T, TagType>() {
         override fun run(
             source: ParserSource,
-            context: ParserContext<T>,
+            context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
             return PegPrimaryRunner.run(suffix.primary, source, context).flatMap {
                 // define recursive function for plus
@@ -74,12 +73,12 @@ sealed class PegSuffixRunner<T> : SyntaxRunner<T>() {
     /**
      * private runner of [PegStarSuffix]
      */
-    private class PegStarSuffixRunner<T, TagType : Tag>(
+    private class PegStarSuffixRunner<T, TagType>(
         private val suffix: PegStarSuffix<T, TagType>,
-    ) : PegPrimaryRunner<T>() {
+    ) : PegPrimaryRunner<T, TagType>() {
         override fun run(
             source: ParserSource,
-            context: ParserContext<T>,
+            context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
             // define recursive function for plus
             fun recurse(recursiveSource: ParserSource): Result<ParsingResult<T>, ErrorInfo> {
@@ -97,12 +96,12 @@ sealed class PegSuffixRunner<T> : SyntaxRunner<T>() {
     /**
      * private runner of [PegQuestionSuffix]
      */
-    private class PegQuestionSuffixRunner<T, TagType : Tag>(
+    private class PegQuestionSuffixRunner<T, TagType>(
         private val suffix: PegQuestionSuffix<T, TagType>,
-    ) : PegPrimaryRunner<T>() {
+    ) : PegPrimaryRunner<T, TagType>() {
         override fun run(
             source: ParserSource,
-            context: ParserContext<T>,
+            context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
             return PegPrimaryRunner.run(suffix.primary, source, context).fold({
                 suffix.tag?.run { context.tagging(this, it) }

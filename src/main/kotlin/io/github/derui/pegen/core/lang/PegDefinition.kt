@@ -5,10 +5,10 @@ import java.util.UUID
 /**
  * No tag version [PegExpression]. This class is used with type constructor of [T]
  */
-class PegDefinition<T> internal constructor(
+class PegDefinition<T, TagType> internal constructor(
     override val id: UUID,
-    internal val sequences: List<PegSequence<T, *>>,
+    internal val expression: PegExpression<T, TagType>,
     private val typeConstructor: () -> T,
-) : PegSyntax<T, Nothing> {
+) : PegSyntax<T, TagType> {
     override val tag: Nothing? = null
 }

@@ -3,7 +3,6 @@ package io.github.derui.pegen.core.parser
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
-import io.github.derui.pegen.core.Tag
 import io.github.derui.pegen.core.lang.PegAndPrefix
 import io.github.derui.pegen.core.lang.PegClassPrimary
 import io.github.derui.pegen.core.lang.PegDotPrimary
@@ -16,14 +15,14 @@ import org.junit.jupiter.api.Test
 import java.util.UUID
 
 class PegPrefixRunnerTest {
-    private enum class TagType : Tag
+    private enum class TagType
 
     @Nested
     inner class AndPrefix {
         @Test
         fun `parse and prefix`() {
             // Arrange
-            val context = ParserContext.new<Unit>()
+            val context = ParserContext.new<Unit, TagType>()
             val source = ParserSource.newWith("test")
             val suffix = PegNakedSuffix<Unit, TagType>(PegDotPrimary(UUID.randomUUID()), UUID.randomUUID())
             val prefix = PegAndPrefix(suffix, UUID.randomUUID())
@@ -38,7 +37,7 @@ class PegPrefixRunnerTest {
         @Test
         fun `fail if suffix is not match`() {
             // Arrange
-            val context = ParserContext.new<Unit>()
+            val context = ParserContext.new<Unit, TagType>()
             val source = ParserSource.newWith("test")
             val suffix = PegNakedSuffix<Unit, TagType>(PegClassPrimary(setOf('a'), UUID.randomUUID()), UUID.randomUUID())
             val prefix = PegAndPrefix(suffix, UUID.randomUUID())
@@ -56,7 +55,7 @@ class PegPrefixRunnerTest {
         @Test
         fun `run not prefix`() {
             // Arrange
-            val context = ParserContext.new<Unit>()
+            val context = ParserContext.new<Unit, TagType>()
             val source = ParserSource.newWith("test")
             val suffix = PegNakedSuffix<Unit, TagType>(PegClassPrimary(setOf('a'), UUID.randomUUID()), UUID.randomUUID())
             val prefix = PegNotPrefix(suffix, UUID.randomUUID())
@@ -71,7 +70,7 @@ class PegPrefixRunnerTest {
         @Test
         fun `fail if suffix is not match`() {
             // Arrange
-            val context = ParserContext.new<Unit>()
+            val context = ParserContext.new<Unit, TagType>()
             val source = ParserSource.newWith("test")
             val suffix = PegNakedSuffix<Unit, TagType>(PegDotPrimary(UUID.randomUUID()), UUID.randomUUID())
             val prefix = PegNotPrefix(suffix, UUID.randomUUID())

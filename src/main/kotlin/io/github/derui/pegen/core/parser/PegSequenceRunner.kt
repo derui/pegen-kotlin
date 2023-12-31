@@ -1,6 +1,5 @@
 package io.github.derui.pegen.core.parser
 
-import io.github.derui.pegen.core.Tag
 import io.github.derui.pegen.core.lang.PegSequence
 import io.github.derui.pegen.core.support.Err
 import io.github.derui.pegen.core.support.Ok
@@ -10,13 +9,13 @@ import io.github.derui.pegen.core.support.get
 /**
  * Syntax runner interface.
  */
-class PegSequenceRunner<T, TagType : Tag>(private val syntax: PegSequence<T, TagType>) : SyntaxRunner<T>() {
+class PegSequenceRunner<T, TagType>(private val syntax: PegSequence<T, TagType>) : SyntaxRunner<T, TagType>() {
     /**
      * Run the primary
      */
     override fun run(
         source: ParserSource,
-        context: ParserContext<T>,
+        context: ParserContext<T, TagType>,
     ): Result<ParsingResult<T>, ErrorInfo> {
         if (syntax.prefixes.isEmpty()) {
             return Err(source.errorOf("Empty sequence is not allowed."))

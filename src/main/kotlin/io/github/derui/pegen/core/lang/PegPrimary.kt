@@ -12,7 +12,7 @@ sealed interface PegPrimary<T, TagType> : PegSyntax<T, TagType>
  */
 class PegIdentifierPrimary<T, TagType> internal constructor(
     // TODO We want to treat Identifier as class
-    private val identifier: PegDefinition<T>,
+    private val identifier: PegDefinition<T, TagType>,
     override val id: UUID,
     override val tag: TagType? = null,
 ) : PegPrimary<T, TagType>

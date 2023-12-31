@@ -1,26 +1,25 @@
 package io.github.derui.pegen.core.parser
 
-import io.github.derui.pegen.core.Tag
 import io.github.derui.pegen.core.lang.PegSyntax
 
 /**
  * A context for parsing.
  */
-class ParserContext<T> private constructor() {
+class ParserContext<T, TagType> private constructor() {
     companion object {
-        fun <T> new() = ParserContext<T>()
+        fun <T, TagType> new() = ParserContext<T, TagType>()
     }
 
     /**
      * Map of tag that is build in [PegDefinition] and [PegExpression] and its [PegSyntax].
      */
-    private val tags = mutableMapOf<Tag, ParsingResult<T>>()
+    private val tags = mutableMapOf<TagType, ParsingResult<T>>()
 
     /**
      * Register a tag and its syntax.
      */
     fun tagging(
-        tag: Tag,
+        tag: TagType,
         result: ParsingResult<T>,
     ) {
         require(tag !in tags) {
@@ -33,5 +32,5 @@ class ParserContext<T> private constructor() {
     /**
      * Get tagged result
      */
-    fun tagged(tag: Tag): ParsingResult<T>? = tags[tag]
+    fun tagged(tag: TagType): ParsingResult<T>? = tags[tag]
 }

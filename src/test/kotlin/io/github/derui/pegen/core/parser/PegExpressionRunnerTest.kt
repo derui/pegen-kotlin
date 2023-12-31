@@ -3,7 +3,6 @@ package io.github.derui.pegen.core.parser
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
-import io.github.derui.pegen.core.Tag
 import io.github.derui.pegen.core.lang.PegClassPrimary
 import io.github.derui.pegen.core.lang.PegDotPrimary
 import io.github.derui.pegen.core.lang.PegExpression
@@ -17,12 +16,12 @@ import org.junit.jupiter.api.Test
 import java.util.UUID
 
 class PegExpressionRunnerTest {
-    private enum class TagType : Tag
+    private enum class TagType
 
     @Test
     fun `parse expression`() {
         // Arrange
-        val context = ParserContext.new<Unit>()
+        val context = ParserContext.new<Unit, TagType>()
         val source = ParserSource.newWith("test")
         val suffix = PegNakedSuffix<Unit, TagType>(PegDotPrimary(UUID.randomUUID()), UUID.randomUUID())
         val prefix = PegNakedPrefix(suffix, UUID.randomUUID())
@@ -38,7 +37,7 @@ class PegExpressionRunnerTest {
     @Test
     fun `return first matched sequence`() {
         // Arrange
-        val context = ParserContext.new<Unit>()
+        val context = ParserContext.new<Unit, TagType>()
         val source = ParserSource.newWith("test")
         val suffix = PegNakedSuffix<Unit, TagType>(PegLiteralPrimary("lit", UUID.randomUUID()), UUID.randomUUID())
         val prefix = PegNakedPrefix(suffix, UUID.randomUUID())
@@ -57,7 +56,7 @@ class PegExpressionRunnerTest {
     @Test
     fun `fail if all sequences are failed`() {
         // Arrange
-        val context = ParserContext.new<Unit>()
+        val context = ParserContext.new<Unit, TagType>()
         val source = ParserSource.newWith("test")
         val suffix = PegNakedSuffix<Unit, TagType>(PegLiteralPrimary("lit", UUID.randomUUID()), UUID.randomUUID())
         val prefix = PegNakedPrefix(suffix, UUID.randomUUID())

@@ -9,15 +9,15 @@ import java.util.UUID
  *
  * This class is NOT thread-safe.
  */
-class PackratState<V> private constructor(
+class PackratState<V, TagType> private constructor(
     private val cache: Array<MutableMap<UUID, ParserResultCache<V>>>,
-    private val expressions: Map<UUID, PegDefinition<V>>,
+    private val expressions: Map<UUID, PegDefinition<V, TagType>>,
 ) {
     companion object {
-        fun <V> from(
+        fun <V, TagType> from(
             input: String,
-            expressions: List<PegDefinition<V>>,
-        ): PackratState<V> {
+            expressions: List<PegDefinition<V, TagType>>,
+        ): PackratState<V, TagType> {
             val expMap = expressions.associateBy { it.id }
 
             return PackratState(
