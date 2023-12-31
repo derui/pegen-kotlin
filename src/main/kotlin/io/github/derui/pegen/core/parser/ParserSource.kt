@@ -3,6 +3,7 @@ package io.github.derui.pegen.core.parser
 import io.github.derui.pegen.core.support.Err
 import io.github.derui.pegen.core.support.Ok
 import io.github.derui.pegen.core.support.Result
+import io.github.derui.pegen.core.support.map
 
 /**
  * A source of characters for parsing.
@@ -53,6 +54,16 @@ class ParserSource private constructor(
     }
 
     /**
+     * Get the next character and do not move the cursor forward.
+     * If index is reached to the end of input, return [Err] with [ErrorInfo].
+     */
+    fun readChar(): Result<Pair<Char, ParserSource>, ErrorInfo> {
+        return peekChar().map {
+            it to ParserSource(currentPosition.forward(it), input, currentIndex + 1)
+        }
+    }
+
+    /**
      * Get parsed string from start index to current index.
      */
     private fun parsed(): String = input.substring(startIndex, currentIndex)
@@ -61,6 +72,11 @@ class ParserSource private constructor(
      * Get rest of the input.
      */
     private fun rest() = ParserSource(currentPosition, input, currentIndex)
+
+    /**
+     * Get the entire string between [this] and [other].
+     */
+    operator fun rangeTo(other: ParserSource) = input.substring(startIndex, other.startIndex)
 
     /**
      * A shortcut function to create error info from current context

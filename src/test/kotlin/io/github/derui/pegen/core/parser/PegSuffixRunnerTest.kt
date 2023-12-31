@@ -19,27 +19,29 @@ class PegSuffixRunnerTest {
         @Test
         fun `parse dot primary`() {
             // Arrange
-            val context = ParserContext.newWith<Unit>("test")
+            val context = ParserContext.new<Unit>()
+            val source = ParserSource.newWith("test")
             val primary = PegClassPrimary<Unit, TagType>(setOf('t', 'e'), UUID.randomUUID())
 
             // Act
-            val actual = PegSuffixRunner.run(PegQuestionSuffix(primary, UUID.randomUUID()), context)
+            val actual = PegSuffixRunner.run(PegQuestionSuffix(primary, UUID.randomUUID()), source, context)
 
             // Assert
-            assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("t"))
+            assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("t", ParserSource.newWith("est")))
         }
 
         @Test
         fun `success if not match`() {
             // Arrange
-            val context = ParserContext.newWith<Unit>("fo")
+            val context = ParserContext.new<Unit>()
+            val source = ParserSource.newWith("fo")
             val primary = PegClassPrimary<Unit, TagType>(setOf('t', 'e'), UUID.randomUUID())
 
             // Act
-            val actual = PegSuffixRunner.run(PegQuestionSuffix(primary, UUID.randomUUID()), context)
+            val actual = PegSuffixRunner.run(PegQuestionSuffix(primary, UUID.randomUUID()), source, context)
 
             // Assert
-            assertThat(actual.get()).isEqualTo(ParsingResult.rawOf(""))
+            assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("", source))
         }
     }
 
@@ -48,27 +50,29 @@ class PegSuffixRunnerTest {
         @Test
         fun `parse star suffix`() {
             // Arrange
-            val context = ParserContext.newWith<Unit>("test")
+            val context = ParserContext.new<Unit>()
+            val source = ParserSource.newWith("test")
             val primary = PegClassPrimary<Unit, TagType>(setOf('t', 'e'), UUID.randomUUID())
 
             // Act
-            val actual = PegSuffixRunner.run(PegStarSuffix(primary, UUID.randomUUID()), context)
+            val actual = PegSuffixRunner.run(PegStarSuffix(primary, UUID.randomUUID()), source, context)
 
             // Assert
-            assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("te"))
+            assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("te", ParserSource.newWith("st")))
         }
 
         @Test
         fun `success if not match`() {
             // Arrange
-            val context = ParserContext.newWith<Unit>("fo")
+            val context = ParserContext.new<Unit>()
+            val source = ParserSource.newWith("fo")
             val primary = PegClassPrimary<Unit, TagType>(setOf('t', 'e'), UUID.randomUUID())
 
             // Act
-            val actual = PegSuffixRunner.run(PegStarSuffix(primary, UUID.randomUUID()), context)
+            val actual = PegSuffixRunner.run(PegStarSuffix(primary, UUID.randomUUID()), source, context)
 
             // Assert
-            assertThat(actual.get()).isEqualTo(ParsingResult.rawOf(""))
+            assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("", source))
         }
     }
 }

@@ -9,5 +9,8 @@ sealed class SyntaxRunner<T> {
     /**
      * Run a syntax in context
      */
-    abstract fun run(context: ParserContext<T>): Result<ParsingResult<T>, ErrorInfo>
+    abstract fun run(
+        source: ParserSource,
+        context: ParserContext<T>,
+    ): Result<ParsingResult<T>, ErrorInfo>
 }

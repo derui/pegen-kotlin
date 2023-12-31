@@ -22,12 +22,13 @@ sealed class PegSuffixRunner<T> : SyntaxRunner<T>() {
          */
         fun <T, TagType : Tag> run(
             syntax: PegSuffix<T, TagType>,
+            source: ParserSource,
             context: ParserContext<T>,
         ) = when (syntax) {
-            is PegNakedSuffix -> PegNakedSuffixRunner(syntax).run(context)
-            is PegPlusSuffix -> PegPlusSuffixRunner(syntax).run(context)
-            is PegQuestionSuffix -> PegQuestionSuffixRunner(syntax).run(context)
-            is PegStarSuffix -> PegStarSuffixRunner(syntax).run(context)
+            is PegNakedSuffix -> PegNakedSuffixRunner(syntax).run(source, context)
+            is PegPlusSuffix -> PegPlusSuffixRunner(syntax).run(source, context)
+            is PegQuestionSuffix -> PegQuestionSuffixRunner(syntax).run(source, context)
+            is PegStarSuffix -> PegStarSuffixRunner(syntax).run(source, context)
         }
     }
 
@@ -37,8 +38,11 @@ sealed class PegSuffixRunner<T> : SyntaxRunner<T>() {
     private class PegNakedSuffixRunner<T, TagType : Tag>(
         private val suffix: PegNakedSuffix<T, TagType>,
     ) : PegPrimaryRunner<T>() {
-        override fun run(context: ParserContext<T>): Result<ParsingResult<T>, ErrorInfo> {
-            return PegPrimaryRunner.run(suffix.primary, context)
+        override fun run(
+            source: ParserSource,
+            context: ParserContext<T>,
+        ): Result<ParsingResult<T>, ErrorInfo> {
+            return PegPrimaryRunner.run(suffix.primary, source, context)
         }
     }
 
@@ -48,17 +52,21 @@ sealed class PegSuffixRunner<T> : SyntaxRunner<T>() {
     private class PegPlusSuffixRunner<T, TagType : Tag>(
         private val suffix: PegPlusSuffix<T, TagType>,
     ) : PegPrimaryRunner<T>() {
-        override fun run(context: ParserContext<T>): Result<ParsingResult<T>, ErrorInfo> {
-            return PegPrimaryRunner.run(suffix.primary, context).flatMap {
-                fun recurse(): Result<ParsingResult<T>, ErrorInfo> {
-                    return PegPrimaryRunner.run(suffix.primary, context).fold({ recurse() }) {
-                        val result = ParsingResult.rawOf<T>(context.parsed())
+        override fun run(
+            source: ParserSource,
+            context: ParserContext<T>,
+        ): Result<ParsingResult<T>, ErrorInfo> {
+            return PegPrimaryRunner.run(suffix.primary, source, context).flatMap {
+                // define recursive function for plus
+                fun recurse(recursiveSource: ParserSource): Result<ParsingResult<T>, ErrorInfo> {
+                    return PegPrimaryRunner.run(suffix.primary, recursiveSource, context).fold({ recurse(it.restSource) }) {
+                        val result = ParsingResult.rawOf<T>(source..recursiveSource, recursiveSource)
                         suffix.tag?.run { context.tagging(this, result) }
                         Ok(result)
                     }
                 }
 
-                recurse()
+                recurse(it.restSource)
             }
         }
     }
@@ -69,16 +77,20 @@ sealed class PegSuffixRunner<T> : SyntaxRunner<T>() {
     private class PegStarSuffixRunner<T, TagType : Tag>(
         private val suffix: PegStarSuffix<T, TagType>,
     ) : PegPrimaryRunner<T>() {
-        override fun run(context: ParserContext<T>): Result<ParsingResult<T>, ErrorInfo> {
-            fun recurse(): Result<ParsingResult<T>, ErrorInfo> {
-                return PegPrimaryRunner.run(suffix.primary, context).fold({ recurse() }) {
-                    val result = ParsingResult.rawOf<T>(context.parsed())
+        override fun run(
+            source: ParserSource,
+            context: ParserContext<T>,
+        ): Result<ParsingResult<T>, ErrorInfo> {
+            // define recursive function for plus
+            fun recurse(recursiveSource: ParserSource): Result<ParsingResult<T>, ErrorInfo> {
+                return PegPrimaryRunner.run(suffix.primary, recursiveSource, context).fold({ recurse(it.restSource) }) {
+                    val result = ParsingResult.rawOf<T>(source..recursiveSource, recursiveSource)
                     suffix.tag?.run { context.tagging(this, result) }
                     Ok(result)
                 }
             }
 
-            return recurse()
+            return recurse(source)
         }
     }
 
@@ -88,13 +100,15 @@ sealed class PegSuffixRunner<T> : SyntaxRunner<T>() {
     private class PegQuestionSuffixRunner<T, TagType : Tag>(
         private val suffix: PegQuestionSuffix<T, TagType>,
     ) : PegPrimaryRunner<T>() {
-        override fun run(context: ParserContext<T>): Result<ParsingResult<T>, ErrorInfo> {
-            return PegPrimaryRunner.run(suffix.primary, context).fold({
-                val result = ParsingResult.rawOf<T>(context.parsed())
-                suffix.tag?.run { context.tagging(this, result) }
-                Ok(result)
+        override fun run(
+            source: ParserSource,
+            context: ParserContext<T>,
+        ): Result<ParsingResult<T>, ErrorInfo> {
+            return PegPrimaryRunner.run(suffix.primary, source, context).fold({
+                suffix.tag?.run { context.tagging(this, it) }
+                Ok(it)
             }) {
-                val result = ParsingResult.rawOf<T>("")
+                val result = ParsingResult.rawOf<T>("", source)
                 suffix.tag?.run { context.tagging(this, result) }
                 Ok(result)
             }

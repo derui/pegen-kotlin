@@ -21,22 +21,24 @@ class PegPrimaryRunnerTest {
         @Test
         fun `parse dot primary`() {
             // Arrange
-            val context = ParserContext.newWith<Unit>("test")
+            val context = ParserContext.new<Unit>()
+            val source = ParserSource.newWith("test")
 
             // Act
-            val actual = PegPrimaryRunner.run(PegDotPrimary<Unit, TagType>(UUID.randomUUID()), context)
+            val actual = PegPrimaryRunner.run(PegDotPrimary<Unit, TagType>(UUID.randomUUID()), source, context)
 
             // Assert
-            assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("t"))
+            assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("t", ParserSource.newWith("est")))
         }
 
         @Test
         fun `fail if empty`() {
             // Arrange
-            val context = ParserContext.newWith<Unit>("")
+            val context = ParserContext.new<Unit>()
+            val source = ParserSource.newWith("")
 
             // Act
-            val actual = PegPrimaryRunner.run(PegDotPrimary<Unit, TagType>(UUID.randomUUID()), context)
+            val actual = PegPrimaryRunner.run(PegDotPrimary<Unit, TagType>(UUID.randomUUID()), source, context)
 
             // Assert
             assertThat(actual.getOrNull()).isNull()
@@ -48,22 +50,37 @@ class PegPrimaryRunnerTest {
         @Test
         fun `parse literal primary`() {
             // Arrange
-            val context = ParserContext.newWith<Unit>("test")
+            val context = ParserContext.new<Unit>()
+            val source = ParserSource.newWith("test")
 
             // Act
-            val actual = PegPrimaryRunner.run(PegLiteralPrimary<Unit, TagType>("te", UUID.randomUUID()), context)
+            val actual = PegPrimaryRunner.run(PegLiteralPrimary<Unit, TagType>("te", UUID.randomUUID()), source, context)
 
             // Assert
-            assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("te"))
+            assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("te", ParserSource.newWith("st")))
+        }
+
+        @Test
+        fun `empty literal is always valid`() {
+            // Arrange
+            val context = ParserContext.new<Unit>()
+            val source = ParserSource.newWith("test")
+
+            // Act
+            val actual = PegPrimaryRunner.run(PegLiteralPrimary<Unit, TagType>("", UUID.randomUUID()), source, context)
+
+            // Assert
+            assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("", ParserSource.newWith("test")))
         }
 
         @Test
         fun `fail if literal is not match`() {
             // Arrange
-            val context = ParserContext.newWith<Unit>("fail")
+            val context = ParserContext.new<Unit>()
+            val source = ParserSource.newWith("fail")
 
             // Act
-            val actual = PegPrimaryRunner.run(PegLiteralPrimary<Unit, TagType>("te", UUID.randomUUID()), context)
+            val actual = PegPrimaryRunner.run(PegLiteralPrimary<Unit, TagType>("te", UUID.randomUUID()), source, context)
 
             // Assert
             assertThat(actual.getOrNull()).isNull()
@@ -75,22 +92,24 @@ class PegPrimaryRunnerTest {
         @Test
         fun `parse class primary`() {
             // Arrange
-            val context = ParserContext.newWith<Unit>("test")
+            val context = ParserContext.new<Unit>()
+            val source = ParserSource.newWith("test")
 
             // Act
-            val actual = PegPrimaryRunner.run(PegClassPrimary<Unit, TagType>(setOf('t', 'e'), UUID.randomUUID()), context)
+            val actual = PegPrimaryRunner.run(PegClassPrimary<Unit, TagType>(setOf('t', 'e'), UUID.randomUUID()), source, context)
 
             // Assert
-            assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("t"))
+            assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("t", ParserSource.newWith("est")))
         }
 
         @Test
-        fun `fail if literal is not match`() {
+        fun `fail if character class is not match`() {
             // Arrange
-            val context = ParserContext.newWith<Unit>("fail")
+            val context = ParserContext.new<Unit>()
+            val source = ParserSource.newWith("fail")
 
             // Act
-            val actual = PegPrimaryRunner.run(PegClassPrimary<Unit, TagType>(setOf('a'), UUID.randomUUID()), context)
+            val actual = PegPrimaryRunner.run(PegClassPrimary<Unit, TagType>(setOf('a'), UUID.randomUUID()), source, context)
 
             // Assert
             assertThat(actual.getOrNull()).isNull()

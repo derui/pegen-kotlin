@@ -23,25 +23,15 @@ sealed class PegPrimaryRunner<T> : SyntaxRunner<T>() {
          */
         fun <T, TagType : Tag> run(
             primary: PegPrimary<T, TagType>,
+            source: ParserSource,
             context: ParserContext<T>,
         ) = when (primary) {
-            is PegClassPrimary -> PegClassPrimaryRunner(primary).run(context)
-            is PegDotPrimary -> PegDotPrimaryRunner(primary).run(context)
+            is PegClassPrimary -> PegClassPrimaryRunner(primary).run(source, context)
+            is PegDotPrimary -> PegDotPrimaryRunner(primary).run(source, context)
             is PegGroupPrimary -> TODO()
             is PegIdentifierPrimary -> TODO()
-            is PegLiteralPrimary -> PegLiteralPrimaryRunner(primary).run(context)
+            is PegLiteralPrimary -> PegLiteralPrimaryRunner(primary).run(source, context)
         }
-    }
-
-    /**
-     * A helper function to put parsed string as raw with [tag]
-     */
-    internal fun <T, R : Tag> ParserContext<T>.putRawIfTagged(tag: R?) {
-        if (tag == null) {
-            return
-        }
-
-        this.tagging(tag, ParsingResult.rawOf(parsed()))
     }
 
     /**
@@ -50,11 +40,14 @@ sealed class PegPrimaryRunner<T> : SyntaxRunner<T>() {
     private class PegDotPrimaryRunner<T, TagType : Tag>(
         private val primary: PegDotPrimary<T, TagType>,
     ) : PegPrimaryRunner<T>() {
-        override fun run(context: ParserContext<T>): Result<ParsingResult<T>, ErrorInfo> {
-            return context.readChar().map {
-                context.putRawIfTagged(primary.tag)
-
-                ParsingResult.rawOf(context.parsed())
+        override fun run(
+            source: ParserSource,
+            context: ParserContext<T>,
+        ): Result<ParsingResult<T>, ErrorInfo> {
+            return source.readChar().map {
+                val result = ParsingResult.rawOf<T>(it.first.toString(), it.second)
+                primary.tag?.let { tag -> context.tagging(tag, result) }
+                result
             }
         }
     }
@@ -65,49 +58,57 @@ sealed class PegPrimaryRunner<T> : SyntaxRunner<T>() {
     private class PegLiteralPrimaryRunner<T, TagType : Tag>(
         private val primary: PegLiteralPrimary<T, TagType>,
     ) : PegPrimaryRunner<T>() {
-        override fun run(context: ParserContext<T>): Result<ParsingResult<T>, ErrorInfo> {
+        override fun run(
+            source: ParserSource,
+            context: ParserContext<T>,
+        ): Result<ParsingResult<T>, ErrorInfo> {
             return if (primary.literal.isEmpty()) {
-                context.putRawIfTagged(primary.tag)
+                val result = ParsingResult.rawOf<T>("", source)
+                primary.tag?.let { tag -> context.tagging(tag, result) }
 
-                Ok(ParsingResult.rawOf(context.parsed()))
+                Ok(result)
             } else {
-                fun recurse(index: Int): Result<Unit, ErrorInfo> {
-                    return if (index == primary.literal.length) {
-                        Ok(Unit)
-                    } else {
-                        val ch = primary.literal[index]
-                        context.readChar().flatMap {
-                            if (it == ch) {
-                                recurse(index + 1)
-                            } else {
-                                Err(context.errorOf("Literal not matched: ${primary.literal}"))
-                            }
+                var index = 0
+
+                val (matched, rest) =
+                    source.advanceWhile { ch ->
+                        if (index < primary.literal.length && ch == primary.literal[index]) {
+                            index++
+                            true
+                        } else {
+                            false
                         }
                     }
-                }
 
-                recurse(0).map {
-                    context.putRawIfTagged(primary.tag)
-                    ParsingResult.rawOf(context.parsed())
+                if (matched == primary.literal) {
+                    val result = ParsingResult.rawOf<T>(matched, rest)
+                    primary.tag?.let { tag -> context.tagging(tag, result) }
+
+                    Ok(result)
+                } else {
+                    Err(source.errorOf("Unexpected literal"))
                 }
             }
         }
     }
 
+    /**
+     * parser runner of [PegClassPrimary]
+     */
     private class PegClassPrimaryRunner<T, TagType : Tag>(
         private val primary: PegClassPrimary<T, TagType>,
     ) : PegPrimaryRunner<T>() {
-        /**
-         * private runner of [PegClassPrimary]
-         */
-        override fun run(context: ParserContext<T>): Result<ParsingResult<T>, ErrorInfo> {
-            return context.readChar().flatMap {
-                if (it !in primary.cls) {
-                    Err(context.errorOf("$it is not contained in $this"))
+        override fun run(
+            source: ParserSource,
+            context: ParserContext<T>,
+        ): Result<ParsingResult<T>, ErrorInfo> {
+            return source.readChar().flatMap { (ch, rest) ->
+                if (ch !in primary.cls) {
+                    Err(source.errorOf("$ch is not contained in $this"))
                 } else {
-                    context.putRawIfTagged(primary.tag)
-
-                    Ok(ParsingResult.rawOf(context.parsed()))
+                    val result = ParsingResult.rawOf<T>(ch.toString(), rest)
+                    primary.tag?.let { tag -> context.tagging(tag, result) }
+                    Ok(result)
                 }
             }
         }
