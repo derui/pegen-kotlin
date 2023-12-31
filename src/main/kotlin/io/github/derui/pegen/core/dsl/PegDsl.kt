@@ -35,10 +35,10 @@ class PegDsl<V, TagType> internal constructor(
      */
     fun <T> exp(vararg sequences: T): PegExpression<V, TagType> where T : PegSequenceMarker, T : ImplicitConversionDelegate<V, TagType> =
         PegExpression(
-            generator.generate(),
             sequences.map {
                 it.asSequence()
             }.toList(),
+            generator.generate(),
         )
 
     /**

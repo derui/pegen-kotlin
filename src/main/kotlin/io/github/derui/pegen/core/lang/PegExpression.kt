@@ -6,8 +6,8 @@ import java.util.UUID
  * A class for PEG expression
  */
 class PegExpression<T, TagType> internal constructor(
+    internal val sequences: List<PegSequence<T, TagType>>,
     override val id: UUID,
-    private val sequences: List<PegSequence<T, TagType>>,
     override val tag: TagType? = null,
 ) : PegSyntax<T, TagType> {
     /**

@@ -7,7 +7,7 @@ import java.util.UUID
  */
 class PegDefinition<T> internal constructor(
     override val id: UUID,
-    private val sequences: List<PegSequence<T, *>>,
+    internal val sequences: List<PegSequence<T, *>>,
     private val typeConstructor: () -> T,
 ) : PegSyntax<T, Nothing> {
     override val tag: Nothing? = null
