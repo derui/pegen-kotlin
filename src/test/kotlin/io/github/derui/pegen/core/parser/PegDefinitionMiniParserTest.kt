@@ -12,7 +12,7 @@ import io.github.derui.pegen.core.support.get
 import org.junit.jupiter.api.Test
 import java.util.UUID
 
-class PegDefinitionRunnerTest {
+class PegDefinitionMiniParserTest {
     private enum class TagType {
         Dot,
     }
@@ -28,7 +28,7 @@ class PegDefinitionRunnerTest {
         val expr = PegExpression(listOf(seq), UUID.randomUUID())
 
         // Act
-        val actual = PegDefinitionRunner(PegDefinition(UUID.randomUUID(), expr, {})).parse(source, context)
+        val actual = PegDefinitionMiniParser(PegDefinition(UUID.randomUUID(), expr, {})).parse(source, context)
 
         // Assert
         assertThat(actual.get()).isEqualTo(ParsingResult.constructedAs(Unit, ParserSource.newWith("est")))
@@ -46,7 +46,7 @@ class PegDefinitionRunnerTest {
 
         // Act
         val actual =
-            PegDefinitionRunner(
+            PegDefinitionMiniParser(
                 PegDefinition(UUID.randomUUID(), expr) {
                     ParsingResult { it.tagged(TagType.Dot)?.asString() ?: error("not found") }
                 },

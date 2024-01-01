@@ -10,7 +10,7 @@ import java.util.UUID
 /**
  * Syntax runner interface.
  */
-class PegSequenceRunner<T, TagType>(private val syntax: PegSequence<T, TagType>) : MiniParser<T, TagType>() {
+class PegSequenceMiniParser<T, TagType>(private val syntax: PegSequence<T, TagType>) : MiniParser<T, TagType>() {
     /**
      * Run the primary
      */
@@ -24,7 +24,7 @@ class PegSequenceRunner<T, TagType>(private val syntax: PegSequence<T, TagType>)
 
         var result = ParsingResult.rawOf<T>("", source)
         for (prefix in syntax.prefixes) {
-            when (val ret = PegPrefixRunner.run(prefix, source, context)) {
+            when (val ret = PegPrefixMiniParser.run(prefix, source, context)) {
                 is Ok -> result = ret.get()
                 is Err -> return ret
             }

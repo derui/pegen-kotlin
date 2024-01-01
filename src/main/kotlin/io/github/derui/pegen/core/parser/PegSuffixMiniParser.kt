@@ -15,7 +15,7 @@ import java.util.UUID
 /**
  * Syntax runner interface.
  */
-sealed class PegSuffixRunner<T, TagType> : MiniParser<T, TagType>() {
+sealed class PegSuffixMiniParser<T, TagType> : MiniParser<T, TagType>() {
     companion object {
         /**
          * Run the primary
@@ -25,45 +25,45 @@ sealed class PegSuffixRunner<T, TagType> : MiniParser<T, TagType>() {
             source: ParserSource,
             context: ParserContext<T, TagType>,
         ) = when (syntax) {
-            is PegNakedSuffix -> PegNakedSuffixRunner(syntax).parse(source, context)
-            is PegPlusSuffix -> PegPlusSuffixRunner(syntax).parse(source, context)
-            is PegQuestionSuffix -> PegQuestionSuffixRunner(syntax).parse(source, context)
-            is PegStarSuffix -> PegStarSuffixRunner(syntax).parse(source, context)
+            is PegNakedSuffix -> PegNakedSuffixMiniParser(syntax).parse(source, context)
+            is PegPlusSuffix -> PegPlusSuffixMiniParser(syntax).parse(source, context)
+            is PegQuestionSuffix -> PegQuestionSuffixMiniParser(syntax).parse(source, context)
+            is PegStarSuffix -> PegStarSuffixMiniParser(syntax).parse(source, context)
         }
     }
 
     /**
      * private runner of [PegDotPrimary]
      */
-    private class PegNakedSuffixRunner<T, TagType>(
+    private class PegNakedSuffixMiniParser<T, TagType>(
         private val suffix: PegNakedSuffix<T, TagType>,
-    ) : PegPrimaryRunner<T, TagType>() {
+    ) : PegPrimaryMiniParser<T, TagType>() {
         override val syntaxId: UUID = suffix.id
 
         override fun parse(
             source: ParserSource,
             context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
-            return PegPrimaryRunner.run(suffix.primary, source, context)
+            return PegPrimaryMiniParser.run(suffix.primary, source, context)
         }
     }
 
     /**
      * private runner of [PegPlusSUffix]
      */
-    private class PegPlusSuffixRunner<T, TagType>(
+    private class PegPlusSuffixMiniParser<T, TagType>(
         private val suffix: PegPlusSuffix<T, TagType>,
-    ) : PegPrimaryRunner<T, TagType>() {
+    ) : PegPrimaryMiniParser<T, TagType>() {
         override val syntaxId: UUID = suffix.id
 
         override fun parse(
             source: ParserSource,
             context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
-            return PegPrimaryRunner.run(suffix.primary, source, context).flatMap {
+            return PegPrimaryMiniParser.run(suffix.primary, source, context).flatMap {
                 // define recursive function for plus
                 fun recurse(recursiveSource: ParserSource): Result<ParsingResult<T>, ErrorInfo> {
-                    return PegPrimaryRunner.run(suffix.primary, recursiveSource, context).fold({ recurse(it.restSource) }) {
+                    return PegPrimaryMiniParser.run(suffix.primary, recursiveSource, context).fold({ recurse(it.restSource) }) {
                         val result = ParsingResult.rawOf<T>(source..recursiveSource, recursiveSource)
                         suffix.tag?.run { context.tagging(this, result) }
                         Ok(result)
@@ -78,9 +78,9 @@ sealed class PegSuffixRunner<T, TagType> : MiniParser<T, TagType>() {
     /**
      * private runner of [PegStarSuffix]
      */
-    private class PegStarSuffixRunner<T, TagType>(
+    private class PegStarSuffixMiniParser<T, TagType>(
         private val suffix: PegStarSuffix<T, TagType>,
-    ) : PegPrimaryRunner<T, TagType>() {
+    ) : PegPrimaryMiniParser<T, TagType>() {
         override val syntaxId: UUID = suffix.id
 
         override fun parse(
@@ -89,7 +89,7 @@ sealed class PegSuffixRunner<T, TagType> : MiniParser<T, TagType>() {
         ): Result<ParsingResult<T>, ErrorInfo> {
             // define recursive function for plus
             fun recurse(recursiveSource: ParserSource): Result<ParsingResult<T>, ErrorInfo> {
-                return PegPrimaryRunner.run(suffix.primary, recursiveSource, context).fold({ recurse(it.restSource) }) {
+                return PegPrimaryMiniParser.run(suffix.primary, recursiveSource, context).fold({ recurse(it.restSource) }) {
                     val result = ParsingResult.rawOf<T>(source..recursiveSource, recursiveSource)
                     suffix.tag?.run { context.tagging(this, result) }
                     Ok(result)
@@ -103,16 +103,16 @@ sealed class PegSuffixRunner<T, TagType> : MiniParser<T, TagType>() {
     /**
      * private runner of [PegQuestionSuffix]
      */
-    private class PegQuestionSuffixRunner<T, TagType>(
+    private class PegQuestionSuffixMiniParser<T, TagType>(
         private val suffix: PegQuestionSuffix<T, TagType>,
-    ) : PegPrimaryRunner<T, TagType>() {
+    ) : PegPrimaryMiniParser<T, TagType>() {
         override val syntaxId: UUID = suffix.id
 
         override fun parse(
             source: ParserSource,
             context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
-            return PegPrimaryRunner.run(suffix.primary, source, context).fold({
+            return PegPrimaryMiniParser.run(suffix.primary, source, context).fold({
                 suffix.tag?.run { context.tagging(this, it) }
                 Ok(it)
             }) {

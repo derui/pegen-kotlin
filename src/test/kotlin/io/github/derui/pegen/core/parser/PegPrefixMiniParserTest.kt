@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import java.util.UUID
 
-class PegPrefixRunnerTest {
+class PegPrefixMiniParserTest {
     private enum class TagType
 
     @Nested
@@ -28,7 +28,7 @@ class PegPrefixRunnerTest {
             val prefix = PegAndPrefix(suffix, UUID.randomUUID())
 
             // Act
-            val actual = PegPrefixRunner.run(prefix, source, context)
+            val actual = PegPrefixMiniParser.run(prefix, source, context)
 
             // Assert
             assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("", ParserSource.newWith("test")))
@@ -43,7 +43,7 @@ class PegPrefixRunnerTest {
             val prefix = PegAndPrefix(suffix, UUID.randomUUID())
 
             // Act
-            val actual = PegPrefixRunner.run(prefix, source, context)
+            val actual = PegPrefixMiniParser.run(prefix, source, context)
 
             // Assert
             assertThat(actual.getOrNull()).isNull()
@@ -61,7 +61,7 @@ class PegPrefixRunnerTest {
             val prefix = PegNotPrefix(suffix, UUID.randomUUID())
 
             // Act
-            val actual = PegPrefixRunner.run(prefix, source, context)
+            val actual = PegPrefixMiniParser.run(prefix, source, context)
 
             // Assert
             assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("", ParserSource.newWith("test")))
@@ -76,7 +76,7 @@ class PegPrefixRunnerTest {
             val prefix = PegNotPrefix(suffix, UUID.randomUUID())
 
             // Act
-            val actual = PegPrefixRunner.run(prefix, source, context)
+            val actual = PegPrefixMiniParser.run(prefix, source, context)
 
             // Assert
             assertThat(actual.getOrNull()).isNull()

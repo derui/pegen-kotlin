@@ -8,7 +8,7 @@ import java.util.UUID
 /**
  * Syntax runner interface.
  */
-class PegDefinitionRunner<T, TagType>(private val syntax: PegDefinition<T, TagType>) : MiniParser<T, TagType>() {
+class PegDefinitionMiniParser<T, TagType>(private val syntax: PegDefinition<T, TagType>) : MiniParser<T, TagType>() {
     /**
      * Run the primary
      */
@@ -18,7 +18,7 @@ class PegDefinitionRunner<T, TagType>(private val syntax: PegDefinition<T, TagTy
     ): Result<ParsingResult<T>, ErrorInfo> {
         val newContext = context.clone()
 
-        return PegExpressionRunner(syntax.expression).parse(source, newContext).map { result ->
+        return PegExpressionMiniParser(syntax.expression).parse(source, newContext).map { result ->
             ParsingResult.constructedAs(syntax.construct(newContext), result.restSource)
         }
     }

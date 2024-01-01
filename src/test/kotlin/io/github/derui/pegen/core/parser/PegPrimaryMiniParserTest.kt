@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import java.util.UUID
 
-class PegPrimaryRunnerTest {
+class PegPrimaryMiniParserTest {
     private enum class TagType
 
     @Nested
@@ -31,7 +31,7 @@ class PegPrimaryRunnerTest {
             val source = ParserSource.newWith("test")
 
             // Act
-            val actual = PegPrimaryRunner.run(PegDotPrimary(UUID.randomUUID()), source, context)
+            val actual = PegPrimaryMiniParser.run(PegDotPrimary(UUID.randomUUID()), source, context)
 
             // Assert
             assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("t", ParserSource.newWith("est")))
@@ -44,7 +44,7 @@ class PegPrimaryRunnerTest {
             val source = ParserSource.newWith("")
 
             // Act
-            val actual = PegPrimaryRunner.run(PegDotPrimary(UUID.randomUUID()), source, context)
+            val actual = PegPrimaryMiniParser.run(PegDotPrimary(UUID.randomUUID()), source, context)
 
             // Assert
             assertThat(actual.getOrNull()).isNull()
@@ -60,7 +60,7 @@ class PegPrimaryRunnerTest {
             val source = ParserSource.newWith("test")
 
             // Act
-            val actual = PegPrimaryRunner.run(PegLiteralPrimary("te", UUID.randomUUID()), source, context)
+            val actual = PegPrimaryMiniParser.run(PegLiteralPrimary("te", UUID.randomUUID()), source, context)
 
             // Assert
             assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("te", ParserSource.newWith("st")))
@@ -73,7 +73,7 @@ class PegPrimaryRunnerTest {
             val source = ParserSource.newWith("test")
 
             // Act
-            val actual = PegPrimaryRunner.run(PegLiteralPrimary("", UUID.randomUUID()), source, context)
+            val actual = PegPrimaryMiniParser.run(PegLiteralPrimary("", UUID.randomUUID()), source, context)
 
             // Assert
             assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("", ParserSource.newWith("test")))
@@ -86,7 +86,7 @@ class PegPrimaryRunnerTest {
             val source = ParserSource.newWith("fail")
 
             // Act
-            val actual = PegPrimaryRunner.run(PegLiteralPrimary("te", UUID.randomUUID()), source, context)
+            val actual = PegPrimaryMiniParser.run(PegLiteralPrimary("te", UUID.randomUUID()), source, context)
 
             // Assert
             assertThat(actual.getOrNull()).isNull()
@@ -102,7 +102,7 @@ class PegPrimaryRunnerTest {
             val source = ParserSource.newWith("test")
 
             // Act
-            val actual = PegPrimaryRunner.run(PegClassPrimary(setOf('t', 'e'), UUID.randomUUID()), source, context)
+            val actual = PegPrimaryMiniParser.run(PegClassPrimary(setOf('t', 'e'), UUID.randomUUID()), source, context)
 
             // Assert
             assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("t", ParserSource.newWith("est")))
@@ -115,7 +115,7 @@ class PegPrimaryRunnerTest {
             val source = ParserSource.newWith("fail")
 
             // Act
-            val actual = PegPrimaryRunner.run(PegClassPrimary(setOf('a'), UUID.randomUUID()), source, context)
+            val actual = PegPrimaryMiniParser.run(PegClassPrimary(setOf('a'), UUID.randomUUID()), source, context)
 
             // Assert
             assertThat(actual.getOrNull()).isNull()
@@ -135,7 +135,7 @@ class PegPrimaryRunnerTest {
             val expr = PegExpression(listOf(seq), UUID.randomUUID())
 
             // Act
-            val actual = PegPrimaryRunner.run(PegGroupPrimary(expr, UUID.randomUUID()), source, context)
+            val actual = PegPrimaryMiniParser.run(PegGroupPrimary(expr, UUID.randomUUID()), source, context)
 
             // Assert
             assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("t", ParserSource.newWith("est")))
@@ -156,7 +156,7 @@ class PegPrimaryRunnerTest {
 
             // Act
             val actual =
-                PegPrimaryRunner.run(
+                PegPrimaryMiniParser.run(
                     PegIdentifierPrimary(PegDefinition(UUID.randomUUID(), expr, {}), UUID.randomUUID()),
                     source,
                     context,

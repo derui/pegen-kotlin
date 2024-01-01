@@ -9,7 +9,7 @@ import java.util.UUID
 /**
  * Syntax runner interface.
  */
-class PegExpressionRunner<T, TagType>(private val syntax: PegExpression<T, TagType>) : MiniParser<T, TagType>() {
+class PegExpressionMiniParser<T, TagType>(private val syntax: PegExpression<T, TagType>) : MiniParser<T, TagType>() {
     /**
      * Run the primary
      */
@@ -22,7 +22,7 @@ class PegExpressionRunner<T, TagType>(private val syntax: PegExpression<T, TagTy
         }
 
         for (seq in syntax.sequences) {
-            when (val ret = PegSequenceRunner(seq).parse(source, context)) {
+            when (val ret = PegSequenceMiniParser(seq).parse(source, context)) {
                 is Ok -> return ret
                 is Err -> continue
             }

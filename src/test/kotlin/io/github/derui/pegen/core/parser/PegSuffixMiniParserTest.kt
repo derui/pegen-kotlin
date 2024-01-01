@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import java.util.UUID
 
-class PegSuffixRunnerTest {
+class PegSuffixMiniParserTest {
     private enum class TagType
 
     @Nested
@@ -23,7 +23,7 @@ class PegSuffixRunnerTest {
             val primary = PegClassPrimary<Unit, TagType>(setOf('t', 'e'), UUID.randomUUID())
 
             // Act
-            val actual = PegSuffixRunner.run(PegQuestionSuffix(primary, UUID.randomUUID()), source, context)
+            val actual = PegSuffixMiniParser.run(PegQuestionSuffix(primary, UUID.randomUUID()), source, context)
 
             // Assert
             assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("t", ParserSource.newWith("est")))
@@ -37,7 +37,7 @@ class PegSuffixRunnerTest {
             val primary = PegClassPrimary<Unit, TagType>(setOf('t', 'e'), UUID.randomUUID())
 
             // Act
-            val actual = PegSuffixRunner.run(PegQuestionSuffix(primary, UUID.randomUUID()), source, context)
+            val actual = PegSuffixMiniParser.run(PegQuestionSuffix(primary, UUID.randomUUID()), source, context)
 
             // Assert
             assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("", source))
@@ -54,7 +54,7 @@ class PegSuffixRunnerTest {
             val primary = PegClassPrimary<Unit, TagType>(setOf('t', 'e'), UUID.randomUUID())
 
             // Act
-            val actual = PegSuffixRunner.run(PegStarSuffix(primary, UUID.randomUUID()), source, context)
+            val actual = PegSuffixMiniParser.run(PegStarSuffix(primary, UUID.randomUUID()), source, context)
 
             // Assert
             assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("te", ParserSource.newWith("st")))
@@ -68,7 +68,7 @@ class PegSuffixRunnerTest {
             val primary = PegClassPrimary<Unit, TagType>(setOf('t', 'e'), UUID.randomUUID())
 
             // Act
-            val actual = PegSuffixRunner.run(PegStarSuffix(primary, UUID.randomUUID()), source, context)
+            val actual = PegSuffixMiniParser.run(PegStarSuffix(primary, UUID.randomUUID()), source, context)
 
             // Assert
             assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("", source))

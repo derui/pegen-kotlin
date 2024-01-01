@@ -15,7 +15,7 @@ import io.github.derui.pegen.core.support.getOrNull
 import org.junit.jupiter.api.Test
 import java.util.UUID
 
-class PegExpressionRunnerTest {
+class PegExpressionMiniParserTest {
     private enum class TagType
 
     @Test
@@ -28,7 +28,7 @@ class PegExpressionRunnerTest {
         val seq = PegSequence(listOf(prefix), UUID.randomUUID())
 
         // Act
-        val actual = PegExpressionRunner(PegExpression(listOf(seq), UUID.randomUUID())).parse(source, context)
+        val actual = PegExpressionMiniParser(PegExpression(listOf(seq), UUID.randomUUID())).parse(source, context)
 
         // Assert
         assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("t", ParserSource.newWith("est")))
@@ -47,7 +47,7 @@ class PegExpressionRunnerTest {
         val seq2 = PegSequence(listOf(prefix2), UUID.randomUUID())
 
         // Act
-        val actual = PegExpressionRunner(PegExpression(listOf(seq, seq2), UUID.randomUUID())).parse(source, context)
+        val actual = PegExpressionMiniParser(PegExpression(listOf(seq, seq2), UUID.randomUUID())).parse(source, context)
 
         // Assert
         assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("t", ParserSource.newWith("est")))
@@ -66,7 +66,7 @@ class PegExpressionRunnerTest {
         val seq2 = PegSequence(listOf(prefix2), UUID.randomUUID())
 
         // Act
-        val actual = PegExpressionRunner(PegExpression(listOf(seq, seq2), UUID.randomUUID())).parse(source, context)
+        val actual = PegExpressionMiniParser(PegExpression(listOf(seq, seq2), UUID.randomUUID())).parse(source, context)
 
         // Assert
         assertThat(actual.getOrNull()).isNull()

@@ -13,7 +13,7 @@ import io.github.derui.pegen.core.support.getOrNull
 import org.junit.jupiter.api.Test
 import java.util.UUID
 
-class PegSequenceRunnerTest {
+class PegSequenceMiniParserTest {
     private enum class TagType
 
     @Test
@@ -26,7 +26,7 @@ class PegSequenceRunnerTest {
         val seq = PegSequence(listOf(prefix), UUID.randomUUID())
 
         // Act
-        val actual = PegSequenceRunner(seq).parse(source, context)
+        val actual = PegSequenceMiniParser(seq).parse(source, context)
 
         // Assert
         assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("t", ParserSource.newWith("est")))
@@ -44,7 +44,7 @@ class PegSequenceRunnerTest {
         val seq = PegSequence(listOf(prefix, prefix2), UUID.randomUUID())
 
         // Act
-        val actual = PegSequenceRunner(seq).parse(source, context)
+        val actual = PegSequenceMiniParser(seq).parse(source, context)
 
         // Assert
         assertThat(actual.getOrNull()).isNull()
