@@ -5,15 +5,20 @@ import io.github.derui.pegen.core.lang.PegSyntax
 /**
  * A context for parsing.
  */
-class ParserContext<T, TagType> private constructor() {
+class ParserContext<T, TagType> private constructor(internal val cache: PackratState<T>) {
     companion object {
-        fun <T, TagType> new() = ParserContext<T, TagType>()
+        fun <T, TagType> new(input: String) = ParserContext<T, TagType>(PackratState.from(input))
     }
 
     /**
      * Map of tag that is build in [PegDefinition] and [PegExpression] and its [PegSyntax].
      */
     private val tags = mutableMapOf<TagType, ParsingResult<T>>()
+
+    /**
+     * Clone this context. Cloned context will have same cache.
+     */
+    fun clone(): ParserContext<T, TagType> = ParserContext(cache)
 
     /**
      * Register a tag and its syntax.

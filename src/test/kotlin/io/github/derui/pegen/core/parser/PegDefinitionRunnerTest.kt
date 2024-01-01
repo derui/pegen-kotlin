@@ -20,7 +20,7 @@ class PegDefinitionRunnerTest {
     @Test
     fun `parse definition`() {
         // Arrange
-        val context = ParserContext.new<Unit, TagType>()
+        val context = ParserContext.new<Unit, TagType>("test")
         val source = ParserSource.newWith("test")
         val suffix = PegNakedSuffix<Unit, TagType>(PegDotPrimary(UUID.randomUUID()), UUID.randomUUID())
         val prefix = PegNakedPrefix(suffix, UUID.randomUUID())
@@ -28,7 +28,7 @@ class PegDefinitionRunnerTest {
         val expr = PegExpression(listOf(seq), UUID.randomUUID())
 
         // Act
-        val actual = PegDefinitionRunner(PegDefinition(UUID.randomUUID(), expr, {})).run(source, context)
+        val actual = PegDefinitionRunner(PegDefinition(UUID.randomUUID(), expr, {})).parse(source, context)
 
         // Assert
         assertThat(actual.get()).isEqualTo(ParsingResult.constructedAs(Unit, ParserSource.newWith("est")))
@@ -37,7 +37,7 @@ class PegDefinitionRunnerTest {
     @Test
     fun `should be able to create instance via context`() {
         // Arrange
-        val context = ParserContext.new<String, TagType>()
+        val context = ParserContext.new<String, TagType>("test")
         val source = ParserSource.newWith("test")
         val suffix = PegNakedSuffix<String, TagType>(PegDotPrimary(UUID.randomUUID(), tag = TagType.Dot), UUID.randomUUID())
         val prefix = PegNakedPrefix(suffix, UUID.randomUUID())
@@ -50,7 +50,7 @@ class PegDefinitionRunnerTest {
                 PegDefinition(UUID.randomUUID(), expr) {
                     ParsingResult { it.tagged(TagType.Dot)?.asString() ?: error("not found") }
                 },
-            ).run(source, context)
+            ).parse(source, context)
 
         // Assert
         assertThat(actual.get()).isEqualTo(ParsingResult.constructedAs("t", ParserSource.newWith("est")))

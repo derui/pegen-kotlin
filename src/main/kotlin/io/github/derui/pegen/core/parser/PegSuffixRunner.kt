@@ -10,11 +10,12 @@ import io.github.derui.pegen.core.support.Ok
 import io.github.derui.pegen.core.support.Result
 import io.github.derui.pegen.core.support.flatMap
 import io.github.derui.pegen.core.support.fold
+import java.util.UUID
 
 /**
  * Syntax runner interface.
  */
-sealed class PegSuffixRunner<T, TagType> : SyntaxRunner<T, TagType>() {
+sealed class PegSuffixRunner<T, TagType> : MiniParser<T, TagType>() {
     companion object {
         /**
          * Run the primary
@@ -24,10 +25,10 @@ sealed class PegSuffixRunner<T, TagType> : SyntaxRunner<T, TagType>() {
             source: ParserSource,
             context: ParserContext<T, TagType>,
         ) = when (syntax) {
-            is PegNakedSuffix -> PegNakedSuffixRunner(syntax).run(source, context)
-            is PegPlusSuffix -> PegPlusSuffixRunner(syntax).run(source, context)
-            is PegQuestionSuffix -> PegQuestionSuffixRunner(syntax).run(source, context)
-            is PegStarSuffix -> PegStarSuffixRunner(syntax).run(source, context)
+            is PegNakedSuffix -> PegNakedSuffixRunner(syntax).parse(source, context)
+            is PegPlusSuffix -> PegPlusSuffixRunner(syntax).parse(source, context)
+            is PegQuestionSuffix -> PegQuestionSuffixRunner(syntax).parse(source, context)
+            is PegStarSuffix -> PegStarSuffixRunner(syntax).parse(source, context)
         }
     }
 
@@ -37,7 +38,9 @@ sealed class PegSuffixRunner<T, TagType> : SyntaxRunner<T, TagType>() {
     private class PegNakedSuffixRunner<T, TagType>(
         private val suffix: PegNakedSuffix<T, TagType>,
     ) : PegPrimaryRunner<T, TagType>() {
-        override fun run(
+        override val syntaxId: UUID = suffix.id
+
+        override fun parse(
             source: ParserSource,
             context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
@@ -51,7 +54,9 @@ sealed class PegSuffixRunner<T, TagType> : SyntaxRunner<T, TagType>() {
     private class PegPlusSuffixRunner<T, TagType>(
         private val suffix: PegPlusSuffix<T, TagType>,
     ) : PegPrimaryRunner<T, TagType>() {
-        override fun run(
+        override val syntaxId: UUID = suffix.id
+
+        override fun parse(
             source: ParserSource,
             context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
@@ -76,7 +81,9 @@ sealed class PegSuffixRunner<T, TagType> : SyntaxRunner<T, TagType>() {
     private class PegStarSuffixRunner<T, TagType>(
         private val suffix: PegStarSuffix<T, TagType>,
     ) : PegPrimaryRunner<T, TagType>() {
-        override fun run(
+        override val syntaxId: UUID = suffix.id
+
+        override fun parse(
             source: ParserSource,
             context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
@@ -99,7 +106,9 @@ sealed class PegSuffixRunner<T, TagType> : SyntaxRunner<T, TagType>() {
     private class PegQuestionSuffixRunner<T, TagType>(
         private val suffix: PegQuestionSuffix<T, TagType>,
     ) : PegPrimaryRunner<T, TagType>() {
-        override fun run(
+        override val syntaxId: UUID = suffix.id
+
+        override fun parse(
             source: ParserSource,
             context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {

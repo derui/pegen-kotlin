@@ -11,11 +11,12 @@ import io.github.derui.pegen.core.support.Ok
 import io.github.derui.pegen.core.support.Result
 import io.github.derui.pegen.core.support.flatMap
 import io.github.derui.pegen.core.support.map
+import java.util.UUID
 
 /**
  * Syntax runner interface.
  */
-sealed class PegPrimaryRunner<T, TagType> : SyntaxRunner<T, TagType>() {
+sealed class PegPrimaryRunner<T, TagType> : MiniParser<T, TagType>() {
     companion object {
         /**
          * Run the primary
@@ -25,11 +26,11 @@ sealed class PegPrimaryRunner<T, TagType> : SyntaxRunner<T, TagType>() {
             source: ParserSource,
             context: ParserContext<T, TagType>,
         ) = when (primary) {
-            is PegClassPrimary -> PegClassPrimaryRunner(primary).run(source, context)
-            is PegDotPrimary -> PegDotPrimaryRunner(primary).run(source, context)
-            is PegGroupPrimary -> PegGroupPrimaryRunner(primary).run(source, context)
-            is PegIdentifierPrimary -> PegIdentifierPrimaryRunner(primary).run(source, context)
-            is PegLiteralPrimary -> PegLiteralPrimaryRunner(primary).run(source, context)
+            is PegClassPrimary -> PegClassPrimaryRunner(primary).parse(source, context)
+            is PegDotPrimary -> PegDotPrimaryRunner(primary).parse(source, context)
+            is PegGroupPrimary -> PegGroupPrimaryRunner(primary).parse(source, context)
+            is PegIdentifierPrimary -> PegIdentifierPrimaryRunner(primary).parse(source, context)
+            is PegLiteralPrimary -> PegLiteralPrimaryRunner(primary).parse(source, context)
         }
     }
 
@@ -39,7 +40,9 @@ sealed class PegPrimaryRunner<T, TagType> : SyntaxRunner<T, TagType>() {
     private class PegDotPrimaryRunner<T, TagType>(
         private val primary: PegDotPrimary<T, TagType>,
     ) : PegPrimaryRunner<T, TagType>() {
-        override fun run(
+        override val syntaxId: UUID = primary.id
+
+        override fun parse(
             source: ParserSource,
             context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
@@ -57,7 +60,7 @@ sealed class PegPrimaryRunner<T, TagType> : SyntaxRunner<T, TagType>() {
     private class PegLiteralPrimaryRunner<T, TagType>(
         private val primary: PegLiteralPrimary<T, TagType>,
     ) : PegPrimaryRunner<T, TagType>() {
-        override fun run(
+        override fun parse(
             source: ParserSource,
             context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
@@ -89,6 +92,8 @@ sealed class PegPrimaryRunner<T, TagType> : SyntaxRunner<T, TagType>() {
                 }
             }
         }
+
+        override val syntaxId: UUID = primary.id
     }
 
     /**
@@ -97,7 +102,9 @@ sealed class PegPrimaryRunner<T, TagType> : SyntaxRunner<T, TagType>() {
     private class PegClassPrimaryRunner<T, TagType>(
         private val primary: PegClassPrimary<T, TagType>,
     ) : PegPrimaryRunner<T, TagType>() {
-        override fun run(
+        override val syntaxId: UUID = primary.id
+
+        override fun parse(
             source: ParserSource,
             context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
@@ -119,11 +126,13 @@ sealed class PegPrimaryRunner<T, TagType> : SyntaxRunner<T, TagType>() {
     private class PegGroupPrimaryRunner<T, TagType>(
         private val primary: PegGroupPrimary<T, TagType>,
     ) : PegPrimaryRunner<T, TagType>() {
-        override fun run(
+        override val syntaxId: UUID = primary.id
+
+        override fun parse(
             source: ParserSource,
             context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
-            return PegExpressionRunner(primary.expression).run(source, context).map {
+            return PegExpressionRunner(primary.expression).parse(source, context).map {
                 primary.tag?.let { tag -> context.tagging(tag, it) }
                 it
             }
@@ -136,11 +145,13 @@ sealed class PegPrimaryRunner<T, TagType> : SyntaxRunner<T, TagType>() {
     private class PegIdentifierPrimaryRunner<T, TagType>(
         private val primary: PegIdentifierPrimary<T, TagType>,
     ) : PegPrimaryRunner<T, TagType>() {
-        override fun run(
+        override val syntaxId: UUID = primary.id
+
+        override fun parse(
             source: ParserSource,
             context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
-            return PegDefinitionRunner(primary.identifier).run(source, context).map {
+            return PegDefinitionRunner(primary.identifier).parse(source, context).map {
                 primary.tag?.let { tag -> context.tagging(tag, it) }
                 it
             }

@@ -5,15 +5,16 @@ import io.github.derui.pegen.core.support.Err
 import io.github.derui.pegen.core.support.Ok
 import io.github.derui.pegen.core.support.Result
 import io.github.derui.pegen.core.support.get
+import java.util.UUID
 
 /**
  * Syntax runner interface.
  */
-class PegSequenceRunner<T, TagType>(private val syntax: PegSequence<T, TagType>) : SyntaxRunner<T, TagType>() {
+class PegSequenceRunner<T, TagType>(private val syntax: PegSequence<T, TagType>) : MiniParser<T, TagType>() {
     /**
      * Run the primary
      */
-    override fun run(
+    override fun parse(
         source: ParserSource,
         context: ParserContext<T, TagType>,
     ): Result<ParsingResult<T>, ErrorInfo> {
@@ -31,4 +32,6 @@ class PegSequenceRunner<T, TagType>(private val syntax: PegSequence<T, TagType>)
 
         return Ok(ParsingResult.rawOf(source..result.restSource, result.restSource))
     }
+
+    override val syntaxId: UUID = syntax.id
 }

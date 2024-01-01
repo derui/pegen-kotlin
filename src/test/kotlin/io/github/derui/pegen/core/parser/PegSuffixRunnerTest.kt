@@ -18,7 +18,7 @@ class PegSuffixRunnerTest {
         @Test
         fun `parse dot primary`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>()
+            val context = ParserContext.new<Unit, TagType>("test")
             val source = ParserSource.newWith("test")
             val primary = PegClassPrimary<Unit, TagType>(setOf('t', 'e'), UUID.randomUUID())
 
@@ -32,7 +32,7 @@ class PegSuffixRunnerTest {
         @Test
         fun `success if not match`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>()
+            val context = ParserContext.new<Unit, TagType>("fo")
             val source = ParserSource.newWith("fo")
             val primary = PegClassPrimary<Unit, TagType>(setOf('t', 'e'), UUID.randomUUID())
 
@@ -49,7 +49,7 @@ class PegSuffixRunnerTest {
         @Test
         fun `parse star suffix`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>()
+            val context = ParserContext.new<Unit, TagType>("test")
             val source = ParserSource.newWith("test")
             val primary = PegClassPrimary<Unit, TagType>(setOf('t', 'e'), UUID.randomUUID())
 
@@ -63,7 +63,7 @@ class PegSuffixRunnerTest {
         @Test
         fun `success if not match`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>()
+            val context = ParserContext.new<Unit, TagType>("fo")
             val source = ParserSource.newWith("fo")
             val primary = PegClassPrimary<Unit, TagType>(setOf('t', 'e'), UUID.randomUUID())
 

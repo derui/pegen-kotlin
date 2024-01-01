@@ -19,14 +19,14 @@ class PegSequenceRunnerTest {
     @Test
     fun `parse sequence`() {
         // Arrange
-        val context = ParserContext.new<Unit, TagType>()
+        val context = ParserContext.new<Unit, TagType>("test")
         val source = ParserSource.newWith("test")
         val suffix = PegNakedSuffix<Unit, TagType>(PegDotPrimary(UUID.randomUUID()), UUID.randomUUID())
         val prefix = PegNakedPrefix(suffix, UUID.randomUUID())
         val seq = PegSequence(listOf(prefix), UUID.randomUUID())
 
         // Act
-        val actual = PegSequenceRunner(seq).run(source, context)
+        val actual = PegSequenceRunner(seq).parse(source, context)
 
         // Assert
         assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("t", ParserSource.newWith("est")))
@@ -35,7 +35,7 @@ class PegSequenceRunnerTest {
     @Test
     fun `fail if any prefix is failed in sequence`() {
         // Arrange
-        val context = ParserContext.new<Unit, TagType>()
+        val context = ParserContext.new<Unit, TagType>("test")
         val source = ParserSource.newWith("test")
         val suffix = PegNakedSuffix<Unit, TagType>(PegDotPrimary(UUID.randomUUID()), UUID.randomUUID())
         val prefix = PegNakedPrefix(suffix, UUID.randomUUID())
@@ -44,7 +44,7 @@ class PegSequenceRunnerTest {
         val seq = PegSequence(listOf(prefix, prefix2), UUID.randomUUID())
 
         // Act
-        val actual = PegSequenceRunner(seq).run(source, context)
+        val actual = PegSequenceRunner(seq).parse(source, context)
 
         // Assert
         assertThat(actual.getOrNull()).isNull()

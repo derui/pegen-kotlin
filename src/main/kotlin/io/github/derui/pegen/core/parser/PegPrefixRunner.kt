@@ -9,11 +9,12 @@ import io.github.derui.pegen.core.support.Ok
 import io.github.derui.pegen.core.support.Result
 import io.github.derui.pegen.core.support.flatMap
 import io.github.derui.pegen.core.support.fold
+import java.util.UUID
 
 /**
  * Syntax runner interface.
  */
-sealed class PegPrefixRunner<T, TagType> : SyntaxRunner<T, TagType>() {
+sealed class PegPrefixRunner<T, TagType> : MiniParser<T, TagType>() {
     companion object {
         /**
          * Run the primary
@@ -23,9 +24,9 @@ sealed class PegPrefixRunner<T, TagType> : SyntaxRunner<T, TagType>() {
             source: ParserSource,
             context: ParserContext<T, TagType>,
         ) = when (syntax) {
-            is PegAndPrefix -> PegAndPrefixRunner(syntax).run(source, context)
-            is PegNakedPrefix -> PegNakedPrefixRunner(syntax).run(source, context)
-            is PegNotPrefix -> PegNotPrefixRunner(syntax).run(source, context)
+            is PegAndPrefix -> PegAndPrefixRunner(syntax).parse(source, context)
+            is PegNakedPrefix -> PegNakedPrefixRunner(syntax).parse(source, context)
+            is PegNotPrefix -> PegNotPrefixRunner(syntax).parse(source, context)
         }
     }
 
@@ -35,12 +36,14 @@ sealed class PegPrefixRunner<T, TagType> : SyntaxRunner<T, TagType>() {
     private class PegNakedPrefixRunner<T, TagType>(
         private val prefix: PegNakedPrefix<T, TagType>,
     ) : PegPrimaryRunner<T, TagType>() {
-        override fun run(
+        override fun parse(
             source: ParserSource,
             context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
             return PegSuffixRunner.run(prefix.suffix, source, context)
         }
+
+        override val syntaxId: UUID = prefix.id
     }
 
     /**
@@ -49,7 +52,7 @@ sealed class PegPrefixRunner<T, TagType> : SyntaxRunner<T, TagType>() {
     private class PegAndPrefixRunner<T, TagType>(
         private val prefix: PegAndPrefix<T, TagType>,
     ) : PegPrimaryRunner<T, TagType>() {
-        override fun run(
+        override fun parse(
             source: ParserSource,
             context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
@@ -58,6 +61,8 @@ sealed class PegPrefixRunner<T, TagType> : SyntaxRunner<T, TagType>() {
                 Ok(result)
             }
         }
+
+        override val syntaxId: UUID = prefix.id
     }
 
     /**
@@ -66,7 +71,7 @@ sealed class PegPrefixRunner<T, TagType> : SyntaxRunner<T, TagType>() {
     private class PegNotPrefixRunner<T, TagType>(
         private val prefix: PegNotPrefix<T, TagType>,
     ) : PegPrimaryRunner<T, TagType>() {
-        override fun run(
+        override fun parse(
             source: ParserSource,
             context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
@@ -82,5 +87,7 @@ sealed class PegPrefixRunner<T, TagType> : SyntaxRunner<T, TagType>() {
 
             return recurse(source)
         }
+
+        override val syntaxId: UUID = prefix.id
     }
 }

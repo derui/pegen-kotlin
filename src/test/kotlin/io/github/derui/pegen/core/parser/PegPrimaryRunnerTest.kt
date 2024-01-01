@@ -27,7 +27,7 @@ class PegPrimaryRunnerTest {
         @Test
         fun `parse dot primary`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>()
+            val context = ParserContext.new<Unit, TagType>("test")
             val source = ParserSource.newWith("test")
 
             // Act
@@ -40,7 +40,7 @@ class PegPrimaryRunnerTest {
         @Test
         fun `fail if empty`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>()
+            val context = ParserContext.new<Unit, TagType>("test")
             val source = ParserSource.newWith("")
 
             // Act
@@ -56,7 +56,7 @@ class PegPrimaryRunnerTest {
         @Test
         fun `parse literal primary`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>()
+            val context = ParserContext.new<Unit, TagType>("test")
             val source = ParserSource.newWith("test")
 
             // Act
@@ -69,7 +69,7 @@ class PegPrimaryRunnerTest {
         @Test
         fun `empty literal is always valid`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>()
+            val context = ParserContext.new<Unit, TagType>("test")
             val source = ParserSource.newWith("test")
 
             // Act
@@ -82,7 +82,7 @@ class PegPrimaryRunnerTest {
         @Test
         fun `fail if literal is not match`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>()
+            val context = ParserContext.new<Unit, TagType>("test")
             val source = ParserSource.newWith("fail")
 
             // Act
@@ -98,7 +98,7 @@ class PegPrimaryRunnerTest {
         @Test
         fun `parse class primary`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>()
+            val context = ParserContext.new<Unit, TagType>("test")
             val source = ParserSource.newWith("test")
 
             // Act
@@ -111,7 +111,7 @@ class PegPrimaryRunnerTest {
         @Test
         fun `fail if character class is not match`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>()
+            val context = ParserContext.new<Unit, TagType>("fail")
             val source = ParserSource.newWith("fail")
 
             // Act
@@ -127,7 +127,7 @@ class PegPrimaryRunnerTest {
         @Test
         fun `parse group primary`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>()
+            val context = ParserContext.new<Unit, TagType>("test")
             val source = ParserSource.newWith("test")
             val suffix = PegNakedSuffix<Unit, TagType>(PegDotPrimary(UUID.randomUUID()), UUID.randomUUID())
             val prefix = PegNakedPrefix(suffix, UUID.randomUUID())
@@ -147,7 +147,7 @@ class PegPrimaryRunnerTest {
         @Test
         fun `parse definition`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>()
+            val context = ParserContext.new<Unit, TagType>("test")
             val source = ParserSource.newWith("test")
             val suffix = PegNakedSuffix<Unit, TagType>(PegDotPrimary(UUID.randomUUID()), UUID.randomUUID())
             val prefix = PegNakedPrefix(suffix, UUID.randomUUID())

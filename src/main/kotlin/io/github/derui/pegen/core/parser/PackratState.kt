@@ -1,6 +1,5 @@
 package io.github.derui.pegen.core.parser
 
-import io.github.derui.pegen.core.lang.PegDefinition
 import io.github.derui.pegen.core.lang.PegExpression
 import java.util.UUID
 
@@ -13,18 +12,9 @@ class PackratState<V> private constructor(
     private val cache: Array<MutableMap<UUID, ParserResultCache<ParsingResult<V>>>>,
 ) {
     companion object {
-        fun <V, TagType> from(
-            input: String,
-            expressions: List<PegDefinition<V, TagType>>,
-        ): PackratState<V> {
-            val expMap = expressions.associateBy { it.id }
-
+        fun <V> from(input: String): PackratState<V> {
             return PackratState(
-                Array(input.length) {
-                    expMap.mapValues {
-                        ParserResultCache.NoParse<ParsingResult<V>>()
-                    }.toMutableMap()
-                },
+                Array(input.length) { mutableMapOf() },
             )
         }
     }
