@@ -13,7 +13,9 @@ import org.junit.jupiter.api.Test
 import java.util.UUID
 
 class PegDefinitionRunnerTest {
-    private enum class TagType
+    private enum class TagType {
+        Dot,
+    }
 
     @Test
     fun `parse definition`() {
@@ -30,5 +32,27 @@ class PegDefinitionRunnerTest {
 
         // Assert
         assertThat(actual.get()).isEqualTo(ParsingResult.constructedAs(Unit, ParserSource.newWith("est")))
+    }
+
+    @Test
+    fun `should be able to create instance via context`() {
+        // Arrange
+        val context = ParserContext.new<String, TagType>()
+        val source = ParserSource.newWith("test")
+        val suffix = PegNakedSuffix<String, TagType>(PegDotPrimary(UUID.randomUUID(), tag = TagType.Dot), UUID.randomUUID())
+        val prefix = PegNakedPrefix(suffix, UUID.randomUUID())
+        val seq = PegSequence(listOf(prefix), UUID.randomUUID())
+        val expr = PegExpression(listOf(seq), UUID.randomUUID())
+
+        // Act
+        val actual =
+            PegDefinitionRunner(
+                PegDefinition(UUID.randomUUID(), expr) {
+                    ParsingResult { it.tagged(TagType.Dot)?.asString() ?: error("not found") }
+                },
+            ).run(source, context)
+
+        // Assert
+        assertThat(actual.get()).isEqualTo(ParsingResult.constructedAs("t", ParserSource.newWith("est")))
     }
 }

@@ -35,7 +35,7 @@ sealed class ParsingResult<T> private constructor(
         /**
          * Provides a simple DSL to unwrap the value.
          */
-        operator fun <T, R> invoke(f: Companion.() -> R): R = this.f()
+        inline operator fun <reified R> invoke(f: Companion.() -> R): R = this.f()
 
         /**
          * A simple unwrap function to get type of [R].
