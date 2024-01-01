@@ -22,10 +22,10 @@ class PegPrefixMiniParserTest {
         @Test
         fun `parse and prefix`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>("test")
             val source = ParserSource.newWith("test")
             val suffix = PegNakedSuffix<Unit, TagType>(PegDotPrimary(UUID.randomUUID()), UUID.randomUUID())
             val prefix = PegAndPrefix(suffix, UUID.randomUUID())
+            val context = ParserContext.new(prefix)
 
             // Act
             val actual = PegPrefixMiniParser.run(prefix, source, context)
@@ -37,10 +37,10 @@ class PegPrefixMiniParserTest {
         @Test
         fun `fail if suffix is not match`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>("test")
             val source = ParserSource.newWith("test")
             val suffix = PegNakedSuffix<Unit, TagType>(PegClassPrimary(setOf('a'), UUID.randomUUID()), UUID.randomUUID())
             val prefix = PegAndPrefix(suffix, UUID.randomUUID())
+            val context = ParserContext.new(prefix)
 
             // Act
             val actual = PegPrefixMiniParser.run(prefix, source, context)
@@ -55,10 +55,10 @@ class PegPrefixMiniParserTest {
         @Test
         fun `run not prefix`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>("test")
             val source = ParserSource.newWith("test")
             val suffix = PegNakedSuffix<Unit, TagType>(PegClassPrimary(setOf('a'), UUID.randomUUID()), UUID.randomUUID())
             val prefix = PegNotPrefix(suffix, UUID.randomUUID())
+            val context = ParserContext.new(prefix)
 
             // Act
             val actual = PegPrefixMiniParser.run(prefix, source, context)
@@ -70,10 +70,10 @@ class PegPrefixMiniParserTest {
         @Test
         fun `fail if suffix is not match`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>("test")
             val source = ParserSource.newWith("test")
             val suffix = PegNakedSuffix<Unit, TagType>(PegDotPrimary(UUID.randomUUID()), UUID.randomUUID())
             val prefix = PegNotPrefix(suffix, UUID.randomUUID())
+            val context = ParserContext.new(prefix)
 
             // Act
             val actual = PegPrefixMiniParser.run(prefix, source, context)

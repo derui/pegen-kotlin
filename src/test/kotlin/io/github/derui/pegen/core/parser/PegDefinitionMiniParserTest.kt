@@ -20,12 +20,12 @@ class PegDefinitionMiniParserTest {
     @Test
     fun `parse definition`() {
         // Arrange
-        val context = ParserContext.new<Unit, TagType>("test")
         val source = ParserSource.newWith("test")
         val suffix = PegNakedSuffix<Unit, TagType>(PegDotPrimary(UUID.randomUUID()), UUID.randomUUID())
         val prefix = PegNakedPrefix(suffix, UUID.randomUUID())
         val seq = PegSequence(listOf(prefix), UUID.randomUUID())
         val expr = PegExpression(listOf(seq), UUID.randomUUID())
+        val context = ParserContext.new(expr)
 
         // Act
         val actual = PegDefinitionMiniParser(PegDefinition(UUID.randomUUID(), expr, {})).parse(source, context)
@@ -37,12 +37,12 @@ class PegDefinitionMiniParserTest {
     @Test
     fun `should be able to create instance via context`() {
         // Arrange
-        val context = ParserContext.new<String, TagType>("test")
         val source = ParserSource.newWith("test")
         val suffix = PegNakedSuffix<String, TagType>(PegDotPrimary(UUID.randomUUID(), tag = TagType.Dot), UUID.randomUUID())
         val prefix = PegNakedPrefix(suffix, UUID.randomUUID())
         val seq = PegSequence(listOf(prefix), UUID.randomUUID())
         val expr = PegExpression(listOf(seq), UUID.randomUUID())
+        val context = ParserContext.new(expr)
 
         // Act
         val actual =

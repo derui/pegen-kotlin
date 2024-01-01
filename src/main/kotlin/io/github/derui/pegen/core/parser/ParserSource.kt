@@ -20,7 +20,8 @@ class ParserSource private constructor(
     /**
      * current index of this context
      */
-    private var currentIndex: Int = startIndex
+    var currentIndex: Int = startIndex
+        private set
 
     /**
      * Get the current position of the cursor.

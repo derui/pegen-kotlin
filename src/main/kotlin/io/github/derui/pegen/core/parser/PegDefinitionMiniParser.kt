@@ -16,10 +16,12 @@ class PegDefinitionMiniParser<T, TagType>(private val syntax: PegDefinition<T, T
         source: ParserSource,
         context: ParserContext<T, TagType>,
     ): Result<ParsingResult<T>, ErrorInfo> {
-        val newContext = context.clone()
+        val newContext = context.newWith(syntax)
 
-        return PegExpressionMiniParser(syntax.expression).parse(source, newContext).map { result ->
-            ParsingResult.constructedAs(syntax.construct(newContext), result.restSource)
+        return newContext.cacheIfAbsent(source) { _source, _context ->
+            PegExpressionMiniParser(syntax.expression).parse(_source, _context).map { result ->
+                ParsingResult.constructedAs(syntax.construct(_context), result.restSource)
+            }
         }
     }
 

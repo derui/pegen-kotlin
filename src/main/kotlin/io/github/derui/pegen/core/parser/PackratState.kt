@@ -9,14 +9,15 @@ import java.util.UUID
  * This class is NOT thread-safe.
  */
 class PackratState<V> private constructor(
-    private val cache: Array<MutableMap<UUID, ParserResultCache<ParsingResult<V>>>>,
+    private val cache: MutableMap<StatePointer, ParserResultCache<ParsingResult<V>>>,
 ) {
+    private data class StatePointer(
+        val syntaxId: UUID,
+        val index: Int,
+    )
+
     companion object {
-        fun <V> from(input: String): PackratState<V> {
-            return PackratState(
-                Array(input.length) { mutableMapOf() },
-            )
-        }
+        fun <V> from(): PackratState<V> = PackratState(mutableMapOf())
     }
 
     /**
@@ -26,7 +27,9 @@ class PackratState<V> private constructor(
         syntaxId: UUID,
         index: Int,
     ): ParserResultCache<ParsingResult<V>> {
-        return cache[index][syntaxId] ?: ParserResultCache.NoParse()
+        return cache.computeIfAbsent(StatePointer(syntaxId, index)) {
+            ParserResultCache.noParse()
+        }
     }
 
     /**
@@ -37,7 +40,7 @@ class PackratState<V> private constructor(
         index: Int,
         result: ParsingResult<V>,
     ) {
-        cache[index][syntaxId] = ParserResultCache.parsed(result)
+        cache[StatePointer(syntaxId, index)] = ParserResultCache.parsed(result)
     }
 
     /**
@@ -48,6 +51,6 @@ class PackratState<V> private constructor(
         index: Int,
         error: ErrorInfo,
     ) {
-        cache[index][syntaxId] = ParserResultCache.parsed(error)
+        cache[StatePointer(syntaxId, index)] = ParserResultCache.parsed(error)
     }
 }

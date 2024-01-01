@@ -27,11 +27,12 @@ class PegPrimaryMiniParserTest {
         @Test
         fun `parse dot primary`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>("test")
             val source = ParserSource.newWith("test")
+            val primary = PegDotPrimary<Unit, TagType>(UUID.randomUUID())
+            val context = ParserContext.new(primary)
 
             // Act
-            val actual = PegPrimaryMiniParser.run(PegDotPrimary(UUID.randomUUID()), source, context)
+            val actual = PegPrimaryMiniParser.run(primary, source, context)
 
             // Assert
             assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("t", ParserSource.newWith("est")))
@@ -40,11 +41,12 @@ class PegPrimaryMiniParserTest {
         @Test
         fun `fail if empty`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>("test")
             val source = ParserSource.newWith("")
+            val primary = PegDotPrimary<Unit, TagType>(UUID.randomUUID())
+            val context = ParserContext.new(primary)
 
             // Act
-            val actual = PegPrimaryMiniParser.run(PegDotPrimary(UUID.randomUUID()), source, context)
+            val actual = PegPrimaryMiniParser.run(primary, source, context)
 
             // Assert
             assertThat(actual.getOrNull()).isNull()
@@ -56,11 +58,12 @@ class PegPrimaryMiniParserTest {
         @Test
         fun `parse literal primary`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>("test")
             val source = ParserSource.newWith("test")
+            val primary = PegLiteralPrimary<Unit, TagType>("te", UUID.randomUUID())
+            val context = ParserContext.new(primary)
 
             // Act
-            val actual = PegPrimaryMiniParser.run(PegLiteralPrimary("te", UUID.randomUUID()), source, context)
+            val actual = PegPrimaryMiniParser.run(primary, source, context)
 
             // Assert
             assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("te", ParserSource.newWith("st")))
@@ -69,11 +72,12 @@ class PegPrimaryMiniParserTest {
         @Test
         fun `empty literal is always valid`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>("test")
             val source = ParserSource.newWith("test")
+            val primary = PegLiteralPrimary<Unit, TagType>("", UUID.randomUUID())
+            val context = ParserContext.new(primary)
 
             // Act
-            val actual = PegPrimaryMiniParser.run(PegLiteralPrimary("", UUID.randomUUID()), source, context)
+            val actual = PegPrimaryMiniParser.run(primary, source, context)
 
             // Assert
             assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("", ParserSource.newWith("test")))
@@ -82,11 +86,12 @@ class PegPrimaryMiniParserTest {
         @Test
         fun `fail if literal is not match`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>("test")
             val source = ParserSource.newWith("fail")
+            val primary = PegLiteralPrimary<Unit, TagType>("te", UUID.randomUUID())
+            val context = ParserContext.new(primary)
 
             // Act
-            val actual = PegPrimaryMiniParser.run(PegLiteralPrimary("te", UUID.randomUUID()), source, context)
+            val actual = PegPrimaryMiniParser.run(primary, source, context)
 
             // Assert
             assertThat(actual.getOrNull()).isNull()
@@ -98,11 +103,12 @@ class PegPrimaryMiniParserTest {
         @Test
         fun `parse class primary`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>("test")
             val source = ParserSource.newWith("test")
+            val primary = PegClassPrimary<Unit, TagType>(setOf('t', 'e'), UUID.randomUUID())
+            val context = ParserContext.new(primary)
 
             // Act
-            val actual = PegPrimaryMiniParser.run(PegClassPrimary(setOf('t', 'e'), UUID.randomUUID()), source, context)
+            val actual = PegPrimaryMiniParser.run(primary, source, context)
 
             // Assert
             assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("t", ParserSource.newWith("est")))
@@ -111,11 +117,12 @@ class PegPrimaryMiniParserTest {
         @Test
         fun `fail if character class is not match`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>("fail")
             val source = ParserSource.newWith("fail")
+            val primary = PegClassPrimary<Unit, TagType>(setOf('a'), UUID.randomUUID())
+            val context = ParserContext.new(primary)
 
             // Act
-            val actual = PegPrimaryMiniParser.run(PegClassPrimary(setOf('a'), UUID.randomUUID()), source, context)
+            val actual = PegPrimaryMiniParser.run(primary, source, context)
 
             // Assert
             assertThat(actual.getOrNull()).isNull()
@@ -127,15 +134,16 @@ class PegPrimaryMiniParserTest {
         @Test
         fun `parse group primary`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>("test")
             val source = ParserSource.newWith("test")
             val suffix = PegNakedSuffix<Unit, TagType>(PegDotPrimary(UUID.randomUUID()), UUID.randomUUID())
             val prefix = PegNakedPrefix(suffix, UUID.randomUUID())
             val seq = PegSequence(listOf(prefix), UUID.randomUUID())
             val expr = PegExpression(listOf(seq), UUID.randomUUID())
+            val primary = PegGroupPrimary(expr, UUID.randomUUID())
+            val context = ParserContext.new(primary)
 
             // Act
-            val actual = PegPrimaryMiniParser.run(PegGroupPrimary(expr, UUID.randomUUID()), source, context)
+            val actual = PegPrimaryMiniParser.run(primary, source, context)
 
             // Assert
             assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("t", ParserSource.newWith("est")))
@@ -147,20 +155,17 @@ class PegPrimaryMiniParserTest {
         @Test
         fun `parse definition`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>("test")
             val source = ParserSource.newWith("test")
             val suffix = PegNakedSuffix<Unit, TagType>(PegDotPrimary(UUID.randomUUID()), UUID.randomUUID())
             val prefix = PegNakedPrefix(suffix, UUID.randomUUID())
             val seq = PegSequence(listOf(prefix), UUID.randomUUID())
             val expr = PegExpression(listOf(seq), UUID.randomUUID())
+            val primary = PegIdentifierPrimary(PegDefinition(UUID.randomUUID(), expr, {}), UUID.randomUUID())
+            val context = ParserContext.new(primary)
 
             // Act
             val actual =
-                PegPrimaryMiniParser.run(
-                    PegIdentifierPrimary(PegDefinition(UUID.randomUUID(), expr, {}), UUID.randomUUID()),
-                    source,
-                    context,
-                )
+                PegPrimaryMiniParser.run(primary, source, context)
 
             // Assert
             assertThat(actual.get()).isEqualTo(ParsingResult.constructedAs(Unit, ParserSource.newWith("est")))

@@ -18,12 +18,13 @@ class PegSuffixMiniParserTest {
         @Test
         fun `parse dot primary`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>("test")
             val source = ParserSource.newWith("test")
             val primary = PegClassPrimary<Unit, TagType>(setOf('t', 'e'), UUID.randomUUID())
+            val suffix = PegQuestionSuffix(primary, UUID.randomUUID())
+            val context = ParserContext.new(suffix)
 
             // Act
-            val actual = PegSuffixMiniParser.run(PegQuestionSuffix(primary, UUID.randomUUID()), source, context)
+            val actual = PegSuffixMiniParser.run(suffix, source, context)
 
             // Assert
             assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("t", ParserSource.newWith("est")))
@@ -32,12 +33,13 @@ class PegSuffixMiniParserTest {
         @Test
         fun `success if not match`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>("fo")
             val source = ParserSource.newWith("fo")
             val primary = PegClassPrimary<Unit, TagType>(setOf('t', 'e'), UUID.randomUUID())
+            val suffix = PegQuestionSuffix(primary, UUID.randomUUID())
+            val context = ParserContext.new(suffix)
 
             // Act
-            val actual = PegSuffixMiniParser.run(PegQuestionSuffix(primary, UUID.randomUUID()), source, context)
+            val actual = PegSuffixMiniParser.run(suffix, source, context)
 
             // Assert
             assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("", source))
@@ -49,12 +51,13 @@ class PegSuffixMiniParserTest {
         @Test
         fun `parse star suffix`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>("test")
             val source = ParserSource.newWith("test")
             val primary = PegClassPrimary<Unit, TagType>(setOf('t', 'e'), UUID.randomUUID())
+            val suffix = PegStarSuffix(primary, UUID.randomUUID())
+            val context = ParserContext.new(suffix)
 
             // Act
-            val actual = PegSuffixMiniParser.run(PegStarSuffix(primary, UUID.randomUUID()), source, context)
+            val actual = PegSuffixMiniParser.run(suffix, source, context)
 
             // Assert
             assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("te", ParserSource.newWith("st")))
@@ -63,12 +66,13 @@ class PegSuffixMiniParserTest {
         @Test
         fun `success if not match`() {
             // Arrange
-            val context = ParserContext.new<Unit, TagType>("fo")
             val source = ParserSource.newWith("fo")
             val primary = PegClassPrimary<Unit, TagType>(setOf('t', 'e'), UUID.randomUUID())
+            val suffix = PegStarSuffix(primary, UUID.randomUUID())
+            val context = ParserContext.new(suffix)
 
             // Act
-            val actual = PegSuffixMiniParser.run(PegStarSuffix(primary, UUID.randomUUID()), source, context)
+            val actual = PegSuffixMiniParser.run(suffix, source, context)
 
             // Assert
             assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("", source))

@@ -19,11 +19,11 @@ class PegSequenceMiniParserTest {
     @Test
     fun `parse sequence`() {
         // Arrange
-        val context = ParserContext.new<Unit, TagType>("test")
         val source = ParserSource.newWith("test")
         val suffix = PegNakedSuffix<Unit, TagType>(PegDotPrimary(UUID.randomUUID()), UUID.randomUUID())
         val prefix = PegNakedPrefix(suffix, UUID.randomUUID())
         val seq = PegSequence(listOf(prefix), UUID.randomUUID())
+        val context = ParserContext.new(seq)
 
         // Act
         val actual = PegSequenceMiniParser(seq).parse(source, context)
@@ -35,13 +35,13 @@ class PegSequenceMiniParserTest {
     @Test
     fun `fail if any prefix is failed in sequence`() {
         // Arrange
-        val context = ParserContext.new<Unit, TagType>("test")
         val source = ParserSource.newWith("test")
         val suffix = PegNakedSuffix<Unit, TagType>(PegDotPrimary(UUID.randomUUID()), UUID.randomUUID())
         val prefix = PegNakedPrefix(suffix, UUID.randomUUID())
         val suffix2 = PegNakedSuffix<Unit, TagType>(PegLiteralPrimary("baz", UUID.randomUUID()), UUID.randomUUID())
         val prefix2 = PegNakedPrefix(suffix2, UUID.randomUUID())
         val seq = PegSequence(listOf(prefix, prefix2), UUID.randomUUID())
+        val context = ParserContext.new(seq)
 
         // Act
         val actual = PegSequenceMiniParser(seq).parse(source, context)
