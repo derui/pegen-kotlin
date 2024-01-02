@@ -56,7 +56,7 @@ class Err<out E>(val error: E) : Result<Nothing, E>() {
 fun <T, E> Result<T, E>.get(): T {
     return when (this) {
         is Ok -> this.value
-        is Err -> throw IllegalStateException("Result is Err")
+        is Err -> throw IllegalStateException("Result is Err, ${this.error}")
     }
 }
 

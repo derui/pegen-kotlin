@@ -30,7 +30,7 @@ class ImplicitPegPrimary<T, TagType> internal constructor(
     private val generator: SyntaxIdentifierGenerator,
     private val primary: (TagType?) -> PegPrimary<T, TagType>,
     private var tag: TagType? = null,
-) : ImplicitConversionDelegate<T, TagType>, PegPrimaryMarker {
+) : ImplicitConversionDelegate<T, TagType> {
     override fun tagged(tag: TagType): ImplicitConversionDelegate<T, TagType> {
         this.tag = tag
 
@@ -61,7 +61,7 @@ class ImplicitPegPrimary<T, TagType> internal constructor(
 class ImplicitPegSuffix<T, TagType> internal constructor(
     private val generator: SyntaxIdentifierGenerator,
     private val suffix: (TagType?) -> PegSuffix<T, TagType>,
-) : ImplicitConversionDelegate<T, TagType>, PegSuffixMarker {
+) : ImplicitConversionDelegate<T, TagType> {
     private var tag: TagType? = null
 
     override fun tagged(tag: TagType): ImplicitConversionDelegate<T, TagType> {
@@ -83,7 +83,7 @@ class ImplicitPegSuffix<T, TagType> internal constructor(
 class ImplicitPegPrefix<T, TagType> internal constructor(
     private val generator: SyntaxIdentifierGenerator,
     private val prefix: (TagType?) -> PegPrefix<T, TagType>,
-) : ImplicitConversionDelegate<T, TagType>, PegPrefixMarker {
+) : ImplicitConversionDelegate<T, TagType> {
     private var tag: TagType? = null
 
     override fun tagged(tag: TagType): ImplicitConversionDelegate<T, TagType> {
@@ -104,7 +104,7 @@ class ImplicitPegPrefix<T, TagType> internal constructor(
  */
 class ImplicitPegSequence<T, TagType> internal constructor(
     private val sequence: (TagType?) -> PegSequence<T, TagType>,
-) : ImplicitConversionDelegate<T, TagType>, PegSequenceMarker {
+) : ImplicitConversionDelegate<T, TagType> {
     private var tag: TagType? = null
 
     override fun tagged(tag: TagType): ImplicitConversionDelegate<T, TagType> {
