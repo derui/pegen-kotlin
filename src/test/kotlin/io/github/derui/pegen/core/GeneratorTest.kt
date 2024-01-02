@@ -192,4 +192,73 @@ class GeneratorTest {
             }
         }
     }
+
+    @Nested
+    inner class Suffix {
+        @Nested
+        inner class Question {
+            @Test
+            fun `parse dot primary`() {
+                // Arrange
+                val parser =
+                    Generator.generateParser<String, Unit>(option) {
+                        exp(opt(cls { +('e'..'t') }))
+                    }
+
+                // Act
+                val actual = parser.parse("test")
+
+                // Assert
+                assertThat(actual.get().asString()).isEqualTo("t")
+            }
+
+            @Test
+            fun `success if not match`() {
+                // Arrange
+                val parser =
+                    Generator.generateParser<String, Unit>(option) {
+                        exp(opt(cls { +('e'..'t') }))
+                    }
+
+                // Act
+                val actual = parser.parse("fo")
+
+                // Assert
+                assertThat(actual.get().asString()).isEqualTo("")
+            }
+        }
+
+        @Nested
+        inner class Star {
+            @Test
+            fun `parse star suffix`() {
+                // Arrange
+                val parser =
+                    Generator.generateParser<String, Unit>(option) {
+                        exp(many(cls { +('e'..'t') }))
+                    }
+
+                // Act
+                val actual = parser.parse("test")
+
+                // Assert
+                assertThat(actual.get().asString()).isEqualTo("te")
+            }
+
+            @Test
+            fun `success if not match`() {
+                // Arrange
+                val parser =
+                    Generator.generateParser<String, Unit>(option) {
+                        exp(many(cls { +('e'..'t') }))
+                    }
+
+                // Act
+                val actual = parser.parse("foo")
+
+                // Assert
+                assertThat(actual.get().asString()).isEqualTo("")
+            }
+        }
+    }
 }
