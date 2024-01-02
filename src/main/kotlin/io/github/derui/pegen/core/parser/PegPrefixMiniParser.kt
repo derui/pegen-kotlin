@@ -1,5 +1,6 @@
 package io.github.derui.pegen.core.parser
 
+import io.github.derui.pegen.core.debug.DebuggingInfoRecorder
 import io.github.derui.pegen.core.lang.PegAndPrefix
 import io.github.derui.pegen.core.lang.PegNakedPrefix
 import io.github.derui.pegen.core.lang.PegNotPrefix
@@ -19,14 +20,15 @@ sealed class PegPrefixMiniParser<T, TagType> : MiniParser<T, TagType>() {
         /**
          * Run the primary
          */
-        fun <T, TagType> run(
+        internal fun <T, TagType> run(
             syntax: PegPrefix<T, TagType>,
             source: ParserSource,
             context: ParserContext<T, TagType>,
+            recorder: DebuggingInfoRecorder,
         ) = when (syntax) {
-            is PegAndPrefix -> PegAndPrefixMiniParser(syntax).parse(source, context)
-            is PegNakedPrefix -> PegNakedPrefixMiniParser(syntax).parse(source, context)
-            is PegNotPrefix -> PegNotPrefixMiniParser(syntax).parse(source, context)
+            is PegAndPrefix -> PegAndPrefixMiniParser(syntax, recorder).parse(source, context)
+            is PegNakedPrefix -> PegNakedPrefixMiniParser(syntax, recorder).parse(source, context)
+            is PegNotPrefix -> PegNotPrefixMiniParser(syntax, recorder).parse(source, context)
         }
     }
 
@@ -35,12 +37,13 @@ sealed class PegPrefixMiniParser<T, TagType> : MiniParser<T, TagType>() {
      */
     private class PegNakedPrefixMiniParser<T, TagType>(
         private val prefix: PegNakedPrefix<T, TagType>,
+        private val recorder: DebuggingInfoRecorder,
     ) : PegPrimaryMiniParser<T, TagType>() {
         override fun parse(
             source: ParserSource,
             context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
-            return PegSuffixMiniParser.run(prefix.suffix, source, context)
+            return PegSuffixMiniParser.run(prefix.suffix, source, context, recorder)
         }
 
         override val syntaxId: UUID = prefix.id
@@ -51,14 +54,20 @@ sealed class PegPrefixMiniParser<T, TagType> : MiniParser<T, TagType>() {
      */
     private class PegAndPrefixMiniParser<T, TagType>(
         private val prefix: PegAndPrefix<T, TagType>,
+        private val recorder: DebuggingInfoRecorder,
     ) : PegPrimaryMiniParser<T, TagType>() {
         override fun parse(
             source: ParserSource,
             context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
-            return PegSuffixMiniParser.run(prefix.suffix, source, context).flatMap {
+            recorder.startParse(prefix)
+
+            return PegSuffixMiniParser.run(prefix.suffix, source, context, recorder).flatMap {
                 val result = ParsingResult.rawOf<T>("", source)
                 Ok(result)
+            }.run {
+                recorder.parsed(prefix, this)
+                this
             }
         }
 
@@ -70,22 +79,23 @@ sealed class PegPrefixMiniParser<T, TagType> : MiniParser<T, TagType>() {
      */
     private class PegNotPrefixMiniParser<T, TagType>(
         private val prefix: PegNotPrefix<T, TagType>,
+        private val recorder: DebuggingInfoRecorder,
     ) : PegPrimaryMiniParser<T, TagType>() {
         override fun parse(
             source: ParserSource,
             context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
-            // define recursive function for plus
-            fun recurse(recursiveSource: ParserSource): Result<ParsingResult<T>, ErrorInfo> {
-                return PegSuffixMiniParser.run(prefix.suffix, recursiveSource, context).fold({
-                    Err(source.errorOf("Can not apply not prefix"))
-                }) {
-                    val result = ParsingResult.rawOf<T>("", source)
-                    Ok(result)
-                }
-            }
+            recorder.startParse(prefix)
 
-            return recurse(source)
+            return PegSuffixMiniParser.run(prefix.suffix, source, context, recorder).fold({
+                Err(source.errorOf("Can not apply not prefix"))
+            }) {
+                val result = ParsingResult.rawOf<T>("", source)
+                Ok(result)
+            }.run {
+                recorder.parsed(prefix, this)
+                this
+            }
         }
 
         override val syntaxId: UUID = prefix.id

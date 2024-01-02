@@ -1,5 +1,6 @@
 package io.github.derui.pegen.core.parser
 
+import io.github.derui.pegen.core.debug.DebuggingInfoRecorder
 import io.github.derui.pegen.core.lang.PegExpression
 import io.github.derui.pegen.core.support.Err
 import io.github.derui.pegen.core.support.Ok
@@ -9,7 +10,10 @@ import java.util.UUID
 /**
  * Syntax runner interface.
  */
-class PegExpressionMiniParser<T, TagType>(private val syntax: PegExpression<T, TagType>) : MiniParser<T, TagType>() {
+internal class PegExpressionMiniParser<T, TagType>(
+    private val syntax: PegExpression<T, TagType>,
+    private val recorder: DebuggingInfoRecorder,
+) : MiniParser<T, TagType>() {
     /**
      * Run the primary
      */
@@ -17,18 +21,27 @@ class PegExpressionMiniParser<T, TagType>(private val syntax: PegExpression<T, T
         source: ParserSource,
         context: ParserContext<T, TagType>,
     ): Result<ParsingResult<T>, ErrorInfo> {
-        if (syntax.sequences.isEmpty()) {
-            return Err(source.errorOf("Empty sequence is not allowed."))
-        }
+        recorder.startParse(syntax)
 
-        for (seq in syntax.sequences) {
-            when (val ret = PegSequenceMiniParser(seq).parse(source, context)) {
-                is Ok -> return ret
-                is Err -> continue
+        val result =
+            run {
+                if (syntax.sequences.isEmpty()) {
+                    return@run Err(source.errorOf("Empty sequence is not allowed."))
+                }
+
+                for (seq in syntax.sequences) {
+                    when (val ret = PegSequenceMiniParser(seq, recorder).parse(source, context)) {
+                        is Ok -> return@run ret
+                        is Err -> continue
+                    }
+                }
+
+                return@run Err(source.errorOf("No sequence matched."))
             }
-        }
 
-        return Err(source.errorOf("No sequence matched."))
+        recorder.parsed(syntax, result)
+
+        return result
     }
 
     override val syntaxId: UUID = syntax.id

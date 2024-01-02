@@ -1,5 +1,6 @@
 package io.github.derui.pegen.core.parser
 
+import io.github.derui.pegen.core.debug.DebuggingInfoRecorder
 import io.github.derui.pegen.core.lang.PegSequence
 import io.github.derui.pegen.core.support.Err
 import io.github.derui.pegen.core.support.Ok
@@ -10,7 +11,10 @@ import java.util.UUID
 /**
  * Syntax runner interface.
  */
-class PegSequenceMiniParser<T, TagType>(private val syntax: PegSequence<T, TagType>) : MiniParser<T, TagType>() {
+internal class PegSequenceMiniParser<T, TagType>(
+    private val syntax: PegSequence<T, TagType>,
+    private val recorder: DebuggingInfoRecorder,
+) : MiniParser<T, TagType>() {
     /**
      * Run the primary
      */
@@ -18,19 +22,27 @@ class PegSequenceMiniParser<T, TagType>(private val syntax: PegSequence<T, TagTy
         source: ParserSource,
         context: ParserContext<T, TagType>,
     ): Result<ParsingResult<T>, ErrorInfo> {
-        if (syntax.prefixes.isEmpty()) {
-            return Err(source.errorOf("Empty sequence is not allowed."))
-        }
+        recorder.startParse(syntax)
 
-        var result = ParsingResult.rawOf<T>("", source)
-        for (prefix in syntax.prefixes) {
-            when (val ret = PegPrefixMiniParser.run(prefix, source, context)) {
-                is Ok -> result = ret.get()
-                is Err -> return ret
+        val result =
+            run {
+                if (syntax.prefixes.isEmpty()) {
+                    return@run Err(source.errorOf("Empty sequence is not allowed."))
+                }
+
+                var result = ParsingResult.rawOf<T>("", source)
+                for (prefix in syntax.prefixes) {
+                    when (val ret = PegPrefixMiniParser.run(prefix, source, context, recorder)) {
+                        is Ok -> result = ret.get()
+                        is Err -> return@run ret
+                    }
+                }
+
+                return@run Ok(ParsingResult.rawOf<T>(source..result.restSource, result.restSource))
             }
-        }
 
-        return Ok(ParsingResult.rawOf(source..result.restSource, result.restSource))
+        recorder.parsed(syntax, result)
+        return result
     }
 
     override val syntaxId: UUID = syntax.id

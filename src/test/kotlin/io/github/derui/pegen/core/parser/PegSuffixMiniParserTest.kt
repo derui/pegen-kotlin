@@ -24,7 +24,7 @@ class PegSuffixMiniParserTest {
             val context = ParserContext.new(suffix)
 
             // Act
-            val actual = PegSuffixMiniParser.run(suffix, source, context)
+            val actual = PegSuffixMiniParser.run(suffix, source, context, recorder)
 
             // Assert
             assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("t", ParserSource.newWith("est")))
@@ -39,7 +39,7 @@ class PegSuffixMiniParserTest {
             val context = ParserContext.new(suffix)
 
             // Act
-            val actual = PegSuffixMiniParser.run(suffix, source, context)
+            val actual = PegSuffixMiniParser.run(suffix, source, context, recorder)
 
             // Assert
             assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("", source))
@@ -57,7 +57,7 @@ class PegSuffixMiniParserTest {
             val context = ParserContext.new(suffix)
 
             // Act
-            val actual = PegSuffixMiniParser.run(suffix, source, context)
+            val actual = PegSuffixMiniParser.run(suffix, source, context, recorder)
 
             // Assert
             assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("te", ParserSource.newWith("st")))
@@ -72,7 +72,7 @@ class PegSuffixMiniParserTest {
             val context = ParserContext.new(suffix)
 
             // Act
-            val actual = PegSuffixMiniParser.run(suffix, source, context)
+            val actual = PegSuffixMiniParser.run(suffix, source, context, recorder)
 
             // Assert
             assertThat(actual.get()).isEqualTo(ParsingResult.rawOf("", source))

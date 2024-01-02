@@ -1,5 +1,6 @@
 package io.github.derui.pegen.core.parser
 
+import io.github.derui.pegen.core.debug.DebuggingInfoRecorder
 import io.github.derui.pegen.core.lang.PegClassPrimary
 import io.github.derui.pegen.core.lang.PegDotPrimary
 import io.github.derui.pegen.core.lang.PegGroupPrimary
@@ -21,16 +22,17 @@ sealed class PegPrimaryMiniParser<T, TagType> : MiniParser<T, TagType>() {
         /**
          * Run the primary
          */
-        fun <T, TagType> run(
+        internal fun <T, TagType> run(
             primary: PegPrimary<T, TagType>,
             source: ParserSource,
             context: ParserContext<T, TagType>,
+            recorder: DebuggingInfoRecorder,
         ) = when (primary) {
-            is PegClassPrimary -> PegClassPrimaryMiniParser(primary).parse(source, context)
-            is PegDotPrimary -> PegDotPrimaryMiniParser(primary).parse(source, context)
-            is PegGroupPrimary -> PegGroupPrimaryMiniParser(primary).parse(source, context)
-            is PegIdentifierPrimary -> PegIdentifierPrimaryMiniParser(primary).parse(source, context)
-            is PegLiteralPrimary -> PegLiteralPrimaryMiniParser(primary).parse(source, context)
+            is PegClassPrimary -> PegClassPrimaryMiniParser(primary, recorder).parse(source, context)
+            is PegDotPrimary -> PegDotPrimaryMiniParser(primary, recorder).parse(source, context)
+            is PegGroupPrimary -> PegGroupPrimaryMiniParser(primary, recorder).parse(source, context)
+            is PegIdentifierPrimary -> PegIdentifierPrimaryMiniParser(primary, recorder).parse(source, context)
+            is PegLiteralPrimary -> PegLiteralPrimaryMiniParser(primary, recorder).parse(source, context)
         }
     }
 
@@ -39,6 +41,7 @@ sealed class PegPrimaryMiniParser<T, TagType> : MiniParser<T, TagType>() {
      */
     private class PegDotPrimaryMiniParser<T, TagType>(
         private val primary: PegDotPrimary<T, TagType>,
+        private val recorder: DebuggingInfoRecorder,
     ) : PegPrimaryMiniParser<T, TagType>() {
         override val syntaxId: UUID = primary.id
 
@@ -46,10 +49,15 @@ sealed class PegPrimaryMiniParser<T, TagType> : MiniParser<T, TagType>() {
             source: ParserSource,
             context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
+            recorder.startParse(primary)
+
             return source.readChar().map {
                 val result = ParsingResult.rawOf<T>(it.first.toString(), it.second)
                 primary.tag?.let { tag -> context.tagging(tag, result) }
                 result
+            }.run {
+                recorder.parsed(primary, this)
+                this
             }
         }
     }
@@ -59,11 +67,14 @@ sealed class PegPrimaryMiniParser<T, TagType> : MiniParser<T, TagType>() {
      */
     private class PegLiteralPrimaryMiniParser<T, TagType>(
         private val primary: PegLiteralPrimary<T, TagType>,
+        private val recorder: DebuggingInfoRecorder,
     ) : PegPrimaryMiniParser<T, TagType>() {
         override fun parse(
             source: ParserSource,
             context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
+            recorder.startParse(primary)
+
             return if (primary.literal.isEmpty()) {
                 val result = ParsingResult.rawOf<T>("", source)
                 primary.tag?.let { tag -> context.tagging(tag, result) }
@@ -90,6 +101,9 @@ sealed class PegPrimaryMiniParser<T, TagType> : MiniParser<T, TagType>() {
                 } else {
                     Err(source.errorOf("Unexpected literal"))
                 }
+            }.run {
+                recorder.parsed(primary, this)
+                this
             }
         }
 
@@ -101,6 +115,7 @@ sealed class PegPrimaryMiniParser<T, TagType> : MiniParser<T, TagType>() {
      */
     private class PegClassPrimaryMiniParser<T, TagType>(
         private val primary: PegClassPrimary<T, TagType>,
+        private val recorder: DebuggingInfoRecorder,
     ) : PegPrimaryMiniParser<T, TagType>() {
         override val syntaxId: UUID = primary.id
 
@@ -108,6 +123,8 @@ sealed class PegPrimaryMiniParser<T, TagType> : MiniParser<T, TagType>() {
             source: ParserSource,
             context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
+            recorder.startParse(primary)
+
             return source.readChar().flatMap { (ch, rest) ->
                 if (ch !in primary.cls) {
                     Err(source.errorOf("$ch is not contained in $this"))
@@ -116,6 +133,9 @@ sealed class PegPrimaryMiniParser<T, TagType> : MiniParser<T, TagType>() {
                     primary.tag?.let { tag -> context.tagging(tag, result) }
                     Ok(result)
                 }
+            }.run {
+                recorder.parsed(primary, this)
+                this
             }
         }
     }
@@ -125,6 +145,7 @@ sealed class PegPrimaryMiniParser<T, TagType> : MiniParser<T, TagType>() {
      */
     private class PegGroupPrimaryMiniParser<T, TagType>(
         private val primary: PegGroupPrimary<T, TagType>,
+        private val recorder: DebuggingInfoRecorder,
     ) : PegPrimaryMiniParser<T, TagType>() {
         override val syntaxId: UUID = primary.id
 
@@ -132,9 +153,14 @@ sealed class PegPrimaryMiniParser<T, TagType> : MiniParser<T, TagType>() {
             source: ParserSource,
             context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
-            return PegExpressionMiniParser(primary.expression).parse(source, context).map {
+            recorder.startParse(primary)
+
+            return PegExpressionMiniParser(primary.expression, recorder).parse(source, context).map {
                 primary.tag?.let { tag -> context.tagging(tag, it) }
                 it
+            }.run {
+                recorder.parsed(primary, this)
+                this
             }
         }
     }
@@ -144,6 +170,7 @@ sealed class PegPrimaryMiniParser<T, TagType> : MiniParser<T, TagType>() {
      */
     private class PegIdentifierPrimaryMiniParser<T, TagType>(
         private val primary: PegIdentifierPrimary<T, TagType>,
+        private val recorder: DebuggingInfoRecorder,
     ) : PegPrimaryMiniParser<T, TagType>() {
         override val syntaxId: UUID = primary.id
 
@@ -151,9 +178,14 @@ sealed class PegPrimaryMiniParser<T, TagType> : MiniParser<T, TagType>() {
             source: ParserSource,
             context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
-            return PegDefinitionMiniParser(primary.identifier).parse(source, context).map {
+            recorder.startParse(primary)
+
+            return PegDefinitionMiniParser(primary.identifier, recorder).parse(source, context).map {
                 primary.tag?.let { tag -> context.tagging(tag, it) }
                 it
+            }.run {
+                recorder.parsed(primary, this)
+                this
             }
         }
     }
