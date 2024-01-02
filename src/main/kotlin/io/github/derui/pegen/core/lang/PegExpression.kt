@@ -15,4 +15,8 @@ class PegExpression<T, TagType> internal constructor(
      * Construct this expression as
      */
     infix fun constructAs(typeConstructor: (ParserContext<T, TagType>) -> T) = PegDefinition(id, this, typeConstructor)
+
+    override fun toString(): String {
+        return sequences.joinToString(" / ") { it.toString() }
+    }
 }

@@ -9,4 +9,8 @@ class PegSequence<T, TagType> internal constructor(
     internal val prefixes: List<PegPrefix<T, TagType>>,
     override val id: UUID,
     override val tag: TagType? = null,
-) : PegSyntax<T, TagType>
+) : PegSyntax<T, TagType> {
+    override fun toString(): String {
+        return prefixes.joinToString(" ") { it.toString() }
+    }
+}

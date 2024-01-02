@@ -105,4 +105,8 @@ class ParserSource private constructor(
         result = 31 * result + currentIndex
         return result
     }
+
+    override fun toString(): String {
+        return "ParserSource(currentPosition=$currentPosition, input='$input', startIndex=$startIndex, currentIndex=$currentIndex)"
+    }
 }

@@ -14,7 +14,11 @@ class PegIdentifierPrimary<T, TagType> internal constructor(
     internal val identifier: PegDefinition<T, TagType>,
     override val id: UUID,
     override val tag: TagType? = null,
-) : PegPrimary<T, TagType>
+) : PegPrimary<T, TagType> {
+    override fun toString(): String {
+        return identifier.toString()
+    }
+}
 
 /**
  * This primary is a representation of PEG's literal
@@ -23,7 +27,11 @@ class PegLiteralPrimary<T, TagType> internal constructor(
     internal val literal: String,
     override val id: UUID,
     override val tag: TagType? = null,
-) : PegPrimary<T, TagType>
+) : PegPrimary<T, TagType> {
+    override fun toString(): String {
+        return "\"$literal\""
+    }
+}
 
 /**
  * This primary is a PEG's [(p)] primary
@@ -84,9 +92,17 @@ class PegGroupPrimary<T, TagType> internal constructor(
     internal val expression: PegExpression<T, TagType>,
     override val id: UUID,
     override val tag: TagType? = null,
-) : PegPrimary<T, TagType>
+) : PegPrimary<T, TagType> {
+    override fun toString(): String {
+        return "($expression)"
+    }
+}
 
 /**
  * This primary is a PEG's [.] primary
  */
-class PegDotPrimary<T, TagType> internal constructor(override val id: UUID, override val tag: TagType? = null) : PegPrimary<T, TagType>
+class PegDotPrimary<T, TagType> internal constructor(override val id: UUID, override val tag: TagType? = null) : PegPrimary<T, TagType> {
+    override fun toString(): String {
+        return "."
+    }
+}

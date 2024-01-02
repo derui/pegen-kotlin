@@ -17,4 +17,8 @@ class PegDefinition<T, TagType> internal constructor(
      * Construct [T] from [ParserContext]
      */
     fun construct(context: ParserContext<T, TagType>) = typeConstructor(context)
+
+    override fun toString(): String {
+        return expression.toString()
+    }
 }

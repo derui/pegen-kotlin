@@ -61,16 +61,21 @@ sealed class PegSuffixMiniParser<T, TagType> : MiniParser<T, TagType>() {
             context: ParserContext<T, TagType>,
         ): Result<ParsingResult<T>, ErrorInfo> {
             return PegPrimaryMiniParser.run(suffix.primary, source, context).flatMap {
-                // define recursive function for plus
-                fun recurse(recursiveSource: ParserSource): Result<ParsingResult<T>, ErrorInfo> {
-                    return PegPrimaryMiniParser.run(suffix.primary, recursiveSource, context).fold({ recurse(it.restSource) }) {
-                        val result = ParsingResult.rawOf<T>(source..recursiveSource, recursiveSource)
-                        suffix.tag?.run { context.tagging(this, result) }
-                        Ok(result)
-                    }
-                }
+                recurse(source, it.restSource, context)
+            }
+        }
 
-                recurse(it.restSource)
+        private fun recurse(
+            originalSource: ParserSource,
+            recursiveSource: ParserSource,
+            context: ParserContext<T, TagType>,
+        ): Result<ParsingResult<T>, ErrorInfo> {
+            return PegPrimaryMiniParser.run(suffix.primary, recursiveSource, context).fold(
+                { recurse(originalSource, it.restSource, context) },
+            ) {
+                val result = ParsingResult.rawOf<T>(originalSource..recursiveSource, recursiveSource)
+                suffix.tag?.run { context.tagging(this, result) }
+                Ok(result)
             }
         }
     }

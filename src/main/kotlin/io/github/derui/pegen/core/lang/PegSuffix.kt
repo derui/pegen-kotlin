@@ -14,7 +14,11 @@ class PegStarSuffix<T, TagType> internal constructor(
     primary: PegPrimary<T, TagType>,
     override val id: UUID,
     override val tag: TagType? = null,
-) : PegSuffix<T, TagType>(primary)
+) : PegSuffix<T, TagType>(primary) {
+    override fun toString(): String {
+        return "$primary*"
+    }
+}
 
 /**
  * This suffix is a PEG's [+] suffix
@@ -23,7 +27,11 @@ class PegPlusSuffix<T, TagType> internal constructor(
     primary: PegPrimary<T, TagType>,
     override val id: UUID,
     override val tag: TagType? = null,
-) : PegSuffix<T, TagType>(primary)
+) : PegSuffix<T, TagType>(primary) {
+    override fun toString(): String {
+        return "$primary+"
+    }
+}
 
 /**
  * This suffix is a PEG's [?] suffix
@@ -32,7 +40,11 @@ class PegQuestionSuffix<T, TagType> internal constructor(
     primary: PegPrimary<T, TagType>,
     override val id: UUID,
     override val tag: TagType? = null,
-) : PegSuffix<T, TagType>(primary)
+) : PegSuffix<T, TagType>(primary) {
+    override fun toString(): String {
+        return "$primary?"
+    }
+}
 
 /**
  * This suffix is marker class for no suffix
@@ -41,4 +53,8 @@ class PegNakedSuffix<T, TagType> internal constructor(
     primary: PegPrimary<T, TagType>,
     override val id: UUID,
     override val tag: TagType? = null,
-) : PegSuffix<T, TagType>(primary)
+) : PegSuffix<T, TagType>(primary) {
+    override fun toString(): String {
+        return "$primary"
+    }
+}
