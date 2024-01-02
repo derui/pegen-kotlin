@@ -23,7 +23,7 @@ class PackratState<V> private constructor(
     /**
      * get cache for [syntaxId] at [index]
      */
-    fun get(
+    internal fun get(
         syntaxId: UUID,
         index: Int,
     ): ParserResultCache<ParsingResult<V>> {
@@ -35,7 +35,7 @@ class PackratState<V> private constructor(
     /**
      * put parsing result with parsed result
      */
-    fun putParsed(
+    internal fun putParsed(
         syntaxId: UUID,
         index: Int,
         result: ParsingResult<V>,
@@ -46,7 +46,7 @@ class PackratState<V> private constructor(
     /**
      * put parsing result with error
      */
-    fun putError(
+    internal fun putError(
         syntaxId: UUID,
         index: Int,
         error: ErrorInfo,
