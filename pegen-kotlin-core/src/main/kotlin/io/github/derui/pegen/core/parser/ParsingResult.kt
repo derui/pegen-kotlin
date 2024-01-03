@@ -31,39 +31,34 @@ sealed class ParsingResult<T> private constructor(
             value: R,
             rest: ParserSource,
         ): ParsingResult<R> = Constructed(value, rest)
-
-        /**
-         * Provides a simple DSL to unwrap the value.
-         */
-        inline operator fun <reified R> invoke(f: Companion.() -> R): R = this.f()
-
-        /**
-         * A simple unwrap function to get type of [R].
-         */
-        inline fun <reified R> ParsingResult<*>.asType(): R? =
-            when (this) {
-                is Raw -> null
-                is Constructed -> if (this.value is R) this.value else null
-            }
-
-        /**
-         * A simple unwrap function to get string value.
-         */
-        fun ParsingResult<*>.asString(): String? =
-            when (this) {
-                is Raw -> this.value
-                is Constructed -> this.value?.toString()
-            }
-
-        /**
-         * A simple unwrap function to get long value. This function only works for [Raw] value.
-         */
-        fun ParsingResult<*>.asLong(): Long? =
-            when (this) {
-                is Raw -> this.value.toLongOrNull()
-                is Constructed -> null
-            }
     }
+
+    /**
+     * A simple unwrap function to get type of [R].
+     */
+    inline fun <reified R> asType(): R? =
+        when (this) {
+            is Raw -> null
+            is Constructed -> if (this.value is R) this.value else null
+        }
+
+    /**
+     * A simple unwrap function to get string value.
+     */
+    fun asString(): String? =
+        when (this) {
+            is Raw -> this.value
+            is Constructed -> this.value?.toString()
+        }
+
+    /**
+     * A simple unwrap function to get long value. This function only works for [Raw] value.
+     */
+    fun asLong(): Long? =
+        when (this) {
+            is Raw -> this.value.toLongOrNull()
+            is Constructed -> null
+        }
 
     internal abstract fun replaceWith(rest: ParserSource): ParsingResult<T>
 

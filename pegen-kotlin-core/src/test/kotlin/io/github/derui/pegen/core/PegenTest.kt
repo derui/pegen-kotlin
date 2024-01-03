@@ -3,9 +3,6 @@ package io.github.derui.pegen.core
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
-import io.github.derui.pegen.core.parser.ParsingResult
-import io.github.derui.pegen.core.parser.ParsingResult.Companion.asString
-import io.github.derui.pegen.core.parser.ParsingResult.Companion.asType
 import io.github.derui.pegen.core.support.get
 import io.github.derui.pegen.core.support.getOrNull
 import org.junit.jupiter.api.Nested
@@ -334,7 +331,7 @@ class PegenTest {
                 val actual = parser.parse("test")
 
                 // Assert
-                assertThat(ParsingResult { actual.get().asString() }).isEqualTo("and")
+                assertThat(actual.get().asString()).isEqualTo("and")
             }
 
             @Test

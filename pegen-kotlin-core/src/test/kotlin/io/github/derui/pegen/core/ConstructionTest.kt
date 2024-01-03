@@ -2,9 +2,7 @@ package io.github.derui.pegen.core
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import io.github.derui.pegen.core.parser.ParsingResult.Companion.asString
-import io.github.derui.pegen.core.parser.ParsingResult.Companion.asType
-import io.github.derui.pegen.core.support.getOrNull
+import io.github.derui.pegen.core.support.get
 import org.junit.jupiter.api.Test
 
 class ConstructionTest {
@@ -27,9 +25,8 @@ class ConstructionTest {
 
         // Act
         val actual = parser.parse("ab")
-        println(parser.printer().print())
 
         // Assert
-        assertThat(actual.getOrNull()?.asType<Data>()).isEqualTo(Data("ab"))
+        assertThat(actual.get().asType<Data>()).isEqualTo(Data("ab"))
     }
 }

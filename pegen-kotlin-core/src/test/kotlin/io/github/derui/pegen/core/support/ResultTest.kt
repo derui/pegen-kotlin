@@ -18,6 +18,7 @@ class ResultTest {
         assertThat(ret).isEqualTo(1)
     }
 
+    @Suppress("KotlinConstantConditions")
     @Test
     fun `should return null if it is error`() {
         // Arrange
