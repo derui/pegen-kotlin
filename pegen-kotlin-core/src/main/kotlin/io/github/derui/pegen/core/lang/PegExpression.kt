@@ -1,5 +1,6 @@
 package io.github.derui.pegen.core.lang
 
+import io.github.derui.pegen.core.dsl.support.PegDefinitionProvider
 import io.github.derui.pegen.core.parser.ParserContext
 import java.util.UUID
 
@@ -14,7 +15,12 @@ class PegExpression<T, TagType> internal constructor(
     /**
      * Construct this expression as
      */
-    infix fun constructAs(typeConstructor: (ParserContext<T, TagType>) -> T) = PegDefinition(id, this, typeConstructor)
+    infix fun constructAs(typeConstructor: (ParserContext<T, TagType>) -> T) =
+        object : PegDefinitionProvider<T, TagType> {
+            override fun provide(): PegDefinition<T, TagType> {
+                return PegDefinition(id, this@PegExpression, typeConstructor)
+            }
+        }
 
     override fun toString(): String {
         return sequences.joinToString(" / ") { it.toString() }

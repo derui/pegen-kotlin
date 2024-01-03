@@ -180,7 +180,7 @@ sealed class PegPrimaryMiniParser<T, TagType> : MiniParser<T, TagType>() {
         ): Result<ParsingResult<T>, ErrorInfo> {
             recorder.startParse(primary)
 
-            return PegDefinitionMiniParser(primary.identifier, recorder).parse(source, context).map {
+            return PegDefinitionMiniParser(primary.identifier.provide(), recorder).parse(source, context).map {
                 primary.tag?.let { tag -> context.tagging(tag, it) }
                 it
             }.run {

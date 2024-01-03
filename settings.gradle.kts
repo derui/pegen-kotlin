@@ -4,3 +4,4 @@ plugins {
 rootProject.name = "pegen-kotlin"
 
 include("pegen-kotlin-core")
+include("pegen-kotlin-sample")

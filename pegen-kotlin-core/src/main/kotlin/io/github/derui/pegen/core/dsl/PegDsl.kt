@@ -1,9 +1,9 @@
 package io.github.derui.pegen.core.dsl
 
+import io.github.derui.pegen.core.dsl.support.PegDefinitionProvider
 import io.github.derui.pegen.core.dsl.support.SyntaxIdentifierGenerator
 import io.github.derui.pegen.core.lang.PegAndPrefix
 import io.github.derui.pegen.core.lang.PegClassPrimary
-import io.github.derui.pegen.core.lang.PegDefinition
 import io.github.derui.pegen.core.lang.PegDotPrimary
 import io.github.derui.pegen.core.lang.PegExpression
 import io.github.derui.pegen.core.lang.PegGroupPrimary
@@ -152,6 +152,6 @@ class PegDsl<V, TagType> internal constructor(
     /**
      * A shortcut to create identifier
      */
-    fun ident(v: PegDefinition<V, TagType>) =
-        ImplicitPegPrimary<V, TagType>(generator, { PegIdentifierPrimary(v, generator.generate(), it) })
+    operator fun PegDefinitionProvider<V, TagType>.invoke() =
+        ImplicitPegPrimary<V, TagType>(generator, { PegIdentifierPrimary(this, generator.generate(), it) })
 }

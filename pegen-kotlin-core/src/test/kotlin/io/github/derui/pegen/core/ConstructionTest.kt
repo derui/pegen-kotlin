@@ -18,7 +18,7 @@ class ConstructionTest {
     fun `construct with tag and class`() {
         // Arrange
         val syntax =
-            Pegen()<Data, Tag> {
+            Pegen<Data, Tag>().define {
                 exp(s(+"a", +"b") tagged Tag.TagName, +"test")
             } constructAs { Data(it.tagged(Tag.TagName)?.asString() ?: "not found") }
         val parser = Generator(GeneratorOption { it.enableDebug() }).generateParserFrom(syntax)

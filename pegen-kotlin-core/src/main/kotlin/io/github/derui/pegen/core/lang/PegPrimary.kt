@@ -1,5 +1,6 @@
 package io.github.derui.pegen.core.lang
 
+import io.github.derui.pegen.core.dsl.support.PegDefinitionProvider
 import java.util.UUID
 
 /**
@@ -11,7 +12,7 @@ sealed interface PegPrimary<T, TagType> : PegSyntax<T, TagType>
  * This primary is a PEG's identifier
  */
 class PegIdentifierPrimary<T, TagType> internal constructor(
-    internal val identifier: PegDefinition<T, TagType>,
+    internal val identifier: PegDefinitionProvider<T, TagType>,
     override val id: UUID,
     override val tag: TagType? = null,
 ) : PegPrimary<T, TagType> {

@@ -22,7 +22,7 @@ class PegenTest {
             fun `parse dot primary`() {
                 // Arrange
                 val syntax =
-                    Pegen()<String, Unit> {
+                    Pegen<String, Unit>().define {
                         dot
                     }.constructAs { "foo" }
                 val parser = Generator(option).generateParserFrom(syntax)
@@ -38,7 +38,7 @@ class PegenTest {
             fun `fail if empty`() {
                 // Arrange
                 val def =
-                    Pegen()<String, Unit> {
+                    Pegen<String, Unit>().define {
                         dot
                     }.constructAs { "" }
                 val parser = Generator(option).generateParserFrom(def)
@@ -57,7 +57,7 @@ class PegenTest {
             fun `parse literal primary`() {
                 // Arrange
                 val syntax =
-                    Pegen()<String, Unit> {
+                    Pegen<String, Unit>().define {
                         +"literal"
                     }.constructAs { "parsed" }
                 val parser = Generator(option).generateParserFrom(syntax)
@@ -73,7 +73,7 @@ class PegenTest {
             fun `empty literal is always valid`() {
                 // Arrange
                 val syntax =
-                    Pegen()<String, Unit> {
+                    Pegen<String, Unit>().define {
                         +""
                     }.constructAs { "parsed" }
                 val parser = Generator(option).generateParserFrom(syntax)
@@ -89,7 +89,7 @@ class PegenTest {
             fun `fail if literal is not match`() {
                 // Arrange
                 val syntax =
-                    Pegen()<String, Unit> {
+                    Pegen<String, Unit>().define {
                         +"literal"
                     }.constructAs { "parsed" }
                 val parser = Generator(option).generateParserFrom(syntax)
@@ -108,7 +108,7 @@ class PegenTest {
             fun `parse class primary`() {
                 // Arrange
                 val syntax =
-                    Pegen()<String, Unit> {
+                    Pegen<String, Unit>().define {
                         cls {
                             +('a'..'z')
                         }
@@ -126,7 +126,7 @@ class PegenTest {
             fun `fail if not matched`() {
                 // Arrange
                 val syntax =
-                    Pegen()<String, Unit> {
+                    Pegen<String, Unit>().define {
                         cls {
                             +('a'..'z')
                         }
@@ -147,7 +147,7 @@ class PegenTest {
             fun `parse group primary`() {
                 // Arrange
                 val syntax =
-                    Pegen()<String, Unit> {
+                    Pegen<String, Unit>().define {
                         g(cls { +('a'..'z') })
                     } constructAs { "parsed" }
                 val parser = Generator(option).generateParserFrom(syntax)
@@ -166,13 +166,13 @@ class PegenTest {
             fun `parse definition`() {
                 // Arrange
                 val other =
-                    Pegen()<String, Unit> {
+                    Pegen<String, Unit>().define {
                         +"test"
                     } constructAs { "foo" }
 
                 val syntax =
-                    Pegen()<String, Unit> {
-                        ident(other)
+                    Pegen<String, Unit>().define {
+                        other()
                     } constructAs { "foo" }
                 val parser = Generator(option).generateParserFrom(syntax)
 
@@ -193,7 +193,7 @@ class PegenTest {
             fun `parse dot primary`() {
                 // Arrange
                 val syntax =
-                    Pegen()<String, Unit> {
+                    Pegen<String, Unit>().define {
                         opt(cls { +('e'..'t') })
                     } constructAs { "parsed" }
                 val parser = Generator(option).generateParserFrom(syntax)
@@ -209,7 +209,7 @@ class PegenTest {
             fun `success if not match`() {
                 // Arrange
                 val syntax =
-                    Pegen()<String, Unit> {
+                    Pegen<String, Unit>().define {
                         opt(cls { +"te" })
                     } constructAs { "foo" }
                 val parser = Generator(option).generateParserFrom(syntax)
@@ -228,7 +228,7 @@ class PegenTest {
             fun `parse star suffix`() {
                 // Arrange
                 val syntax =
-                    Pegen()<String, Unit> {
+                    Pegen<String, Unit>().define {
                         many(cls { +"te" })
                     } constructAs { "star" }
                 val parser = Generator(option).generateParserFrom(syntax)
@@ -244,7 +244,7 @@ class PegenTest {
             fun `success if not match`() {
                 // Arrange
                 val syntax =
-                    Pegen()<String, Unit> {
+                    Pegen<String, Unit>().define {
                         many(cls { +('s'..'t') })
                     } constructAs { "star" }
                 val parser = Generator(option).generateParserFrom(syntax)
@@ -263,7 +263,7 @@ class PegenTest {
             fun `parse star suffix`() {
                 // Arrange
                 val syntax =
-                    Pegen()<String, Unit> {
+                    Pegen<String, Unit>().define {
                         many1(cls { +('e'..'t') })
                     } constructAs { "plus" }
                 val parser = Generator(option).generateParserFrom(syntax)
@@ -279,7 +279,7 @@ class PegenTest {
             fun `fail if not match`() {
                 // Arrange
                 val syntax =
-                    Pegen()<String, Unit> {
+                    Pegen<String, Unit>().define {
                         many1(
                             cls {
                                 +"t"
@@ -306,7 +306,7 @@ class PegenTest {
             fun `parse and prefix`() {
                 // Arrange
                 val syntax =
-                    Pegen()<String, Unit> {
+                    Pegen<String, Unit>().define {
                         and(dot)
                     } constructAs { "and" }
                 val parser = Generator(option).generateParserFrom(syntax)
@@ -322,7 +322,7 @@ class PegenTest {
             fun `fail if suffix is not match`() {
                 // Arrange
                 val syntax =
-                    Pegen()<String, Unit> {
+                    Pegen<String, Unit>().define {
                         and(+"a")
                     } constructAs { "" }
                 val parser = Generator(option).generateParserFrom(syntax)
@@ -341,7 +341,7 @@ class PegenTest {
             fun `success if suffix is not match`() {
                 // Arrange
                 val syntax =
-                    Pegen()<String, Unit> {
+                    Pegen<String, Unit>().define {
                         not(+"abc")
                     } constructAs { "" }
                 val parser = Generator(option).generateParserFrom(syntax)
@@ -357,7 +357,7 @@ class PegenTest {
             fun `fail if suffix is match`() {
                 // Arrange
                 val syntax =
-                    Pegen()<String, Unit> {
+                    Pegen<String, Unit>().define {
                         not(dot)
                     } constructAs { "" }
                 val parser = Generator(option).generateParserFrom(syntax)
@@ -377,7 +377,7 @@ class PegenTest {
         fun `parse sequence`() {
             // Arrange
             val syntax =
-                Pegen()<String, Unit> {
+                Pegen<String, Unit>().define {
                     s(+"a", +"b")
                 } constructAs { "ab" }
             val parser = Generator(option).generateParserFrom(syntax)
@@ -393,7 +393,7 @@ class PegenTest {
         fun `fail if any prefix is failed in sequence`() {
             // Arrange
             val syntax =
-                Pegen()<String, Unit> {
+                Pegen<String, Unit>().define {
                     s(+"a", +"b")
                 } constructAs { "" }
             val parser = Generator(option).generateParserFrom(syntax)
@@ -412,7 +412,7 @@ class PegenTest {
         fun `parse expression`() {
             // Arrange
             val syntax =
-                Pegen()<String, Unit> {
+                Pegen<String, Unit>().define {
                     s(+"a", +"b")
                 } constructAs { "constructed" }
             val parser = Generator(option).generateParserFrom(syntax)
@@ -428,7 +428,7 @@ class PegenTest {
         fun `return first matched sequence`() {
             // Arrange
             val syntax =
-                Pegen()<String, Unit> {
+                Pegen<String, Unit>().define {
                     s(+"a", +"b") / +"test"
                 } constructAs { "" }
             val parser = Generator(option).generateParserFrom(syntax)
@@ -444,7 +444,7 @@ class PegenTest {
         fun `fail if all sequences are failed`() {
             // Arrange
             val syntax =
-                Pegen()<String, Unit> {
+                Pegen<String, Unit>().define {
                     s(+"a", +"b") / +"test"
                 } constructAs { "" }
             val parser = Generator(option).generateParserFrom(syntax)

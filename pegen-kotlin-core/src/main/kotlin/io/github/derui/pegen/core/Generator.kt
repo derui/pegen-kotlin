@@ -4,6 +4,7 @@ import io.github.derui.pegen.core.debug.DebugPrinter
 import io.github.derui.pegen.core.debug.DebuggingInfoRecorder
 import io.github.derui.pegen.core.debug.DebuggingInfoRecorderImpl
 import io.github.derui.pegen.core.debug.NullDebuggingInfoRecorder
+import io.github.derui.pegen.core.dsl.support.PegDefinitionProvider
 import io.github.derui.pegen.core.lang.PegDefinition
 import io.github.derui.pegen.core.parser.ErrorInfo
 import io.github.derui.pegen.core.parser.ParserContext
@@ -19,8 +20,8 @@ class Generator(private val option: GeneratorOption = GeneratorOption.default) {
     /**
      * Generate a parser from [definition] with [option]
      */
-    fun <V, TagType> generateParserFrom(definition: PegDefinition<V, TagType>): Parser<V> {
-        return GeneratedParser(definition, option)
+    fun <V, TagType> generateParserFrom(definition: PegDefinitionProvider<V, TagType>): Parser<V> {
+        return GeneratedParser(definition.provide(), option)
     }
 
     private class GeneratedParser<V, TagType>(
