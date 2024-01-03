@@ -8,7 +8,7 @@ import io.github.derui.pegen.core.support.Result
 /**
  * No-op version debugger
  */
-internal class NullDebuggingInfoRecorder : DebuggingInfoRecorder {
+internal class NullDebuggingInfoRecorder : DebuggingInfoRecorder, DebugPrinter {
     override fun cacheHit(
         syntax: PegSyntax<*, *>,
         result: Result<ParsingResult<*>, ErrorInfo>,
@@ -20,4 +20,6 @@ internal class NullDebuggingInfoRecorder : DebuggingInfoRecorder {
     ) {}
 
     override fun startParse(syntax: PegSyntax<*, *>) {}
+
+    override fun print(): String = ""
 }

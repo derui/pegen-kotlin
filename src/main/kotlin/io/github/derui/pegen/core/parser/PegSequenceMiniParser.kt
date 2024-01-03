@@ -32,7 +32,7 @@ internal class PegSequenceMiniParser<T, TagType>(
 
                 var result = ParsingResult.rawOf<T>("", source)
                 for (prefix in syntax.prefixes) {
-                    when (val ret = PegPrefixMiniParser.run(prefix, source, context, recorder)) {
+                    when (val ret = PegPrefixMiniParser.run(prefix, result.restSource, context, recorder)) {
                         is Ok -> result = ret.get()
                         is Err -> return@run ret
                     }

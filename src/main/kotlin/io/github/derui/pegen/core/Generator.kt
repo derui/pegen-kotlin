@@ -1,5 +1,7 @@
 package io.github.derui.pegen.core
 
+import io.github.derui.pegen.core.debug.DebugPrinter
+import io.github.derui.pegen.core.debug.DebuggingInfoRecorder
 import io.github.derui.pegen.core.debug.DebuggingInfoRecorderImpl
 import io.github.derui.pegen.core.debug.NullDebuggingInfoRecorder
 import io.github.derui.pegen.core.dsl.PegDsl
@@ -15,11 +17,12 @@ import io.github.derui.pegen.core.support.Result
 /**
  * Option for [Generator]
  */
-class GeneratorOption internal constructor(
-    val debug: Boolean,
-) {
+class GeneratorOption internal constructor() {
+    var debug: Boolean = false
+        private set
+
     companion object {
-        val default = GeneratorOption(debug = false)
+        val default = GeneratorOption()
 
         operator fun invoke(init: Companion.(GeneratorOption) -> Unit): GeneratorOption {
             val option = default
@@ -27,7 +30,9 @@ class GeneratorOption internal constructor(
             return option
         }
 
-        fun GeneratorOption.enableDebug() = GeneratorOption(debug = true)
+        fun GeneratorOption.enableDebug() {
+            debug = true
+        }
     }
 }
 
@@ -62,13 +67,17 @@ object Generator {
         private val syntax: PegExpression<V, TagType>,
         private val option: GeneratorOption,
     ) : Parser<V> {
+        private val recorder: DebuggingInfoRecorder = if (option.debug) DebuggingInfoRecorderImpl() else NullDebuggingInfoRecorder()
+
         override fun parse(input: String): Result<ParsingResult<V>, ErrorInfo> {
             val source = ParserSource.newWith(input)
             val context = ParserContext.new(syntax)
 
-            val recorder = if (option.debug) DebuggingInfoRecorderImpl() else NullDebuggingInfoRecorder()
-
             return PegExpressionMiniParser(syntax, recorder).parse(source, context)
+        }
+
+        override fun printer(): DebugPrinter {
+            return recorder as DebugPrinter
         }
     }
 }
