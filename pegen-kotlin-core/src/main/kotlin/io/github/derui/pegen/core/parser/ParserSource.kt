@@ -75,7 +75,7 @@ class ParserSource private constructor(
     private fun rest() = ParserSource(currentPosition, input, currentIndex)
 
     /**
-     * Get the entire string between [this] and [other].
+     * Get the entire string between [ParserSource] and [other].
      */
     operator fun rangeTo(other: ParserSource) = input.substring(startIndex, other.startIndex)
 
