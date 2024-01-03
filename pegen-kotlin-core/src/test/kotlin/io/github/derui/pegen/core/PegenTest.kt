@@ -23,7 +23,7 @@ class PegenTest {
                 // Arrange
                 val syntax =
                     Pegen()<String, Unit> {
-                        exp(s(dot))
+                        dot
                     }.constructAs { "foo" }
                 val parser = Generator(option).generateParserFrom(syntax)
 
@@ -39,7 +39,7 @@ class PegenTest {
                 // Arrange
                 val def =
                     Pegen()<String, Unit> {
-                        exp(s(dot))
+                        dot
                     }.constructAs { "" }
                 val parser = Generator(option).generateParserFrom(def)
 
@@ -58,7 +58,7 @@ class PegenTest {
                 // Arrange
                 val syntax =
                     Pegen()<String, Unit> {
-                        exp(s(+"literal"))
+                        +"literal"
                     }.constructAs { "parsed" }
                 val parser = Generator(option).generateParserFrom(syntax)
 
@@ -74,7 +74,7 @@ class PegenTest {
                 // Arrange
                 val syntax =
                     Pegen()<String, Unit> {
-                        exp(s(+""))
+                        +""
                     }.constructAs { "parsed" }
                 val parser = Generator(option).generateParserFrom(syntax)
 
@@ -90,7 +90,7 @@ class PegenTest {
                 // Arrange
                 val syntax =
                     Pegen()<String, Unit> {
-                        exp(s(+"literal"))
+                        +"literal"
                     }.constructAs { "parsed" }
                 val parser = Generator(option).generateParserFrom(syntax)
 
@@ -109,13 +109,9 @@ class PegenTest {
                 // Arrange
                 val syntax =
                     Pegen()<String, Unit> {
-                        exp(
-                            s(
-                                cls {
-                                    +('a'..'z')
-                                },
-                            ),
-                        )
+                        cls {
+                            +('a'..'z')
+                        }
                     }.constructAs { "parsed" }
                 val parser = Generator(option).generateParserFrom(syntax)
 
@@ -131,13 +127,9 @@ class PegenTest {
                 // Arrange
                 val syntax =
                     Pegen()<String, Unit> {
-                        exp(
-                            s(
-                                cls {
-                                    +('a'..'z')
-                                },
-                            ),
-                        )
+                        cls {
+                            +('a'..'z')
+                        }
                     }.constructAs { "parsed" }
                 val parser = Generator(option).generateParserFrom(syntax)
 
@@ -156,13 +148,7 @@ class PegenTest {
                 // Arrange
                 val syntax =
                     Pegen()<String, Unit> {
-                        exp(
-                            s(
-                                cls {
-                                    +('a'..'z')
-                                },
-                            ),
-                        )
+                        g(cls { +('a'..'z') })
                     } constructAs { "parsed" }
                 val parser = Generator(option).generateParserFrom(syntax)
 
@@ -181,12 +167,12 @@ class PegenTest {
                 // Arrange
                 val other =
                     Pegen()<String, Unit> {
-                        exp(s(+"test"))
+                        +"test"
                     } constructAs { "foo" }
 
                 val syntax =
                     Pegen()<String, Unit> {
-                        exp(s(ident(other)))
+                        ident(other)
                     } constructAs { "foo" }
                 val parser = Generator(option).generateParserFrom(syntax)
 
@@ -208,7 +194,7 @@ class PegenTest {
                 // Arrange
                 val syntax =
                     Pegen()<String, Unit> {
-                        exp(opt(cls { +('e'..'t') }))
+                        opt(cls { +('e'..'t') })
                     } constructAs { "parsed" }
                 val parser = Generator(option).generateParserFrom(syntax)
 
@@ -224,7 +210,7 @@ class PegenTest {
                 // Arrange
                 val syntax =
                     Pegen()<String, Unit> {
-                        exp(opt(cls { +"te" }))
+                        opt(cls { +"te" })
                     } constructAs { "foo" }
                 val parser = Generator(option).generateParserFrom(syntax)
 
@@ -243,7 +229,7 @@ class PegenTest {
                 // Arrange
                 val syntax =
                     Pegen()<String, Unit> {
-                        exp(many(cls { +"te" }))
+                        many(cls { +"te" })
                     } constructAs { "star" }
                 val parser = Generator(option).generateParserFrom(syntax)
 
@@ -259,7 +245,7 @@ class PegenTest {
                 // Arrange
                 val syntax =
                     Pegen()<String, Unit> {
-                        exp(many(cls { +('s'..'t') }))
+                        many(cls { +('s'..'t') })
                     } constructAs { "star" }
                 val parser = Generator(option).generateParserFrom(syntax)
 
@@ -278,7 +264,7 @@ class PegenTest {
                 // Arrange
                 val syntax =
                     Pegen()<String, Unit> {
-                        exp(many1(cls { +('e'..'t') }))
+                        many1(cls { +('e'..'t') })
                     } constructAs { "plus" }
                 val parser = Generator(option).generateParserFrom(syntax)
 
@@ -294,13 +280,11 @@ class PegenTest {
                 // Arrange
                 val syntax =
                     Pegen()<String, Unit> {
-                        exp(
-                            many1(
-                                cls {
-                                    +"t"
-                                    +"e"
-                                },
-                            ),
+                        many1(
+                            cls {
+                                +"t"
+                                +"e"
+                            },
                         )
                     } constructAs { "" }
                 val parser = Generator(option).generateParserFrom(syntax)
@@ -323,7 +307,7 @@ class PegenTest {
                 // Arrange
                 val syntax =
                     Pegen()<String, Unit> {
-                        exp(and(dot))
+                        and(dot)
                     } constructAs { "and" }
                 val parser = Generator(option).generateParserFrom(syntax)
 
@@ -339,7 +323,7 @@ class PegenTest {
                 // Arrange
                 val syntax =
                     Pegen()<String, Unit> {
-                        exp(and(+"a"))
+                        and(+"a")
                     } constructAs { "" }
                 val parser = Generator(option).generateParserFrom(syntax)
 
@@ -358,7 +342,7 @@ class PegenTest {
                 // Arrange
                 val syntax =
                     Pegen()<String, Unit> {
-                        exp(not(+"abc"))
+                        not(+"abc")
                     } constructAs { "" }
                 val parser = Generator(option).generateParserFrom(syntax)
 
@@ -374,7 +358,7 @@ class PegenTest {
                 // Arrange
                 val syntax =
                     Pegen()<String, Unit> {
-                        exp(not(dot))
+                        not(dot)
                     } constructAs { "" }
                 val parser = Generator(option).generateParserFrom(syntax)
 
@@ -394,7 +378,7 @@ class PegenTest {
             // Arrange
             val syntax =
                 Pegen()<String, Unit> {
-                    exp(s(+"a", +"b"))
+                    s(+"a", +"b")
                 } constructAs { "ab" }
             val parser = Generator(option).generateParserFrom(syntax)
 
@@ -410,7 +394,7 @@ class PegenTest {
             // Arrange
             val syntax =
                 Pegen()<String, Unit> {
-                    exp(s(+"a", +"b"))
+                    s(+"a", +"b")
                 } constructAs { "" }
             val parser = Generator(option).generateParserFrom(syntax)
 
@@ -429,7 +413,7 @@ class PegenTest {
             // Arrange
             val syntax =
                 Pegen()<String, Unit> {
-                    exp(s(+"a", +"b"))
+                    s(+"a", +"b")
                 } constructAs { "constructed" }
             val parser = Generator(option).generateParserFrom(syntax)
 
@@ -445,7 +429,7 @@ class PegenTest {
             // Arrange
             val syntax =
                 Pegen()<String, Unit> {
-                    exp(s(+"a", +"b"), +"test")
+                    s(+"a", +"b") / +"test"
                 } constructAs { "" }
             val parser = Generator(option).generateParserFrom(syntax)
 
@@ -461,7 +445,7 @@ class PegenTest {
             // Arrange
             val syntax =
                 Pegen()<String, Unit> {
-                    exp(s(+"a", +"b"), +"test")
+                    s(+"a", +"b") / +"test"
                 } constructAs { "" }
             val parser = Generator(option).generateParserFrom(syntax)
 

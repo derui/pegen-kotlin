@@ -32,24 +32,45 @@ class PegDsl<V, TagType> internal constructor(
     /**
      * Create a new [PegExpression] with the given [sequences]. This function implicitly expresses CHOICE.
      */
-    fun <T> exp(vararg sequences: T): PegExpression<V, TagType> where T : ImplicitConversionDelegate<V, TagType> =
-        PegExpression(
-            sequences.map {
-                it.asSequence()
-            }.toList(),
-            generator.generate(),
-        )
+    fun <T> exp(vararg sequences: T): ImplicitPegExpression<V, TagType> where T : ImplicitConversionDelegate<V, TagType> =
+        ImplicitPegExpression {
+            PegExpression(
+                sequences.map {
+                    it.asSequence()
+                }.toList(),
+                generator.generate(),
+                it,
+            )
+        }
+
+    /**
+     * shortcut function to make expression
+     */
+    operator fun ImplicitConversionDelegate<V, TagType>.div(
+        other: ImplicitConversionDelegate<V, TagType>,
+    ): ImplicitConversionDelegate<V, TagType> {
+        return ImplicitPegExpression {
+            val expr1 = this.asExpression()
+            val expr2 = other.asExpression()
+
+            PegExpression(
+                expr1.sequences + expr2.sequences,
+                generator.generate(),
+                it,
+            )
+        }
+    }
 
     /**
      * Create a new [PegSequence] without any prefix. This function implicitly expresses SEQUENCE.
      */
-    fun s(): ImplicitPegSequence<V, TagType> = ImplicitPegSequence { PegSequence(emptyList(), generator.generate(), it) }
+    fun s(): ImplicitPegSequence<V, TagType> = ImplicitPegSequence(generator) { PegSequence(emptyList(), generator.generate(), it) }
 
     /**
      * Create a new [PegSequence] with the given [prefixes]. This function implicitly expresses SEQUENCE.
      */
     fun <T> s(vararg prefixes: T): ImplicitPegSequence<V, TagType> where T : ImplicitConversionDelegate<V, TagType> =
-        ImplicitPegSequence { tag ->
+        ImplicitPegSequence(generator) { tag ->
             PegSequence(prefixes.map { it.asPrefix() }.toList(), generator.generate(), tag)
         }
 
@@ -120,8 +141,8 @@ class PegDsl<V, TagType> internal constructor(
     /**
      * A shortcut creating [PegGroupPrimary]
      */
-    fun g(exp: PegExpression<V, TagType>): ImplicitPegPrimary<V, TagType> =
-        ImplicitPegPrimary(generator, { PegGroupPrimary(exp, generator.generate(), it) })
+    fun g(exp: ImplicitConversionDelegate<V, TagType>): ImplicitPegPrimary<V, TagType> =
+        ImplicitPegPrimary(generator, { PegGroupPrimary(exp.asExpression(), generator.generate(), it) })
 
     /**
      * A shortcut to detect dot
