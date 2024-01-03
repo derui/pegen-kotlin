@@ -3,13 +3,15 @@ package io.github.derui.pegen.core
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
+import io.github.derui.pegen.core.parser.ParsingResult
 import io.github.derui.pegen.core.parser.ParsingResult.Companion.asString
+import io.github.derui.pegen.core.parser.ParsingResult.Companion.asType
 import io.github.derui.pegen.core.support.get
 import io.github.derui.pegen.core.support.getOrNull
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
-class GeneratorTest {
+class PegenTest {
     private val option =
         GeneratorOption {
             it.enableDebug()
@@ -22,25 +24,27 @@ class GeneratorTest {
             @Test
             fun `parse dot primary`() {
                 // Arrange
-                val parser =
-                    Generator.generateParser<String, Unit>(option) {
+                val syntax =
+                    Pegen()<String, Unit> {
                         exp(s(dot))
-                    }
+                    }.constructAs { "foo" }
+                val parser = Generator(option).generateParserFrom(syntax)
 
                 // Act
                 val actual = parser.parse("test")
 
                 // Assert
-                assertThat(actual.get().asString()).isEqualTo("t")
+                assertThat(actual.get().asString()).isEqualTo("foo")
             }
 
             @Test
             fun `fail if empty`() {
                 // Arrange
-                val parser =
-                    Generator.generateParser<String, Unit>(option) {
+                val def =
+                    Pegen()<String, Unit> {
                         exp(s(dot))
-                    }
+                    }.constructAs { "" }
+                val parser = Generator(option).generateParserFrom(def)
 
                 // Act
                 val actual = parser.parse("")
@@ -55,40 +59,43 @@ class GeneratorTest {
             @Test
             fun `parse literal primary`() {
                 // Arrange
-                val parser =
-                    Generator.generateParser<String, Unit>(option) {
+                val syntax =
+                    Pegen()<String, Unit> {
                         exp(s(+"literal"))
-                    }
+                    }.constructAs { "parsed" }
+                val parser = Generator(option).generateParserFrom(syntax)
 
                 // Act
                 val actual = parser.parse("literal")
 
                 // Assert
-                assertThat(actual.get().asString()).isEqualTo("literal")
+                assertThat(actual.get().asString()).isEqualTo("parsed")
             }
 
             @Test
             fun `empty literal is always valid`() {
                 // Arrange
-                val parser =
-                    Generator.generateParser<String, Unit>(option) {
+                val syntax =
+                    Pegen()<String, Unit> {
                         exp(s(+""))
-                    }
+                    }.constructAs { "parsed" }
+                val parser = Generator(option).generateParserFrom(syntax)
 
                 // Act
                 val actual = parser.parse("literal")
 
                 // Assert
-                assertThat(actual.get().asString()).isEqualTo("")
+                assertThat(actual.get().asString()).isEqualTo("parsed")
             }
 
             @Test
             fun `fail if literal is not match`() {
                 // Arrange
-                val parser =
-                    Generator.generateParser<String, Unit> {
+                val syntax =
+                    Pegen()<String, Unit> {
                         exp(s(+"literal"))
-                    }
+                    }.constructAs { "parsed" }
+                val parser = Generator(option).generateParserFrom(syntax)
 
                 // Act
                 val actual = parser.parse("parser")
@@ -103,8 +110,8 @@ class GeneratorTest {
             @Test
             fun `parse class primary`() {
                 // Arrange
-                val parser =
-                    Generator.generateParser<String, Unit> {
+                val syntax =
+                    Pegen()<String, Unit> {
                         exp(
                             s(
                                 cls {
@@ -112,20 +119,21 @@ class GeneratorTest {
                                 },
                             ),
                         )
-                    }
+                    }.constructAs { "parsed" }
+                val parser = Generator(option).generateParserFrom(syntax)
 
                 // Act
                 val actual = parser.parse("abcd")
 
                 // Assert
-                assertThat(actual.get().asString()).isEqualTo("a")
+                assertThat(actual.get().asString()).isEqualTo("parsed")
             }
 
             @Test
             fun `fail if not matched`() {
                 // Arrange
-                val parser =
-                    Generator.generateParser<String, Unit> {
+                val syntax =
+                    Pegen()<String, Unit> {
                         exp(
                             s(
                                 cls {
@@ -133,7 +141,8 @@ class GeneratorTest {
                                 },
                             ),
                         )
-                    }
+                    }.constructAs { "parsed" }
+                val parser = Generator(option).generateParserFrom(syntax)
 
                 // Act
                 val actual = parser.parse("Abcd")
@@ -148,8 +157,8 @@ class GeneratorTest {
             @Test
             fun `parse group primary`() {
                 // Arrange
-                val parser =
-                    Generator.generateParser<String, Unit>(option) {
+                val syntax =
+                    Pegen()<String, Unit> {
                         exp(
                             s(
                                 cls {
@@ -157,13 +166,14 @@ class GeneratorTest {
                                 },
                             ),
                         )
-                    }
+                    } constructAs { "parsed" }
+                val parser = Generator(option).generateParserFrom(syntax)
 
                 // Act
                 val actual = parser.parse("abcd")
 
                 // Assert
-                assertThat(actual.get().asString()).isEqualTo("a")
+                assertThat(actual.get().asString()).isEqualTo("parsed")
             }
         }
 
@@ -173,20 +183,21 @@ class GeneratorTest {
             fun `parse definition`() {
                 // Arrange
                 val other =
-                    Generator<String, Unit> {
+                    Pegen()<String, Unit> {
                         exp(s(+"test"))
                     } constructAs { "foo" }
 
-                val parser =
-                    Generator.generateParser(option) {
+                val syntax =
+                    Pegen()<String, Unit> {
                         exp(s(ident(other)))
-                    }
+                    } constructAs { "foo" }
+                val parser = Generator(option).generateParserFrom(syntax)
 
                 // Act
                 val actual = parser.parse("test")
 
                 // Assert
-                assertThat(actual.get().asString()).isEqualTo("test")
+                assertThat(actual.get().asString()).isEqualTo("foo")
             }
         }
     }
@@ -198,31 +209,33 @@ class GeneratorTest {
             @Test
             fun `parse dot primary`() {
                 // Arrange
-                val parser =
-                    Generator.generateParser<String, Unit>(option) {
+                val syntax =
+                    Pegen()<String, Unit> {
                         exp(opt(cls { +('e'..'t') }))
-                    }
+                    } constructAs { "parsed" }
+                val parser = Generator(option).generateParserFrom(syntax)
 
                 // Act
                 val actual = parser.parse("test")
 
                 // Assert
-                assertThat(actual.get().asString()).isEqualTo("t")
+                assertThat(actual.get().asString()).isEqualTo("parsed")
             }
 
             @Test
             fun `success if not match`() {
                 // Arrange
-                val parser =
-                    Generator.generateParser<String, Unit>(option) {
+                val syntax =
+                    Pegen()<String, Unit> {
                         exp(opt(cls { +"te" }))
-                    }
+                    } constructAs { "foo" }
+                val parser = Generator(option).generateParserFrom(syntax)
 
                 // Act
                 val actual = parser.parse("fo")
 
                 // Assert
-                assertThat(actual.get().asString()).isEqualTo("")
+                assertThat(actual.get().asString()).isEqualTo("foo")
             }
         }
 
@@ -231,31 +244,33 @@ class GeneratorTest {
             @Test
             fun `parse star suffix`() {
                 // Arrange
-                val parser =
-                    Generator.generateParser<String, Unit>(option) {
+                val syntax =
+                    Pegen()<String, Unit> {
                         exp(many(cls { +"te" }))
-                    }
+                    } constructAs { "star" }
+                val parser = Generator(option).generateParserFrom(syntax)
 
                 // Act
                 val actual = parser.parse("test")
 
                 // Assert
-                assertThat(actual.get().asString()).isEqualTo("te")
+                assertThat(actual.get().asString()).isEqualTo("star")
             }
 
             @Test
             fun `success if not match`() {
                 // Arrange
-                val parser =
-                    Generator.generateParser<String, Unit>(option) {
+                val syntax =
+                    Pegen()<String, Unit> {
                         exp(many(cls { +('s'..'t') }))
-                    }
+                    } constructAs { "star" }
+                val parser = Generator(option).generateParserFrom(syntax)
 
                 // Act
                 val actual = parser.parse("foo")
 
                 // Assert
-                assertThat(actual.get().asString()).isEqualTo("")
+                assertThat(actual.get().asString()).isEqualTo("star")
             }
         }
 
@@ -264,23 +279,24 @@ class GeneratorTest {
             @Test
             fun `parse star suffix`() {
                 // Arrange
-                val parser =
-                    Generator.generateParser<String, Unit>(option) {
+                val syntax =
+                    Pegen()<String, Unit> {
                         exp(many1(cls { +('e'..'t') }))
-                    }
+                    } constructAs { "plus" }
+                val parser = Generator(option).generateParserFrom(syntax)
 
                 // Act
                 val actual = parser.parse("teaa")
 
                 // Assert
-                assertThat(actual.get().asString()).isEqualTo("te")
+                assertThat(actual.get().asString()).isEqualTo("plus")
             }
 
             @Test
             fun `fail if not match`() {
                 // Arrange
-                val parser =
-                    Generator.generateParser<String, Unit>(option) {
+                val syntax =
+                    Pegen()<String, Unit> {
                         exp(
                             many1(
                                 cls {
@@ -289,7 +305,8 @@ class GeneratorTest {
                                 },
                             ),
                         )
-                    }
+                    } constructAs { "" }
+                val parser = Generator(option).generateParserFrom(syntax)
 
                 // Act
                 val actual = parser.parse("foo")
@@ -307,25 +324,27 @@ class GeneratorTest {
             @Test
             fun `parse and prefix`() {
                 // Arrange
-                val parser =
-                    Generator.generateParser<String, Unit>(option) {
+                val syntax =
+                    Pegen()<String, Unit> {
                         exp(and(dot))
-                    }
+                    } constructAs { "and" }
+                val parser = Generator(option).generateParserFrom(syntax)
 
                 // Act
                 val actual = parser.parse("test")
 
                 // Assert
-                assertThat(actual.get().asString()).isEqualTo("")
+                assertThat(ParsingResult { actual.get().asString() }).isEqualTo("and")
             }
 
             @Test
             fun `fail if suffix is not match`() {
                 // Arrange
-                val parser =
-                    Generator.generateParser<String, Unit>(option) {
+                val syntax =
+                    Pegen()<String, Unit> {
                         exp(and(+"a"))
-                    }
+                    } constructAs { "" }
+                val parser = Generator(option).generateParserFrom(syntax)
 
                 // Act
                 val actual = parser.parse("test")
@@ -340,10 +359,11 @@ class GeneratorTest {
             @Test
             fun `success if suffix is not match`() {
                 // Arrange
-                val parser =
-                    Generator.generateParser<String, Unit>(option) {
+                val syntax =
+                    Pegen()<String, Unit> {
                         exp(not(+"abc"))
-                    }
+                    } constructAs { "" }
+                val parser = Generator(option).generateParserFrom(syntax)
 
                 // Act
                 val actual = parser.parse("test")
@@ -355,10 +375,11 @@ class GeneratorTest {
             @Test
             fun `fail if suffix is match`() {
                 // Arrange
-                val parser =
-                    Generator.generateParser<String, Unit>(option) {
+                val syntax =
+                    Pegen()<String, Unit> {
                         exp(not(dot))
-                    }
+                    } constructAs { "" }
+                val parser = Generator(option).generateParserFrom(syntax)
 
                 // Act
                 val actual = parser.parse("test")
@@ -374,10 +395,11 @@ class GeneratorTest {
         @Test
         fun `parse sequence`() {
             // Arrange
-            val parser =
-                Generator.generateParser<String, Unit>(option) {
+            val syntax =
+                Pegen()<String, Unit> {
                     exp(s(+"a", +"b"))
-                }
+                } constructAs { "ab" }
+            val parser = Generator(option).generateParserFrom(syntax)
 
             // Act
             val actual = parser.parse("abc")
@@ -389,10 +411,11 @@ class GeneratorTest {
         @Test
         fun `fail if any prefix is failed in sequence`() {
             // Arrange
-            val parser =
-                Generator.generateParser<String, Unit>(option) {
+            val syntax =
+                Pegen()<String, Unit> {
                     exp(s(+"a", +"b"))
-                }
+                } constructAs { "" }
+            val parser = Generator(option).generateParserFrom(syntax)
 
             // Act
             val actual = parser.parse("acb")
@@ -407,46 +430,49 @@ class GeneratorTest {
         @Test
         fun `parse expression`() {
             // Arrange
-            val parser =
-                Generator.generateParser<String, Unit>(option) {
+            val syntax =
+                Pegen()<String, Unit> {
                     exp(s(+"a", +"b"))
-                }
+                } constructAs { "constructed" }
+            val parser = Generator(option).generateParserFrom(syntax)
 
             // Act
             val actual = parser.parse("abc")
 
             // Assert
-            assertThat(actual.get().asString()).isEqualTo("ab")
+            assertThat(actual.get().asType<String>()).isEqualTo("constructed")
         }
 
         @Test
         fun `return first matched sequence`() {
             // Arrange
-            val parser =
-                Generator.generateParser<String, Unit>(option) {
+            val syntax =
+                Pegen()<String, Unit> {
                     exp(s(+"a", +"b"), +"test")
-                }
+                } constructAs { "" }
+            val parser = Generator(option).generateParserFrom(syntax)
 
             // Act
             val actual = parser.parse("test")
 
             // Assert
-            assertThat(actual.getOrNull()?.asString()).isEqualTo("test")
+            assertThat(actual.getOrNull()?.asType<String>()).isEqualTo("")
         }
 
         @Test
         fun `fail if all sequences are failed`() {
             // Arrange
-            val parser =
-                Generator.generateParser<String, Unit>(option) {
+            val syntax =
+                Pegen()<String, Unit> {
                     exp(s(+"a", +"b"), +"test")
-                }
+                } constructAs { "" }
+            val parser = Generator(option).generateParserFrom(syntax)
 
             // Act
             val actual = parser.parse("foo")
 
             // Assert
-            assertThat(actual.getOrNull()?.asString()).isNull()
+            assertThat(actual.getOrNull()?.asType<String>()).isNull()
         }
     }
 }

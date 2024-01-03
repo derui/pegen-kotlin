@@ -38,7 +38,10 @@ internal class PegSequenceMiniParser<T, TagType>(
                     }
                 }
 
-                return@run Ok(ParsingResult.rawOf<T>(source..result.restSource, result.restSource))
+                val sequenceResult = ParsingResult.rawOf<T>(source..result.restSource, result.restSource)
+                syntax.tag?.let { tag -> context.tagging(tag, sequenceResult) }
+
+                return@run Ok(sequenceResult)
             }
 
         recorder.parsed(syntax, result)

@@ -52,7 +52,7 @@ sealed class ParsingResult<T> private constructor(
         fun ParsingResult<*>.asString(): String? =
             when (this) {
                 is Raw -> this.value
-                is Constructed -> null
+                is Constructed -> this.value?.toString()
             }
 
         /**
