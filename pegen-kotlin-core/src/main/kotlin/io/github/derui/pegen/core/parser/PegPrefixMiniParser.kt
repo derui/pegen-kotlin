@@ -63,7 +63,7 @@ sealed class PegPrefixMiniParser<T, TagType> : MiniParser<T, TagType>() {
             recorder.startParse(prefix)
 
             return PegSuffixMiniParser.run(prefix.suffix, source, context, recorder).flatMap {
-                val result = ParsingResult.rawOf<T>("", source)
+                val result = ParsingResult.noValueOf<T>("", source)
                 Ok(result)
             }.run {
                 recorder.parsed(prefix, this)
@@ -90,7 +90,7 @@ sealed class PegPrefixMiniParser<T, TagType> : MiniParser<T, TagType>() {
             return PegSuffixMiniParser.run(prefix.suffix, source, context, recorder).fold({
                 Err(source.errorOf("Can not apply not prefix"))
             }) {
-                val result = ParsingResult.rawOf<T>("", source)
+                val result = ParsingResult.noValueOf<T>("", source)
                 Ok(result)
             }.run {
                 recorder.parsed(prefix, this)

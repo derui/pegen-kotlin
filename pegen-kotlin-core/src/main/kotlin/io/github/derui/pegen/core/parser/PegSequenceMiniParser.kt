@@ -30,7 +30,7 @@ internal class PegSequenceMiniParser<T, TagType>(
                     return@run Err(source.errorOf("Empty sequence is not allowed."))
                 }
 
-                var result = ParsingResult.rawOf<T>("", source)
+                var result = ParsingResult.noValueOf<T>("", source)
                 for (prefix in syntax.prefixes) {
                     when (val ret = PegPrefixMiniParser.run(prefix, result.restSource, context, recorder)) {
                         is Ok -> result = ret.get()
@@ -38,7 +38,7 @@ internal class PegSequenceMiniParser<T, TagType>(
                     }
                 }
 
-                val sequenceResult = ParsingResult.rawOf<T>(source..result.restSource, result.restSource)
+                val sequenceResult = ParsingResult.noValueOf<T>(source..result.restSource, result.restSource)
                 syntax.tag?.let { tag -> context.tagging(tag, sequenceResult) }
 
                 return@run Ok(sequenceResult)

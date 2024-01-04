@@ -29,7 +29,7 @@ internal class PegDefinitionMiniParser<T, TagType>(
                 hit = false
 
                 PegExpressionMiniParser(syntax.expression, recorder).parse(_source, _context).map { result ->
-                    ParsingResult.constructedAs(syntax.construct(_context), result.restSource)
+                    ParsingResult.from(syntax.construct(_context), _source..result.restSource, result.restSource)
                 }
             }
 

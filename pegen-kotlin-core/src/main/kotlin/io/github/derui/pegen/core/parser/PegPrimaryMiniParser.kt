@@ -52,7 +52,7 @@ sealed class PegPrimaryMiniParser<T, TagType> : MiniParser<T, TagType>() {
             recorder.startParse(primary)
 
             return source.readChar().map {
-                val result = ParsingResult.rawOf<T>(it.first.toString(), it.second)
+                val result = ParsingResult.noValueOf<T>(it.first.toString(), it.second)
                 primary.tag?.let { tag -> context.tagging(tag, result) }
                 result
             }.run {
@@ -76,7 +76,7 @@ sealed class PegPrimaryMiniParser<T, TagType> : MiniParser<T, TagType>() {
             recorder.startParse(primary)
 
             return if (primary.literal.isEmpty()) {
-                val result = ParsingResult.rawOf<T>("", source)
+                val result = ParsingResult.noValueOf<T>("", source)
                 primary.tag?.let { tag -> context.tagging(tag, result) }
 
                 Ok(result)
@@ -94,7 +94,7 @@ sealed class PegPrimaryMiniParser<T, TagType> : MiniParser<T, TagType>() {
                     }
 
                 if (matched == primary.literal) {
-                    val result = ParsingResult.rawOf<T>(matched, rest)
+                    val result = ParsingResult.noValueOf<T>(matched, rest)
                     primary.tag?.let { tag -> context.tagging(tag, result) }
 
                     Ok(result)
@@ -129,7 +129,7 @@ sealed class PegPrimaryMiniParser<T, TagType> : MiniParser<T, TagType>() {
                 if (ch !in primary.cls) {
                     Err(source.errorOf("$ch is not contained in $this"))
                 } else {
-                    val result = ParsingResult.rawOf<T>(ch.toString(), rest)
+                    val result = ParsingResult.noValueOf<T>(ch.toString(), rest)
                     primary.tag?.let { tag -> context.tagging(tag, result) }
                     Ok(result)
                 }

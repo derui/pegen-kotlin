@@ -31,7 +31,7 @@ class PegenTest {
                 val actual = parser.parse("test")
 
                 // Assert
-                assertThat(actual.get().asString()).isEqualTo("foo")
+                assertThat(actual.get().read).isEqualTo("foo")
             }
 
             @Test
@@ -66,7 +66,7 @@ class PegenTest {
                 val actual = parser.parse("literal")
 
                 // Assert
-                assertThat(actual.get().asString()).isEqualTo("parsed")
+                assertThat(actual.get().read).isEqualTo("parsed")
             }
 
             @Test
@@ -82,7 +82,7 @@ class PegenTest {
                 val actual = parser.parse("literal")
 
                 // Assert
-                assertThat(actual.get().asString()).isEqualTo("parsed")
+                assertThat(actual.get().read).isEqualTo("parsed")
             }
 
             @Test
@@ -119,7 +119,7 @@ class PegenTest {
                 val actual = parser.parse("abcd")
 
                 // Assert
-                assertThat(actual.get().asString()).isEqualTo("parsed")
+                assertThat(actual.get().read).isEqualTo("parsed")
             }
 
             @Test
@@ -156,7 +156,7 @@ class PegenTest {
                 val actual = parser.parse("abcd")
 
                 // Assert
-                assertThat(actual.get().asString()).isEqualTo("parsed")
+                assertThat(actual.get().read).isEqualTo("parsed")
             }
         }
 
@@ -180,7 +180,7 @@ class PegenTest {
                 val actual = parser.parse("test")
 
                 // Assert
-                assertThat(actual.get().asString()).isEqualTo("foo")
+                assertThat(actual.get().read).isEqualTo("foo")
             }
         }
     }
@@ -202,7 +202,7 @@ class PegenTest {
                 val actual = parser.parse("test")
 
                 // Assert
-                assertThat(actual.get().asString()).isEqualTo("parsed")
+                assertThat(actual.get().read).isEqualTo("parsed")
             }
 
             @Test
@@ -218,7 +218,7 @@ class PegenTest {
                 val actual = parser.parse("fo")
 
                 // Assert
-                assertThat(actual.get().asString()).isEqualTo("foo")
+                assertThat(actual.get().read).isEqualTo("foo")
             }
         }
 
@@ -237,7 +237,7 @@ class PegenTest {
                 val actual = parser.parse("test")
 
                 // Assert
-                assertThat(actual.get().asString()).isEqualTo("star")
+                assertThat(actual.get().read).isEqualTo("star")
             }
 
             @Test
@@ -253,7 +253,7 @@ class PegenTest {
                 val actual = parser.parse("foo")
 
                 // Assert
-                assertThat(actual.get().asString()).isEqualTo("star")
+                assertThat(actual.get().read).isEqualTo("star")
             }
         }
 
@@ -272,7 +272,7 @@ class PegenTest {
                 val actual = parser.parse("teaa")
 
                 // Assert
-                assertThat(actual.get().asString()).isEqualTo("plus")
+                assertThat(actual.get().read).isEqualTo("plus")
             }
 
             @Test
@@ -315,7 +315,7 @@ class PegenTest {
                 val actual = parser.parse("test")
 
                 // Assert
-                assertThat(actual.get().asString()).isEqualTo("and")
+                assertThat(actual.get().read).isEqualTo("and")
             }
 
             @Test
@@ -350,7 +350,7 @@ class PegenTest {
                 val actual = parser.parse("test")
 
                 // Assert
-                assertThat(actual.get().asString()).isEqualTo("")
+                assertThat(actual.get().read).isEqualTo("")
             }
 
             @Test
@@ -386,7 +386,7 @@ class PegenTest {
             val actual = parser.parse("abc")
 
             // Assert
-            assertThat(actual.get().asString()).isEqualTo("ab")
+            assertThat(actual.get().read).isEqualTo("ab")
         }
 
         @Test
@@ -421,7 +421,7 @@ class PegenTest {
             val actual = parser.parse("abc")
 
             // Assert
-            assertThat(actual.get().asType<String>()).isEqualTo("constructed")
+            assertThat(actual.get().read).isEqualTo("constructed")
         }
 
         @Test
@@ -437,7 +437,7 @@ class PegenTest {
             val actual = parser.parse("test")
 
             // Assert
-            assertThat(actual.getOrNull()?.asType<String>()).isEqualTo("")
+            assertThat(actual.getOrNull()?.read).isEqualTo("")
         }
 
         @Test
@@ -453,7 +453,7 @@ class PegenTest {
             val actual = parser.parse("foo")
 
             // Assert
-            assertThat(actual.getOrNull()?.asType<String>()).isNull()
+            assertThat(actual.getOrNull()?.read).isNull()
         }
     }
 }

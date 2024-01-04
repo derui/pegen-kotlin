@@ -28,7 +28,7 @@ class ParserContext<T, TagType> private constructor(
     /**
      * Map of tag that is build in [PegDefinition] and [PegExpression] and its [PegSyntax].
      */
-    private val tags = mutableMapOf<TagType, ParsingResult<T>>()
+    private val tags = mutableMapOf<TagType, TaggedResult<T>>()
 
     /**
      * Get parsed result from cache if exists, or parse and cache it.
@@ -70,11 +70,14 @@ class ParserContext<T, TagType> private constructor(
             "Tag $tag is already registered. Please check your grammar."
         }
 
-        tags[tag] = result
+        val list = tags.computeIfAbsent(tag) { TaggedResult.new() }
+        tags[tag] = list + result
     }
 
     /**
      * Get tagged result
      */
-    fun tagged(tag: TagType): ParsingResult<T>? = tags[tag]
+    fun tagged(tag: TagType): TaggedResult<T> {
+        return tags[tag] ?: TaggedResult.new()
+    }
 }
