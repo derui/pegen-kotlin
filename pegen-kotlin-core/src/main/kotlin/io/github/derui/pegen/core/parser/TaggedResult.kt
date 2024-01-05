@@ -23,6 +23,16 @@ class TaggedResult<T> private constructor(
     fun asList(): List<ParsingResult<T>> = results.toList()
 
     /**
+     * A shortcut function to get first result as [R].
+     */
+    inline fun <reified R : T> firstAsType(): R? = get(0)?.let { it.value() as? R }
+
+    /**
+     * A shortcut function to get first read string.
+     */
+    fun firstRead(): String? = get(0)?.read
+
+    /**
      * Get [ParsingResult] by index.
      */
     operator fun get(index: Int): ParsingResult<T>? = results.getOrNull(index)
