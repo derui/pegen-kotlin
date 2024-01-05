@@ -9,7 +9,7 @@ class Expr(val value: Long) : Node() {
         Pegen<Node, String>() define {
             Sum() tagged "sum"
         } constructAs {
-            Expr(it.tagged("sum")?.asType<Sum>()?.value ?: 0L)
+            Expr(it.tagged("sum")[0]?.value() ?: 0L)
         },
     )
 }
