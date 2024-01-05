@@ -66,10 +66,6 @@ class ParserContext<T, TagType> private constructor(
         tag: TagType,
         result: ParsingResult<T>,
     ) {
-        require(tag !in tags) {
-            "Tag $tag is already registered. Please check your grammar."
-        }
-
         val list = tags.computeIfAbsent(tag) { TaggedResult.new() }
         tags[tag] = list + result
     }

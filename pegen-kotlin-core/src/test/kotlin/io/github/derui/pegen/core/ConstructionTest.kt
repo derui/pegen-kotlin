@@ -54,9 +54,9 @@ class ConstructionTest {
             // Arrange
             val syntax =
                 Pegen<String, String>().define {
-                    many(+"a") tagged "tag"
+                    many(+"a" tagged "tag")
                 } constructAs {
-                    it.tagged("tag").asList().joinToString("/")
+                    it.tagged("tag").asList().joinToString("/") { v -> v.read }
                 }
             val parser = Generator().generateParserFrom(syntax)
 
