@@ -1,0 +1,100 @@
+* Pegen for Kotlin
+~Pegen~ is Parser Generator of PEG syntax for Kotlin.
+
+This library aims below:
+
+- Provides DSL to define parser with PEG
+- Provides effective parser created from DSL
+- No 3rd party dependency
+- ..and Kotlin affinity syntax
+
+
+** What is PEG?
+https://en.wikipedia.org/wiki/Parsing_expression_grammar
+
+See Wikipedia above.
+
+
+* Usage
+
+** Define expression with DSL
+You can define expression with DSL.
+
+#+begin_src kotlin
+  // Pegen is not object, it's a class.
+  Pegen<String, Unit>() define {
+      // Pegen provides straight forward syntax of PEG.
+      s(+"Hello", many(cls {+" "}), +"World")
+  }
+#+end_src
+
+** Define syntax with DSL
+#+begin_src kotlin
+  // Pegen is not object, it's a class.
+  Pegen<String, Unit>() define {
+      // Pegen provides straight forward syntax of PEG.
+      s(+"Hello", many(cls {+" "}), +"World")
+  } constructAs {
+      // Construct an user type.
+      "Return value"
+  }
+#+end_src
+
+** Run parser with defined syntax
+#+begin_src kotlin
+  val syntax = Pegen<String, String> define {
+      // add tag to get value in constructor
+      +"foo" tagging "tag"
+  } constructAs {
+      // Constructor for user type. This function gives ParserContext to get tagged value of syntax.
+      it.tagged("tag").firstRead()
+  }
+  val parser = Generator.generateParserFrom(syntax)
+
+  parser.parse("foo").get() // => "foo"
+#+end_src
+
+* DSL
+~Pegen~ provides these syntaxes.
+
+- ~/~ :: create a Expression
+- ~s~ :: create a Sequence
+- ~and~ :: create a And Prefix
+- ~not~ :: create a Not Prefix
+- ~many~ :: create a ~*~ Suffix
+- ~many1~ :: create a ~+~ Suffix
+- ~opt~ :: create a ~?~ Suffix
+- ~unary +~ :: create a Literal
+- ~cls~ :: create a Class
+  - class has a builder with some small DSL
+- ~identifier()~ :: create a Identifier
+- ~dot~ :: create a Dot
+- ~g~ :: crete a Group
+
+
+** Why some syntaxes is not defined operator?
+We can not define operators such as ~?~ and unary ~*~, ~+~ in Kotlin language. We have defined DSL as nearly as possible original PEG syntax, but defined syntax is not user friendly. This DSL is not providing great user friendly, but we think it is completer friendly.
+
+* Development
+
+** Dependencies
+- JDK 21
+  - This library built on it
+- Gradle
+  - This library uses ~gradlew~ , so developer does not need to install gradle.
+
+
+** commands
+#+begin_src sh
+  # build
+  $ ./gradlew build
+
+  # run test
+  $ ./gradlew test
+
+  # publish to local maven repository
+  $ ./gradlew publishToMavenLocal
+#+end_src
+
+* License
+MIT
