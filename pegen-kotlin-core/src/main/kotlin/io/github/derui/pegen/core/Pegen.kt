@@ -28,10 +28,7 @@ class Pegen<V, TagType> {
     abstract class Def<V, TagType>(
         private val provider: Pegen<V, TagType>.() -> PegDefinitionProvider<V, TagType>,
     ) : PegDefinitionProvider<V, TagType> {
-        private val laziedProvider by lazy {
-            val pegen = Pegen<V, TagType>()
-            pegen.provider()
-        }
+        private val laziedProvider by lazy { Pegen<V, TagType>().provider() }
 
         override fun provide(): PegDefinition<V, TagType> {
             return laziedProvider.provide()
