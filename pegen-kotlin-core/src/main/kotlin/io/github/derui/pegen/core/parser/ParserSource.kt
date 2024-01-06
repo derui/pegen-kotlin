@@ -14,7 +14,7 @@ class ParserSource private constructor(
     private val startIndex: Int,
 ) {
     companion object {
-        fun newWith(input: String) = ParserSource(Position.start(), input, 0)
+        internal fun newWith(input: String) = ParserSource(Position.start(), input, 0)
     }
 
     /**

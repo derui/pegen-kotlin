@@ -11,7 +11,7 @@ class ErrorInfo private constructor(
         /**
          * Create new [ErrorInfo] from message and position
          */
-        fun from(
+        internal fun from(
             message: String,
             position: Position,
         ) = ErrorInfo(listOf(message), position)

@@ -8,7 +8,7 @@ import java.util.UUID
  *
  * This class is NOT thread-safe.
  */
-class PackratState<V> private constructor(
+internal class PackratState<V> private constructor(
     private val cache: MutableMap<StatePointer, ParserResultCache<ParsingResult<V>>>,
 ) {
     private data class StatePointer(

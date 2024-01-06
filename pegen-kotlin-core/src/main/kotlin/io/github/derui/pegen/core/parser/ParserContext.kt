@@ -13,7 +13,7 @@ class ParserContext<T, TagType> private constructor(
     private val cache: PackratState<T>,
 ) {
     companion object {
-        fun <T, TagType> new(syntax: PegSyntax<T, TagType>) =
+        internal fun <T, TagType> new(syntax: PegSyntax<T, TagType>) =
             ParserContext<T, TagType>(PackratState.from()).also {
                 it.currentSyntaxId = syntax.id
             }

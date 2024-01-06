@@ -14,7 +14,7 @@ class TaggedResult<T> private constructor(
     private val results: List<ParsingResult<T>>,
 ) {
     companion object {
-        fun <T> new(): TaggedResult<T> = TaggedResult(emptyList())
+        internal fun <T> new(): TaggedResult<T> = TaggedResult(emptyList())
     }
 
     /**
@@ -40,5 +40,5 @@ class TaggedResult<T> private constructor(
     /**
      * Get new [TaggedResult] with new [ParsingResult] added.
      */
-    operator fun plus(result: ParsingResult<T>): TaggedResult<T> = TaggedResult(results + result)
+    internal operator fun plus(result: ParsingResult<T>): TaggedResult<T> = TaggedResult(results + result)
 }

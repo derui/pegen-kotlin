@@ -27,7 +27,7 @@ sealed class ParsingResult<T> {
         /**
          * Create a [Raw] instance.
          */
-        fun <R> from(
+        internal fun <R> from(
             value: R,
             read: String,
             rest: ParserSource,
@@ -36,7 +36,7 @@ sealed class ParsingResult<T> {
         /**
          * Create an instance to mark it is empty
          */
-        fun <R> noValueOf(
+        internal fun <R> noValueOf(
             read: String,
             rest: ParserSource,
         ): ParsingResult<R> = NoValue(read, rest)
