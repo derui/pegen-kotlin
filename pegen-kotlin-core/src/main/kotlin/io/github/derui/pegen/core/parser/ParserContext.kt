@@ -62,7 +62,7 @@ class ParserContext<T, TagType> private constructor(
     /**
      * Register a tag and its syntax.
      */
-    fun tagging(
+    internal fun tagging(
         tag: TagType,
         result: ParsingResult<T>,
     ) {
