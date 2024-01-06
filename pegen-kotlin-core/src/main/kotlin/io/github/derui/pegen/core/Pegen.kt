@@ -3,8 +3,8 @@ package io.github.derui.pegen.core
 import io.github.derui.pegen.core.dsl.ImplicitConversionDelegate
 import io.github.derui.pegen.core.dsl.PegDsl
 import io.github.derui.pegen.core.dsl.support.DefaultSyntaxIdentifierGenerator
-import io.github.derui.pegen.core.dsl.support.PegDefinitionProvider
 import io.github.derui.pegen.core.lang.PegDefinition
+import io.github.derui.pegen.core.lang.PegDefinitionProvider
 import io.github.derui.pegen.core.lang.PegExpression
 
 /**

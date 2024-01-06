@@ -1,9 +1,9 @@
 package io.github.derui.pegen.core.dsl
 
-import io.github.derui.pegen.core.dsl.support.PegDefinitionProvider
 import io.github.derui.pegen.core.dsl.support.SyntaxIdentifierGenerator
 import io.github.derui.pegen.core.lang.PegAndPrefix
 import io.github.derui.pegen.core.lang.PegClassPrimary
+import io.github.derui.pegen.core.lang.PegDefinitionProvider
 import io.github.derui.pegen.core.lang.PegDotPrimary
 import io.github.derui.pegen.core.lang.PegExpression
 import io.github.derui.pegen.core.lang.PegGroupPrimary

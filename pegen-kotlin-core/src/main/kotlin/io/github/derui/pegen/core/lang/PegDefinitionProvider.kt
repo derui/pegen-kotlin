@@ -1,6 +1,4 @@
-package io.github.derui.pegen.core.dsl.support
-
-import io.github.derui.pegen.core.lang.PegDefinition
+package io.github.derui.pegen.core.lang
 
 /**
  * A provider for [PegDefinition]. This is used with companion object pattern.

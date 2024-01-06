@@ -1,6 +1,5 @@
 package io.github.derui.pegen.core.lang
 
-import io.github.derui.pegen.core.dsl.support.PegDefinitionProvider
 import io.github.derui.pegen.core.parser.ParserContext
 import java.util.UUID
 

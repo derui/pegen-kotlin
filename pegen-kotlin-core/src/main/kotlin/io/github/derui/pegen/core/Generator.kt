@@ -4,8 +4,8 @@ import io.github.derui.pegen.core.debug.DebugPrinter
 import io.github.derui.pegen.core.debug.DebuggingInfoRecorder
 import io.github.derui.pegen.core.debug.DebuggingInfoRecorderImpl
 import io.github.derui.pegen.core.debug.NullDebuggingInfoRecorder
-import io.github.derui.pegen.core.dsl.support.PegDefinitionProvider
 import io.github.derui.pegen.core.lang.PegDefinition
+import io.github.derui.pegen.core.lang.PegDefinitionProvider
 import io.github.derui.pegen.core.parser.ErrorInfo
 import io.github.derui.pegen.core.parser.ParserContext
 import io.github.derui.pegen.core.parser.ParserSource
