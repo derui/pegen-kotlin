@@ -94,7 +94,12 @@ inline infix fun <T, T2, E> Result<T, E>.map(f: (T) -> T2): Result<T2, E> {
 /**
  * operate [f] if [this] is [Ok].
  */
-fun <T, T2, E> Result<T, E>.flatMap(f: (T) -> Result<T2, E>): Result<T2, E> {
+@OptIn(ExperimentalContracts::class)
+inline fun <T, T2, E> Result<T, E>.flatMap(f: (T) -> Result<T2, E>): Result<T2, E> {
+    contract {
+        callsInPlace(f, kotlin.contracts.InvocationKind.AT_MOST_ONCE)
+    }
+
     return when (this) {
         is Ok -> f(this.value)
         is Err -> Err(this.error)
@@ -104,10 +109,16 @@ fun <T, T2, E> Result<T, E>.flatMap(f: (T) -> Result<T2, E>): Result<T2, E> {
 /**
  * fold [f] if [this] is [Ok], otherwise fold [e].
  */
-fun <T, T2, E> Result<T, E>.fold(
+@OptIn(ExperimentalContracts::class)
+inline fun <T, T2, E> Result<T, E>.fold(
     f: (T) -> T2,
     e: (E) -> T2,
 ): T2 {
+    contract {
+        callsInPlace(f, kotlin.contracts.InvocationKind.AT_MOST_ONCE)
+        callsInPlace(e, kotlin.contracts.InvocationKind.AT_MOST_ONCE)
+    }
+
     return when (this) {
         is Ok -> f(this.value)
         is Err -> e(this.error)
