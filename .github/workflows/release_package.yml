@@ -1,0 +1,27 @@
+name: publish package
+
+on:
+  release:
+    types: [published]
+  workflow_displatch:
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Cache gradle's caceh
+        uses: actions/cache@v3
+        with:
+          path: prime-numbers
+          key: gradle-cache-${{ hashFiles('**/*.gradle.kts') }}
+
+      - name: Publish package
+        run: ./gradlew publish
+        env:
+          USERNAME: ${{ github.actor }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}

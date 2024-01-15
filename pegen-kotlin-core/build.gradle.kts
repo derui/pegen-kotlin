@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "io.github.derui"
-version = "0.0.1"
+version = "0.1.0"
 
 repositories {
     mavenCentral()
@@ -28,12 +28,23 @@ tasks {
     jar {}
 }
 
+
 publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/derui/pegen-kotlin")
+            credentials {
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
+            }
+        }
+    }
+    
     publications {
-        create<MavenPublication>("mavenKotlin") {
-            groupId = "io.github.derui"
+        create<MavenPublication>("grp") {
             artifactId = "pegen-kotlin-core"
-            version = "0.0.1"
+            version = "0.1.0"
             from(components["java"])
         }
     }
