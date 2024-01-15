@@ -17,7 +17,7 @@ jobs:
       - name: Cache gradle's caceh
         uses: actions/cache@v3
         with:
-          path: prime-numbers
+          path: ~/.gradle/caches/
           key: gradle-cache-${{ hashFiles('**/*.gradle.kts') }}
 
       - name: Publish package
