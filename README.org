@@ -22,7 +22,7 @@ You can define expression with DSL.
 
 #+begin_src kotlin
   // Pegen is not object, it's a class.
-  Pegen<String, Unit>() define {
+  Pegen<String, Unit> {
       // Pegen provides straight forward syntax of PEG.
       s(+"Hello", many(cls {+" "}), +"World")
   }
@@ -31,7 +31,7 @@ You can define expression with DSL.
 ** Define syntax with DSL
 #+begin_src kotlin
   // Pegen is not object, it's a class.
-  Pegen<String, Unit>() define {
+  Pegen<String, Unit> {
       // Pegen provides straight forward syntax of PEG.
       s(+"Hello", many(cls {+" "}), +"World")
   } constructAs {
@@ -42,7 +42,7 @@ You can define expression with DSL.
 
 ** Run parser with defined syntax
 #+begin_src kotlin
-  val syntax = Pegen<String, String> define {
+  val syntax = Pegen<String, String> {
       // add tag to get value in constructor
       +"foo" tagging "tag"
   } constructAs {

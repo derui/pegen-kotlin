@@ -19,7 +19,7 @@ class ConstructionTest {
     fun `construct with tag and class`() {
         // Arrange
         val syntax =
-            Pegen<Data, Tag>().define {
+            Pegen<Data, Tag> {
                 exp(s(+"a", +"b") tagged Tag.TagName, +"test")
             } constructAs { Data(it.tagged(Tag.TagName)[0]?.read ?: "not found") }
         val parser = Generator(GeneratorOption { it.enableDebug() }).generateParserFrom(syntax)
@@ -37,7 +37,7 @@ class ConstructionTest {
         fun `get tagging result as string from any syntax`() {
             // Arrange
             val syntax =
-                Pegen<Data, String>().define {
+                Pegen<Data, String> {
                     exp(s(+"a", +"b") tagged "tag", +"test")
                 } constructAs { Data(it.tagged("tag")[0]?.read ?: "not found") }
             val parser = Generator().generateParserFrom(syntax)
@@ -53,7 +53,7 @@ class ConstructionTest {
         fun `get tagging result as list from many syntax`() {
             // Arrange
             val syntax =
-                Pegen<String, String>().define {
+                Pegen<String, String> {
                     many(+"a" tagged "tag")
                 } constructAs {
                     it.tagged("tag").asList().joinToString("/") { v -> v.read }

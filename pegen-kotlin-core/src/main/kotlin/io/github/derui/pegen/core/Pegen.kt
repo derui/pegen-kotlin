@@ -10,25 +10,27 @@ import io.github.derui.pegen.core.lang.PegExpression
 /**
  * A parser generator with PEG DSL
  */
-class Pegen<V, TagType> {
-    /**
-     * Make expression with DSL
-     */
-    infix fun define(init: PegDsl<V, TagType>.() -> ImplicitConversionDelegate<V, TagType>): PegExpression<V, TagType> {
-        val generator = DefaultSyntaxIdentifierGenerator()
+class Pegen {
+    companion object {
+        /**
+         * Make expression with DSL
+         */
+        operator fun <V, TagType> invoke(init: PegDsl<V, TagType>.() -> ImplicitConversionDelegate<V, TagType>): PegExpression<V, TagType> {
+            val generator = DefaultSyntaxIdentifierGenerator()
 
-        val expr = PegDsl<V, TagType>(generator).init()
+            val expr = PegDsl<V, TagType>(generator).init()
 
-        return expr.asExpression()
+            return expr.asExpression()
+        }
     }
 
     /**
      * Make definition with DSL
      */
     abstract class Def<V, TagType>(
-        private val provider: Pegen<V, TagType>.() -> PegDefinitionProvider<V, TagType>,
+        private val provider: () -> PegDefinitionProvider<V, TagType>,
     ) : PegDefinitionProvider<V, TagType> {
-        private val laziedProvider by lazy { Pegen<V, TagType>().provider() }
+        private val laziedProvider by lazy { provider() }
 
         override fun provide(): PegDefinition<V, TagType> {
             return laziedProvider.provide()

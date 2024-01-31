@@ -6,7 +6,7 @@ sealed class Node
 
 class Expr(val value: Long) : Node() {
     companion object : Pegen.Def<Node, String>({
-        define {
+        Pegen {
             Sum() tagged "sum"
         } constructAs {
             val sum = it.tagged("sum")[0]?.value() as? Sum
@@ -17,7 +17,7 @@ class Expr(val value: Long) : Node() {
 
 class Sum(val value: Long) : Node() {
     companion object : Pegen.Def<Node, String>({
-        define {
+        Pegen {
             s(Product() tagged "initial", many(g(s(g(+"+" / +"-") tagged "op", Product() tagged "others"))))
         } constructAs {
             val initial = it.tagged("initial").firstAsType<Product>()?.value ?: 0
@@ -39,7 +39,7 @@ class Sum(val value: Long) : Node() {
 
 class Product(val value: Long) : Node() {
     companion object : Pegen.Def<Node, String>({
-        define {
+        Pegen {
             s(Power() tagged "initial", many(g(s(g(+"*" / +"/") tagged "op", Power() tagged "others"))))
         } constructAs {
             val initial = it.tagged("initial").firstAsType<Power>()?.value ?: 0
@@ -61,7 +61,7 @@ class Product(val value: Long) : Node() {
 
 class Power(val value: Long) : Node() {
     companion object : Pegen.Def<Node, String>({
-        define {
+        Pegen {
             s(Value() tagged "initial", opt(g(s(+"^", Power() tagged "powered"))))
         } constructAs {
             val initial = it.tagged("initial").firstAsType<Value>()?.value ?: 0
@@ -82,7 +82,7 @@ class Power(val value: Long) : Node() {
 
 class Value(val value: Long) : Node() {
     companion object : Pegen.Def<Node, String>({
-        define {
+        Pegen {
             (many1(cls { +('0'..'9') }) tagged "digits") / s(+"(", Expr() tagged "expr", +")")
         } constructAs {
             val digits = it.tagged("digits").firstRead()?.toLong()

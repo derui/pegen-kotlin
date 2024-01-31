@@ -15,10 +15,10 @@ class DefinitionTest {
         // Arrange
         val syntax =
             object : Pegen.Def<String, Tag>({
-                define {
+                Pegen<String, Tag> {
                     +"a" tagged Tag.TagName
                 } constructAs {
-                    it.tagged(Tag.TagName)[0]?.read?.let { s -> s + " parsed" } ?: "not found"
+                    it.tagged(Tag.TagName)[0]?.read?.let { s -> "$s parsed" } ?: "not found"
                 }
             }) {}
 
